@@ -2,146 +2,126 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function ProgramCard({ title, description, image, icon: Icon, link, iconColor = 'var(--color-primary-deep)', iconBg = '#FFFFFF' }) {
+export default function ProgramCard({ title, description, image, icon: Icon, link, iconColor = '#064B35' }) {
   return (
-    <div
-      style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '24px',
+    <div className="program-card" style={{
+      backgroundColor: '#FFFFFF',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: '0 4px 20px rgba(6,75,53,0.07)',
+      border: '1px solid rgba(6,75,53,0.07)',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    }}>
+      {/* Image — 4:3 like reference card images */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        paddingBottom: '75%',   /* 4:3 ratio */
         overflow: 'hidden',
-        boxShadow: '0 10px 30px rgba(6, 75, 53, 0.06)',
-        border: '1px solid rgba(6, 75, 53, 0.08)',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-        height: '100%',
-      }}
-      className="program-card"
-    >
-      {/* Top Image Container with Arch Shape */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          aspectRatio: '4 / 3.4',
-          overflow: 'hidden',
-          backgroundColor: '#F5F0E4',
-        }}
-      >
+        backgroundColor: '#F5F0E4',
+        flexShrink: 0,
+      }}>
         <img
           src={image}
           alt={title}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.5s ease',
-          }}
           className="card-img"
-        />
-        {/* Soft gradient bottom overlay */}
-        <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.15) 100%)',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            transition: 'transform 0.45s ease',
           }}
         />
       </div>
 
-      {/* Floating Center Icon Badge */}
-      <div
-        style={{
-          width: '54px',
-          height: '54px',
+      {/* Floating icon — centered, overlapping image/content border */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '-22px',
+        zIndex: 2,
+        position: 'relative',
+      }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
           borderRadius: '50%',
           backgroundColor: '#FFFFFF',
-          boxShadow: '0 8px 20px rgba(6, 75, 53, 0.12)',
+          boxShadow: '0 4px 14px rgba(6,75,53,0.13)',
+          border: '2px solid rgba(215,154,24,0.22)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '-27px auto 14px auto',
-          position: 'relative',
-          zIndex: 5,
-          border: '2px solid rgba(215, 154, 24, 0.25)',
           color: iconColor,
-        }}
-      >
-        <Icon size={24} strokeWidth={2} />
+        }}>
+          <Icon size={20} strokeWidth={2} />
+        </div>
       </div>
 
-      {/* Card Content */}
-      <div
-        style={{
-          padding: '0 20px 24px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          flexGrow: 1,
-        }}
-      >
-        <h3
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '1.22rem',
-            fontWeight: '700',
-            color: 'var(--color-text-primary)',
-            marginBottom: '10px',
-            lineHeight: '1.3',
-            minHeight: '48px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+      {/* Content */}
+      <div style={{
+        padding: '12px 16px 20px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        flexGrow: 1,
+      }}>
+        <h3 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: '1.03rem',
+          fontWeight: '700',
+          color: '#17231F',
+          marginBottom: '8px',
+          lineHeight: '1.3',
+        }}>
           {title}
         </h3>
 
-        <p
-          style={{
-            fontSize: '0.88rem',
-            lineHeight: '1.55',
-            color: 'var(--color-text-secondary)',
-            marginBottom: '20px',
-            flexGrow: 1,
-          }}
-        >
+        <p style={{
+          fontSize: '0.8rem',
+          lineHeight: '1.52',
+          color: '#5B625E',
+          marginBottom: '14px',
+          flexGrow: 1,
+        }}>
           {description}
         </p>
 
         <Link
           to={link || '/programs'}
+          className="learn-more-link"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
-            fontSize: '0.85rem',
+            gap: '5px',
+            fontSize: '0.8rem',
             fontWeight: '700',
-            color: 'var(--color-purple-elegant)',
+            color: '#6B2D67',
             textDecoration: 'none',
-            padding: '4px 0',
-            transition: 'gap 0.2s ease, color 0.2s ease',
+            transition: 'gap 0.2s, color 0.2s',
           }}
-          className="learn-more-link"
         >
-          <span>Learn More</span>
-          <ArrowRight size={14} className="arrow-icon" />
+          Learn More <ArrowRight size={13} />
         </Link>
       </div>
 
       <style>{`
         .program-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 18px 40px rgba(6, 75, 53, 0.12);
-          border-color: rgba(215, 154, 24, 0.35);
+          transform: translateY(-6px);
+          box-shadow: 0 12px 32px rgba(6,75,53,0.12);
         }
         .program-card:hover .card-img {
-          transform: scale(1.06);
+          transform: scale(1.05);
         }
         .program-card:hover .learn-more-link {
-          color: var(--color-primary-deep);
-          gap: 9px;
+          color: #064B35;
+          gap: 8px;
         }
       `}</style>
     </div>

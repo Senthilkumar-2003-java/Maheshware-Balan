@@ -1,46 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, GraduationCap, PlusSquare, Users, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import impactBg from '../assets/images/impact-children.jpg';
 
-export default function Impact({ onOpenDonate }) {
-  const [students, setStudents] = useState(0);
-  const [medical, setMedical] = useState(0);
-  const [families, setFamilies] = useState(0);
-  const [countries, setCountries] = useState(0);
+function useCountUp(target, duration = 1600) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef(null);
 
-  // Animated counter effect
   useEffect(() => {
-    let start = 0;
-    const duration = 1500;
-    const steps = 40;
-    const interval = duration / steps;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [started]);
 
+  useEffect(() => {
+    if (!started) return;
+    let start = 0;
+    const steps = 50;
+    const interval = duration / steps;
     const timer = setInterval(() => {
       start++;
-      const progress = start / steps;
-      setStudents(Math.floor(progress * 500));
-      setMedical(Math.floor(progress * 200));
-      setFamilies(Math.floor(progress * 150));
-      setCountries(Math.floor(progress * 10));
-
-      if (start >= steps) {
-        clearInterval(timer);
-        setStudents(500);
-        setMedical(200);
-        setFamilies(150);
-        setCountries(10);
-      }
+      setCount(Math.floor((start / steps) * target));
+      if (start >= steps) { clearInterval(timer); setCount(target); }
     }, interval);
-
     return () => clearInterval(timer);
-  }, []);
+  }, [started, target, duration]);
+
+  return [count, ref];
+}
+
+export default function Impact({ onOpenDonate }) {
+  const [students, studentsRef] = useCountUp(500);
+  const [medical] = useCountUp(200);
+  const [families] = useCountUp(150);
+  const [countries] = useCountUp(10);
 
   const stats = [
-    { number: `${students}+`, label: 'Students Supported', icon: GraduationCap },
-    { number: `${medical}+`, label: 'People Received\nMedical Support', icon: PlusSquare },
-    { number: `${families}+`, label: 'Families Assisted', icon: Users },
-    { number: `${countries}+`, label: 'Countries Contributing', icon: Globe },
+    { number: students, suffix: '+', label: 'Students\nSupported', icon: GraduationCap },
+    { number: medical, suffix: '+', label: 'People Received\nMedical Support', icon: PlusSquare },
+    { number: families, suffix: '+', label: 'Families\nAssisted', icon: Users },
+    { number: countries, suffix: '+', label: 'Countries\nContributing', icon: Globe },
   ];
 
   return (
@@ -48,117 +51,121 @@ export default function Impact({ onOpenDonate }) {
       style={{
         position: 'relative',
         backgroundColor: '#064B35',
-        backgroundImage: `linear-gradient(90deg, rgba(6, 75, 53, 0.94) 0%, rgba(6, 75, 53, 0.82) 50%, rgba(6, 75, 53, 0.55) 100%), url(${impactBg})`,
+        backgroundImage: `linear-gradient(90deg, rgba(6,75,53,0.96) 0%, rgba(6,75,53,0.85) 50%, rgba(6,75,53,0.55) 100%), url(${impactBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center 40%',
         color: '#FFFFFF',
-        paddingTop: '90px',
-        paddingBottom: '120px',
+        paddingTop: '72px',
+        paddingBottom: '100px',
         overflow: 'hidden',
       }}
     >
-      {/* Background ambient lighting */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20%',
-          right: '15%',
-          width: '300px',
-          height: '300px',
-          borderRadius: '50%',
-          backgroundColor: 'rgba(215, 154, 24, 0.18)',
-          filter: 'blur(80px)',
-          pointerEvents: 'none',
-        }}
-      />
+      {/* Ambient gold glow */}
+      <div style={{
+        position: 'absolute',
+        top: '25%', right: '12%',
+        width: '280px', height: '280px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(215,154,24,0.18)',
+        filter: 'blur(80px)',
+        pointerEvents: 'none',
+      }} />
 
-      <div className="container-wide" style={{ position: 'relative', zIndex: 2 }}>
+      <div ref={studentsRef} style={{ maxWidth: '1380px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1.1fr 1.6fr 0.6fr',
+            gridTemplateColumns: '1fr 1.7fr 0.55fr',
             alignItems: 'center',
             gap: '36px',
           }}
           className="impact-grid"
         >
-          {/* Left Text Block */}
+          {/* LEFT: Heading + text + CTA */}
           <div>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '0.8rem',
-                fontWeight: '700',
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: 'var(--color-gold-soft)',
-                marginBottom: '14px',
-              }}
-            >
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-gold-warm)', display: 'inline-block' }}></span>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '7px',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: '#E9C66A',
+              marginBottom: '12px',
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#D79A18', display: 'inline-block' }} />
               OUR IMPACT
             </div>
 
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(2.3rem, 3.8vw, 3.4rem)',
-                fontWeight: '700',
-                color: '#FFFFFF',
-                lineHeight: '1.12',
-                letterSpacing: '-0.01em',
-                marginBottom: '18px',
-              }}
-            >
-              Real People. <br />
-              <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-editorial)', color: 'var(--color-gold-soft)' }}>
+            <h2 style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: 'clamp(2rem, 3.2vw, 3rem)',
+              fontWeight: '700',
+              color: '#FFFFFF',
+              lineHeight: '1.12',
+              letterSpacing: '-0.01em',
+              marginBottom: '16px',
+            }}>
+              Real People.<br />
+              <span style={{
+                fontStyle: 'italic',
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                color: '#E9C66A',
+              }}>
                 Real Stories.
               </span>
             </h2>
 
-            <p
-              style={{
-                fontSize: '1.02rem',
-                lineHeight: '1.6',
-                color: 'rgba(255, 255, 255, 0.85)',
-                marginBottom: '30px',
-                maxWidth: '380px',
-              }}
-            >
+            <p style={{
+              fontSize: '0.95rem',
+              lineHeight: '1.6',
+              color: 'rgba(255,255,255,0.85)',
+              marginBottom: '28px',
+              maxWidth: '360px',
+            }}>
               Your support helps us create real change in the lives of many. Together, we make a difference.
             </p>
 
             <Link
               to="/about"
-              className="btn btn-primary"
               style={{
-                padding: '13px 26px',
-                fontSize: '0.92rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '11px 24px',
+                background: 'linear-gradient(135deg, #D79A18 0%, #C4870B 100%)',
+                color: '#FFFFFF',
+                borderRadius: '9999px',
+                fontSize: '0.88rem',
+                fontWeight: '700',
+                textDecoration: 'none',
+                boxShadow: '0 4px 18px rgba(215,154,24,0.38)',
+                transition: 'transform 0.2s, box-shadow 0.2s',
               }}
+              className="impact-cta-btn"
             >
               <span>See Our Impact</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={15} />
             </Link>
           </div>
 
-          {/* Middle Stats Columns */}
+          {/* MIDDLE: 4 Stats in glassmorphic card — exactly like reference */}
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '16px',
-              backgroundColor: 'rgba(255, 255, 255, 0.07)',
-              backdropFilter: 'blur(10px)',
-              padding: '28px 20px',
-              borderRadius: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
+              gap: '12px',
+              backgroundColor: 'rgba(255,255,255,0.07)',
+              backdropFilter: 'blur(12px)',
+              padding: '28px 18px',
+              borderRadius: '22px',
+              border: '1px solid rgba(255,255,255,0.12)',
             }}
             className="stats-container"
           >
             {stats.map((stat, idx) => {
-              const IconComponent = stat.icon;
+              const Icon = stat.icon;
               return (
                 <div
                   key={idx}
@@ -167,49 +174,43 @@ export default function Impact({ onOpenDonate }) {
                     flexDirection: 'column',
                     alignItems: 'center',
                     textAlign: 'center',
-                    position: 'relative',
-                    padding: '0 6px',
+                    padding: '4px',
                   }}
                 >
-                  <div
-                    style={{
-                      width: '42px',
-                      height: '42px',
-                      borderRadius: '50%',
-                      border: '1px solid rgba(233, 198, 106, 0.4)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'var(--color-gold-soft)',
-                      marginBottom: '12px',
-                      backgroundColor: 'rgba(215, 154, 24, 0.1)',
-                    }}
-                  >
-                    <IconComponent size={20} strokeWidth={1.8} />
+                  {/* Icon circle */}
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(233,198,106,0.4)',
+                    backgroundColor: 'rgba(215,154,24,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#E9C66A',
+                    marginBottom: '10px',
+                  }}>
+                    <Icon size={18} strokeWidth={1.8} />
                   </div>
-
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-serif)',
-                      fontSize: 'clamp(1.7rem, 2.3vw, 2.2rem)',
-                      fontWeight: '700',
-                      color: '#FFFFFF',
-                      lineHeight: '1.1',
-                      marginBottom: '6px',
-                    }}
-                  >
-                    {stat.number}
+                  {/* Count */}
+                  <div style={{
+                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontSize: 'clamp(1.6rem, 2.2vw, 2rem)',
+                    fontWeight: '700',
+                    color: '#FFFFFF',
+                    lineHeight: '1.1',
+                    marginBottom: '5px',
+                  }}>
+                    {stat.number}{stat.suffix}
                   </div>
-
-                  <div
-                    style={{
-                      fontSize: '0.78rem',
-                      fontWeight: '500',
-                      color: 'rgba(255, 255, 255, 0.8)',
-                      lineHeight: '1.3',
-                      whiteSpace: 'pre-line',
-                    }}
-                  >
+                  {/* Label */}
+                  <div style={{
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    color: 'rgba(255,255,255,0.8)',
+                    lineHeight: '1.3',
+                    whiteSpace: 'pre-line',
+                  }}>
                     {stat.label}
                   </div>
                 </div>
@@ -217,76 +218,55 @@ export default function Impact({ onOpenDonate }) {
             })}
           </div>
 
-          {/* Right Handwritten script */}
+          {/* RIGHT: Handwritten script — "Hope Changes Lives ♡" */}
           <div
-            style={{
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            style={{ textAlign: 'center' }}
             className="impact-handwriting-col"
           >
             <div
-              className="font-handwriting"
               style={{
-                fontSize: '2.4rem',
+                fontFamily: "'Caveat', cursive",
+                fontSize: '2.2rem',
                 lineHeight: '1.15',
-                color: 'var(--color-gold-soft)',
+                color: '#E9C66A',
                 transform: 'rotate(-6deg)',
                 textShadow: '0 2px 10px rgba(0,0,0,0.3)',
               }}
             >
-              Hope<br />
-              Changes<br />
-              Lives ♡
+              Hope<br />Changes<br />Lives ♡
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Organic Wave Curve */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          overflow: 'hidden',
-          lineHeight: 0,
-          transform: 'translateY(1px)',
-        }}
-      >
-        <svg
-          viewBox="0 0 1440 70"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ width: '100%', height: '36px', display: 'block' }}
+      {/* Bottom wave → OurStory (ivory) */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0,
+        width: '100%',
+        overflow: 'hidden',
+        lineHeight: 0,
+        transform: 'translateY(1px)',
+      }}>
+        <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"
+          style={{ width: '100%', height: '32px', display: 'block' }}
           preserveAspectRatio="none"
         >
-          <path
-            d="M0,35 C360,70 820,0 1200,45 C1320,60 1400,45 1440,35 L1440,70 L0,70 Z"
-            fill="#FCF9F1"
-          />
+          <path d="M0,30 C360,65 820,0 1200,38 C1320,52 1400,38 1440,30 L1440,60 L0,60 Z" fill="#FCF9F1" />
         </svg>
       </div>
 
       <style>{`
-        @media (max-width: 1080px) {
-          .impact-grid {
-            grid-template-columns: 1fr !important;
-            gap: 32px !important;
-          }
-          .impact-handwriting-col {
-            display: none !important;
-          }
+        .impact-cta-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(215,154,24,0.5);
         }
-        @media (max-width: 768px) {
-          .stats-container {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 20px !important;
-          }
+        @media (max-width: 1080px) {
+          .impact-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .impact-handwriting-col { display: none !important; }
+        }
+        @media (max-width: 700px) {
+          .stats-container { grid-template-columns: repeat(2, 1fr) !important; gap: 18px !important; }
         }
       `}</style>
     </section>

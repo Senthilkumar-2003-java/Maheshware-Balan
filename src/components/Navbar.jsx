@@ -11,17 +11,12 @@ export default function Navbar({ onOpenDonate }) {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location]);
+  useEffect(() => { setMobileMenuOpen(false); }, [location]);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -34,44 +29,44 @@ export default function Navbar({ onOpenDonate }) {
   ];
 
   return (
-    <header
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 1000,
-        backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.96)' : 'rgba(252, 249, 241, 0.92)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: scrolled ? '1px solid rgba(6, 75, 53, 0.08)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 4px 20px rgba(6, 75, 53, 0.05)' : 'none',
-        transition: 'all 0.3s ease',
-        padding: scrolled ? '12px 0' : '16px 0',
-      }}
-    >
-      <div className="container-wide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <header style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 1000,
+      backgroundColor: '#FFFFFF',
+      borderBottom: '1px solid rgba(6,75,53,0.08)',
+      boxShadow: scrolled ? '0 2px 16px rgba(6,75,53,0.07)' : 'none',
+      transition: 'box-shadow 0.3s ease',
+    }}>
+      <div style={{
+        maxWidth: '1380px',
+        margin: '0 auto',
+        padding: '0 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '68px',
+      }}>
         {/* Brand Logo */}
         <Logo />
 
-        {/* Desktop Navigation */}
-        <nav
-          style={{
-            display: 'none',
-            alignItems: 'center',
-            gap: '28px',
-          }}
-          className="desktop-nav"
-        >
+        {/* Desktop Navigation — center */}
+        <nav className="desktop-nav" style={{ display: 'none', alignItems: 'center', gap: '24px' }}>
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
+              end={link.path === '/'}
               style={({ isActive }) => ({
-                fontSize: '0.94rem',
+                fontSize: '0.88rem',
                 fontWeight: isActive ? '600' : '500',
-                color: isActive ? 'var(--color-primary-deep)' : 'var(--color-text-secondary)',
+                color: isActive ? '#064B35' : '#5B625E',
                 position: 'relative',
-                padding: '6px 2px',
-                transition: 'color 0.2s ease',
-                borderBottom: isActive ? '2px solid var(--color-gold-warm)' : '2px solid transparent',
+                padding: '4px 0 6px 0',
+                textDecoration: 'none',
+                borderBottom: isActive ? '2px solid #D79A18' : '2px solid transparent',
+                transition: 'color 0.2s, border-color 0.2s',
+                whiteSpace: 'nowrap',
               })}
             >
               {link.name}
@@ -79,63 +74,70 @@ export default function Navbar({ onOpenDonate }) {
           ))}
         </nav>
 
-        {/* Right Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          {/* Donate Now Button */}
+        {/* Right: Donate + Language */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Donate Now Button — matches reference green pill */}
           <button
             onClick={onOpenDonate}
-            className="btn btn-dark"
             style={{
-              padding: '10px 22px',
-              fontSize: '0.9rem',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'var(--color-primary-deep)',
+              gap: '7px',
+              padding: '9px 20px',
+              backgroundColor: '#064B35',
+              color: '#FFFFFF',
               borderRadius: '9999px',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              border: 'none',
+              transition: 'background 0.2s',
+              whiteSpace: 'nowrap',
             }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#085e43'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#064B35'}
           >
-            <Heart size={16} fill="#D79A18" color="#D79A18" />
+            <Heart size={15} fill="#D79A18" color="#D79A18" />
             <span>Donate Now</span>
           </button>
 
-          {/* Language Selector */}
-          <div style={{ position: 'relative' }} className="lang-selector">
+          {/* Language Selector — globe + EN + chevron */}
+          <div style={{ position: 'relative' }}>
             <button
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '8px 12px',
+                gap: '5px',
+                padding: '7px 10px',
                 borderRadius: '8px',
-                fontSize: '0.85rem',
+                fontSize: '0.82rem',
                 fontWeight: '600',
-                color: 'var(--color-text-primary)',
-                background: 'rgba(6, 75, 53, 0.05)',
+                color: '#17231F',
+                background: 'rgba(6,75,53,0.05)',
+                border: '1px solid rgba(6,75,53,0.1)',
+                cursor: 'pointer',
                 transition: 'background 0.2s',
               }}
             >
-              <Globe size={16} color="var(--color-primary-deep)" />
+              <Globe size={15} color="#064B35" />
               <span>{currentLang}</span>
-              <ChevronDown size={14} />
+              <ChevronDown size={13} />
             </button>
 
             {langDropdownOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '110%',
-                  right: 0,
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow-md)',
-                  border: '1px solid var(--color-border-light)',
-                  padding: '6px',
-                  minWidth: '130px',
-                  zIndex: 100,
-                }}
-              >
+              <div style={{
+                position: 'absolute',
+                top: '110%',
+                right: 0,
+                backgroundColor: '#FFFFFF',
+                borderRadius: '10px',
+                boxShadow: '0 8px 24px rgba(6,75,53,0.12)',
+                border: '1px solid rgba(6,75,53,0.08)',
+                padding: '5px',
+                minWidth: '130px',
+                zIndex: 200,
+              }}>
                 {[
                   { code: 'EN', label: 'English' },
                   { code: 'TA', label: 'தமிழ் (Tamil)' },
@@ -143,19 +145,18 @@ export default function Navbar({ onOpenDonate }) {
                 ].map((item) => (
                   <button
                     key={item.code}
-                    onClick={() => {
-                      setCurrentLang(item.code);
-                      setLangDropdownOpen(false);
-                    }}
+                    onClick={() => { setCurrentLang(item.code); setLangDropdownOpen(false); }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
                       padding: '8px 12px',
                       borderRadius: '6px',
-                      fontSize: '0.85rem',
+                      fontSize: '0.83rem',
                       fontWeight: currentLang === item.code ? '600' : '400',
-                      color: currentLang === item.code ? 'var(--color-primary-deep)' : 'var(--color-text-primary)',
-                      backgroundColor: currentLang === item.code ? 'var(--color-green-mint)' : 'transparent',
+                      color: currentLang === item.code ? '#064B35' : '#17231F',
+                      backgroundColor: currentLang === item.code ? '#eaf5e9' : 'transparent',
+                      cursor: 'pointer',
+                      border: 'none',
                     }}
                   >
                     {item.label}
@@ -165,83 +166,88 @@ export default function Navbar({ onOpenDonate }) {
             )}
           </div>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            className="mobile-toggle-btn"
             style={{
               display: 'none',
               padding: '8px',
               borderRadius: '8px',
-              color: 'var(--color-primary-deep)',
+              color: '#064B35',
+              cursor: 'pointer',
+              border: 'none',
+              background: 'none',
             }}
-            className="mobile-toggle-btn"
           >
-            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            borderBottom: '1px solid var(--color-border-light)',
-            boxShadow: 'var(--shadow-lg)',
-            padding: '20px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px',
-          }}
-          className="mobile-nav-panel"
-        >
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderTop: '1px solid rgba(6,75,53,0.06)',
+          boxShadow: '0 8px 24px rgba(6,75,53,0.08)',
+          padding: '16px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px',
+        }}>
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
+              end={link.path === '/'}
               style={({ isActive }) => ({
-                fontSize: '1rem',
+                fontSize: '0.96rem',
                 fontWeight: isActive ? '600' : '500',
-                color: isActive ? 'var(--color-primary-deep)' : 'var(--color-text-primary)',
+                color: isActive ? '#064B35' : '#17231F',
                 padding: '10px 0',
-                borderBottom: '1px solid rgba(6, 75, 53, 0.04)',
+                borderBottom: '1px solid rgba(6,75,53,0.04)',
+                textDecoration: 'none',
+                display: 'block',
               })}
             >
               {link.name}
             </NavLink>
           ))}
           <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenDonate();
+            onClick={() => { setMobileMenuOpen(false); onOpenDonate(); }}
+            style={{
+              marginTop: '12px',
+              width: '100%',
+              padding: '12px',
+              backgroundColor: '#064B35',
+              color: '#FFFFFF',
+              borderRadius: '9999px',
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
             }}
-            className="btn btn-primary"
-            style={{ width: '100%', marginTop: '10px' }}
           >
-            <Heart size={18} fill="#FFF" />
+            <Heart size={17} fill="#D79A18" color="#D79A18" />
             <span>Donate Now</span>
           </button>
         </div>
       )}
 
-      {/* Inline styles for media queries */}
       <style>{`
-        @media (min-width: 992px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-          .mobile-toggle-btn {
-            display: none !important;
-          }
+        @media (min-width: 1024px) {
+          .desktop-nav { display: flex !important; }
+          .mobile-toggle-btn { display: none !important; }
         }
-        @media (max-width: 991px) {
-          .desktop-nav {
-            display: none !important;
-          }
-          .mobile-toggle-btn {
-            display: inline-flex !important;
-          }
+        @media (max-width: 1023px) {
+          .desktop-nav { display: none !important; }
+          .mobile-toggle-btn { display: inline-flex !important; }
         }
       `}</style>
     </header>
