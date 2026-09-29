@@ -131,7 +131,7 @@ export default function Navbar({ onOpenDonate }) {
                 }}
               >
                 <Globe size={13} color="#C9A227" />
-                <span>{currentLangObj.native}</span>
+                <span>{currentLangObj.nativeName}</span>
                 <ChevronDown size={12} />
               </button>
 
@@ -164,8 +164,8 @@ export default function Navbar({ onOpenDonate }) {
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                       }}
                     >
-                      <span>{item.native}</span>
-                      <span style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>{item.label}</span>
+                      <span>{item.nativeName}</span>
+                      <span style={{ fontSize: '0.72rem', color: '#9CA3AF' }}>{item.name}</span>
                     </button>
                   ))}
                 </div>
@@ -320,7 +320,7 @@ export default function Navbar({ onOpenDonate }) {
                   cursor: 'pointer'
                 }}
               >
-                {item.native}
+                {item.nativeName}
               </button>
             ))}
           </div>

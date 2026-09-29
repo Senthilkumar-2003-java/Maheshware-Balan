@@ -1,6 +1,154 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2, X, Heart, Sparkles } from 'lucide-react';
 import { submitContactApi } from '../services/api';
+import confetti from 'canvas-confetti';
+
+// ── Beautiful Success Popup Overlay ──
+function SuccessPopup({ onClose }) {
+  useEffect(() => {
+    // Fire confetti
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.5 },
+      colors: ['#064B35', '#4F8A35', '#D79A18', '#C9A227', '#FFFFFF'],
+    });
+    setTimeout(() => {
+      confetti({
+        particleCount: 60,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+        colors: ['#064B35', '#D79A18'],
+      });
+      confetti({
+        particleCount: 60,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+        colors: ['#064B35', '#D79A18'],
+      });
+    }, 300);
+    // Auto-close after 5 seconds
+    const timer = setTimeout(onClose, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0,
+        backgroundColor: 'rgba(6, 75, 53, 0.75)',
+        backdropFilter: 'blur(10px)',
+        zIndex: 9999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '24px',
+        animation: 'fadeIn 0.35s ease',
+      }}
+      onClick={onClose}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '32px',
+          padding: '52px 44px',
+          maxWidth: '480px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 32px 80px rgba(6, 75, 53, 0.25)',
+          position: 'relative',
+          animation: 'popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '18px', right: '18px',
+            background: '#F3F4F6', border: 'none', borderRadius: '50%',
+            width: '34px', height: '34px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#6B7280',
+          }}
+        >
+          <X size={16} />
+        </button>
+
+        {/* Animated check icon */}
+        <div style={{
+          width: '88px', height: '88px', borderRadius: '50%',
+          background: 'linear-gradient(135deg, #064B35, #0f7a52)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 24px auto',
+          boxShadow: '0 16px 40px rgba(6, 75, 53, 0.3)',
+          animation: 'pulse 2s infinite',
+        }}>
+          <CheckCircle2 size={42} color="#FFFFFF" strokeWidth={2.5} />
+        </div>
+
+        {/* Sparkles row */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
+          <Sparkles size={18} color="#D79A18" />
+          <Sparkles size={14} color="#064B35" />
+          <Sparkles size={18} color="#D79A18" />
+        </div>
+
+        <h2 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: '1.85rem', fontWeight: '800',
+          color: '#064B35', marginBottom: '12px', lineHeight: '1.25',
+        }}>
+          Message Sent!
+        </h2>
+        <p style={{ fontSize: '1rem', color: '#5B625E', lineHeight: '1.65', marginBottom: '20px' }}>
+          Thank you for reaching out. Our trust office will get back to you within <strong>24–48 hours</strong>. 🙏
+        </p>
+
+        {/* Divider */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(6,75,53,0.1)' }} />
+          <Heart size={14} color="#D79A18" fill="#D79A18" />
+          <div style={{ flex: 1, height: '1px', background: 'rgba(6,75,53,0.1)' }} />
+        </div>
+
+        <p style={{ fontSize: '0.82rem', color: '#829AB1' }}>
+          This popup closes automatically in a few seconds
+        </p>
+
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: '20px',
+            padding: '13px 36px',
+            background: '#064B35',
+            color: '#FFFFFF',
+            border: 'none', borderRadius: '9999px',
+            fontSize: '0.95rem', fontWeight: '700',
+            cursor: 'pointer',
+            transition: 'background 0.2s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = '#085e43'}
+          onMouseLeave={e => e.currentTarget.style.background = '#064B35'}
+        >
+          Close
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(0.7) translateY(30px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 16px 40px rgba(6,75,53,0.3); }
+          50% { box-shadow: 0 16px 60px rgba(6,75,53,0.5); }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -55,6 +203,8 @@ export default function Contact() {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
+      {/* ── Success Popup ── */}
+      {submitted && <SuccessPopup onClose={() => setSubmitted(false)} />}
       {/* Header */}
       <section
         style={{
@@ -207,18 +357,7 @@ export default function Contact() {
                 Fill out the form below and our trust office will respond within 24–48 hours.
               </p>
 
-              {submitted ? (
-                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                  <CheckCircle2 size={48} color="var(--color-primary-deep)" style={{ margin: '0 auto 16px auto' }} />
-                  <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--color-primary-deep)', marginBottom: '6px' }}>
-                    Message Sent Successfully!
-                  </h4>
-                  <p style={{ fontSize: '0.92rem', color: 'var(--color-text-secondary)' }}>
-                    Thank you for reaching out. We appreciate your interest and support.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <input
                       type="text"
@@ -294,7 +433,6 @@ export default function Contact() {
                     )}
                   </button>
                 </form>
-              )}
             </div>
           </div>
 
