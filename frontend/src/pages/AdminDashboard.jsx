@@ -98,26 +98,22 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [causeFilter, setCauseFilter] = useState('ALL');
 
-  // Real Database States
+  // Real Database States — no fake/hardcoded data
   const [donations, setDonations] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [volunteers, setVolunteers] = useState([]);
   const [beneficiaries, setBeneficiaries] = useState([]);
-  const [stats, setStats] = useState({
-    totalDonations: 105000,
-    donationCount: 5,
-    peopleSupported: 1248,
-    activeProjects: 12,
-    volunteers: 86
-  });
+  const [dbStats, setDbStats] = useState(null); // null = not loaded yet
 
   const [loading, setLoading] = useState(true);
   const [isLiveBackend, setIsLiveBackend] = useState(false);
+  const [backendError, setBackendError] = useState(false);
   const [actionMessage, setActionMessage] = useState('');
 
-  // Fetch all real data from backend API
+  // Fetch all real data from backend API — no fallback fake data
   const loadDashboardData = async () => {
     setLoading(true);
+    setBackendError(false);
     try {
       const [donationsRes, statsRes, contactsRes, volunteersRes, beneficiariesRes] = await Promise.all([
         getDonationsApi(),
@@ -127,17 +123,21 @@ export default function AdminDashboard() {
         getBeneficiariesApi(),
       ]);
 
-      if (donationsRes.donations) setDonations(donationsRes.donations);
-      if (statsRes.stats) setStats(statsRes.stats);
-      if (contactsRes.contacts) setContacts(contactsRes.contacts);
-      if (volunteersRes.volunteers) setVolunteers(volunteersRes.volunteers);
-      if (beneficiariesRes.beneficiaries) setBeneficiaries(beneficiariesRes.beneficiaries);
+      // Only set real data — no fake fallback
+      setDonations(donationsRes.donations || []);
+      setContacts(contactsRes.contacts || []);
+      setVolunteers(volunteersRes.volunteers || []);
+      setBeneficiaries(beneficiariesRes.beneficiaries || []);
+      if (statsRes.stats) setDbStats(statsRes.stats);
 
-      // Check if backend connected
-      const isOnline = !donationsRes.isFallback && !contactsRes.isFallback;
+      // Check if backend is live
+      const isOnline = donationsRes.success && contactsRes.success;
       setIsLiveBackend(isOnline);
+      if (!isOnline) setBackendError(true);
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
+      setBackendError(true);
+      setIsLiveBackend(false);
     } finally {
       setLoading(false);
     }
@@ -466,13 +466,13 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Real KPI Cards */}
+          {/* Real KPI Cards — data from MySQL DB only */}
           <div style={{ display: 'flex', gap: '18px', marginBottom: '24px', flexWrap: 'wrap' }}>
             <KPICard
               icon={IndianRupee}
               label="Total Donations Raised"
-              value={formatINR(stats.totalDonations)}
-              change={`${donations.length} Contributions`}
+              value={dbStats ? formatINR(dbStats.totalRaised || 0) : (loading ? 'Loading...' : '₹0')}
+              change={`${donations.length} Contribution${donations.length !== 1 ? 's' : ''}`}
               positive={true}
               iconBg="#E8F5E9"
               iconColor="#2E7D32"
@@ -480,27 +480,27 @@ export default function AdminDashboard() {
             <KPICard
               icon={Users}
               label="Beneficiaries Enrolled"
-              value={`${beneficiaries.length} Cases`}
-              change="+100% Verified"
-              positive={true}
+              value={loading ? 'Loading...' : `${beneficiaries.length} Cases`}
+              change={beneficiaries.length > 0 ? 'DB Records' : 'No records yet'}
+              positive={beneficiaries.length > 0}
               iconBg="#F3E8FA"
               iconColor="#6B2D67"
             />
             <KPICard
               icon={HandHelping}
-              label="Active Volunteers"
-              value={`${volunteers.length} Ready`}
-              change="+15% This Month"
-              positive={true}
+              label="Volunteer Applicants"
+              value={loading ? 'Loading...' : `${volunteers.length} Applied`}
+              change={volunteers.filter(v => v.status === 'Pending').length + ' Pending Review'}
+              positive={volunteers.length > 0}
               iconBg="#FFF8E1"
               iconColor="#D79A18"
             />
             <KPICard
               icon={MessageSquare}
-              label="Inquiries & Requests"
-              value={`${contacts.length} Inquiries`}
-              change="Real-time Sync"
-              positive={true}
+              label="Contact Inquiries"
+              value={loading ? 'Loading...' : `${contacts.length} Messages`}
+              change={contacts.filter(c => c.status === 'New').length + ' New Unread'}
+              positive={contacts.length > 0}
               iconBg="#E0F7FA"
               iconColor="#087F8C"
             />
