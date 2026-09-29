@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { X, UserPlus, CheckCircle2, Sparkles, Heart } from 'lucide-react';
+import { X, UserPlus, CheckCircle2, Sparkles, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { submitVolunteerApi } from '../services/api';
 
 export default function VolunteerModal({ isOpen, onClose }) {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,19 +19,41 @@ export default function VolunteerModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    confetti({
-      particleCount: 80,
-      spread: 60,
-      origin: { y: 0.6 },
-      colors: ['#064B35', '#4F8A35', '#D79A18'],
-    });
-    setSubmitted(true);
+    setSubmitting(true);
+    setErrorMessage('');
+    try {
+      const res = await submitVolunteerApi({
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        preferred_area: formData.interest,
+        skills: formData.city ? `City: ${formData.city}. Notes: ${formData.message}` : formData.message,
+        availability: formData.availability,
+      });
+
+      if (res && res.success) {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#064B35', '#4F8A35', '#D79A18'],
+        });
+        setSubmitted(true);
+      } else {
+        setErrorMessage(res?.message || 'Failed to submit application. Please try again.');
+      }
+    } catch (err) {
+      setErrorMessage('Server connection error. Please try again later.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
+    setErrorMessage('');
     onClose();
   };
 
@@ -226,18 +251,36 @@ export default function VolunteerModal({ isOpen, onClose }) {
               />
             </div>
 
+            {errorMessage && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '14px' }}>
+                <AlertCircle size={16} />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <button
               type="submit"
+              disabled={submitting}
               className="btn btn-dark"
               style={{
                 width: '100%',
                 padding: '14px',
                 fontSize: '0.98rem',
                 borderRadius: '9999px',
+                opacity: submitting ? 0.7 : 1,
               }}
             >
-              <Heart size={18} fill="#D79A18" color="#D79A18" />
-              <span>Submit Volunteer Application</span>
+              {submitting ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Submitting Application...</span>
+                </>
+              ) : (
+                <>
+                  <Heart size={18} fill="#D79A18" color="#D79A18" />
+                  <span>Submit Volunteer Application</span>
+                </>
+              )}
             </button>
           </form>
         ) : (

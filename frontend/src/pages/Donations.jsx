@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Heart, ShieldCheck, FileCheck, Landmark, ArrowRight, Sparkles, CheckCircle2, QrCode, CreditCard, Building } from 'lucide-react';
+import { Heart, ShieldCheck, FileCheck, Landmark, ArrowRight, Sparkles, CheckCircle2, QrCode, CreditCard, Building, AlertCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { submitDonationApi } from '../services/api';
 
 export default function Donations({ onOpenDonate }) {
   const [amount, setAmount] = useState(2500);
@@ -8,6 +9,15 @@ export default function Donations({ onOpenDonate }) {
   const [frequency, setFrequency] = useState('one-time');
   const [cause, setCause] = useState('Education Support');
   const [donated, setDonated] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [txnRef, setTxnRef] = useState('');
+  const [donorInfo, setDonorInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    pan: '',
+  });
 
   const presets = [500, 1000, 2500, 5000, 10000];
 
@@ -23,16 +33,44 @@ export default function Donations({ onOpenDonate }) {
 
   const total = customVal ? Number(customVal) || 0 : amount;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (total <= 0) return;
-    confetti({
-      particleCount: 90,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#064B35', '#D79A18', '#7AAE45'],
-    });
-    setDonated(true);
+    if (!donorInfo.name || !donorInfo.email || !donorInfo.phone) {
+      setErrorMessage('Please provide your name, email, and phone number.');
+      return;
+    }
+    setSubmitting(true);
+    setErrorMessage('');
+    try {
+      const res = await submitDonationApi({
+        donor_name: donorInfo.name,
+        email: donorInfo.email,
+        phone: donorInfo.phone,
+        pan_number: donorInfo.pan || null,
+        amount: total,
+        cause,
+        payment_method: 'UPI',
+        notes: `Plan: ${frequency}`,
+      });
+
+      if (res && res.success) {
+        setTxnRef(res.transaction_id || `MBMCT-${Math.floor(100000 + Math.random() * 900000)}`);
+        confetti({
+          particleCount: 90,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#064B35', '#D79A18', '#7AAE45'],
+        });
+        setDonated(true);
+      } else {
+        setErrorMessage(res?.message || 'Failed to submit donation. Please try again.');
+      }
+    } catch (err) {
+      setErrorMessage('Server connection error. Please try again later.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -218,38 +256,64 @@ export default function Donations({ onOpenDonate }) {
                   </div>
 
                   {/* Donor Info */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
                     <input
                       type="text"
                       required
                       placeholder="Your Full Name *"
+                      value={donorInfo.name}
+                      onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
                       style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="email"
                       required
                       placeholder="Email Address *"
+                      value={donorInfo.email}
+                      onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
                       style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="tel"
-                      placeholder="Phone (Optional)"
+                      required
+                      placeholder="Phone Number *"
+                      value={donorInfo.phone}
+                      onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value })}
                       style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="text"
                       placeholder="PAN Number (For 80G Tax Exemption)"
+                      value={donorInfo.pan}
+                      onChange={(e) => setDonorInfo({ ...donorInfo, pan: e.target.value })}
                       style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                   </div>
 
+                  {errorMessage && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '14px' }}>
+                      <AlertCircle size={16} />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="btn btn-primary"
-                    style={{ width: '100%', padding: '15px', fontSize: '1rem', borderRadius: '9999px', marginBottom: '14px' }}
+                    style={{ width: '100%', padding: '15px', fontSize: '1rem', borderRadius: '9999px', marginBottom: '14px', opacity: submitting ? 0.75 : 1 }}
                   >
-                    <Heart size={18} fill="#FFF" />
-                    <span>Complete Donation of ₹{total.toLocaleString('en-IN')}</span>
+                    {submitting ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        <span>Recording Donation to Database...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Heart size={18} fill="#FFF" />
+                        <span>Complete Donation of ₹{total.toLocaleString('en-IN')}</span>
+                      </>
+                    )}
                   </button>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
@@ -277,16 +341,24 @@ export default function Donations({ onOpenDonate }) {
                   <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--color-primary-deep)', marginBottom: '8px' }}>
                     Thank You for Your Generosity!
                   </h3>
-                  <p style={{ fontSize: '0.96rem', color: 'var(--color-text-secondary)', marginBottom: '24px' }}>
-                    Your donation of <strong>₹{total.toLocaleString('en-IN')}</strong> will be utilized for <em>{cause}</em>. An official 80G receipt has been dispatched.
+                  <p style={{ fontSize: '0.96rem', color: 'var(--color-text-secondary)', marginBottom: '16px' }}>
+                    Thank you, <strong>{donorInfo.name || 'Kind Donor'}</strong>! Your donation of <strong>₹{total.toLocaleString('en-IN')}</strong> has been recorded for <em>{cause}</em>.
                   </p>
-                  <button
-                    onClick={() => setDonated(false)}
-                    className="btn btn-dark"
-                    style={{ padding: '12px 28px', fontSize: '0.92rem' }}
-                  >
-                    Make Another Donation
-                  </button>
+                  <div style={{ backgroundColor: '#FCF9F1', padding: '12px 18px', borderRadius: '12px', border: '1px solid rgba(215, 154, 24, 0.3)', display: 'inline-block', marginBottom: '22px', fontSize: '0.85rem' }}>
+                    Reference ID: <strong style={{ fontFamily: 'monospace' }}>{txnRef || 'MBMCT-SUCCESS'}</strong>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => {
+                        setDonated(false);
+                        setDonorInfo({ name: '', email: '', phone: '', pan: '' });
+                      }}
+                      className="btn btn-dark"
+                      style={{ padding: '12px 28px', fontSize: '0.92rem' }}
+                    >
+                      Make Another Donation
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

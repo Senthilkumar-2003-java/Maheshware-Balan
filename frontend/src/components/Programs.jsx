@@ -8,7 +8,7 @@ import { useLanguage } from '../context/LanguageContext';
 import eduImg from '../assets/images/government-school-students.jpg';
 import needsImg from '../assets/images/government-school-needs.jpg';
 import cancerImg from '../assets/images/cancer-patient-support.jpg';
-import aidsImg from '../assets/images/aids-support.jpg';
+import leprosyImg from '../assets/images/leprosy-support.jpg';
 import seniorImg from '../assets/images/senior-citizen-support.jpg';
 
 export default function Programs() {
@@ -41,7 +41,7 @@ export default function Programs() {
     {
       title: t('leprosyTitle'),
       description: t('leprosyDesc'),
-      image: aidsImg,
+      image: leprosyImg,
       icon: Ribbon,
       link: '/programs#leprosy-support',
       iconColor: '#6B2D67',

@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { X, Heart, ShieldCheck, CheckCircle2, QrCode, CreditCard, Building, ArrowRight, Sparkles } from 'lucide-react';
+import { X, Heart, ShieldCheck, CheckCircle2, QrCode, CreditCard, Building, ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { submitDonationApi } from '../services/api';
 
 export default function DonationModal({ isOpen, onClose }) {
   const [frequency, setFrequency] = useState('one-time');
   const [selectedAmount, setSelectedAmount] = useState(1000);
   const [customAmount, setCustomAmount] = useState('');
-  const [selectedCause, setSelectedCause] = useState('All Causes / General Fund');
+  const [selectedCause, setSelectedCause] = useState('Education Support');
   const [paymentMethod, setPaymentMethod] = useState('upi');
   const [step, setStep] = useState('form'); // 'form' | 'success'
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [txnRef, setTxnRef] = useState('');
   const [donorDetails, setDonorDetails] = useState({
     name: '',
     email: '',
@@ -32,24 +36,52 @@ export default function DonationModal({ isOpen, onClose }) {
 
   const currentTotal = customAmount ? Number(customAmount) || 0 : selectedAmount;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (currentTotal <= 0) {
       alert('Please enter a valid donation amount');
       return;
     }
-    // Launch confetti!
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#064B35', '#D79A18', '#6B2D67', '#7AAE45'],
-    });
-    setStep('success');
+    if (!donorDetails.name || !donorDetails.email || !donorDetails.phone) {
+      setErrorMessage('Please provide your name, email, and phone number.');
+      return;
+    }
+    setSubmitting(true);
+    setErrorMessage('');
+    try {
+      const res = await submitDonationApi({
+        donor_name: donorDetails.name,
+        email: donorDetails.email,
+        phone: donorDetails.phone,
+        pan_number: donorDetails.pan || null,
+        amount: currentTotal,
+        cause: selectedCause,
+        payment_method: paymentMethod.toUpperCase(),
+        notes: `Plan: ${frequency}`,
+      });
+
+      if (res && res.success) {
+        setTxnRef(res.transaction_id || `MBMCT-${Math.floor(100000 + Math.random() * 900000)}`);
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#064B35', '#D79A18', '#6B2D67', '#7AAE45'],
+        });
+        setStep('success');
+      } else {
+        setErrorMessage(res?.message || 'Failed to record donation. Please try again.');
+      }
+    } catch (err) {
+      setErrorMessage('Could not connect to database server. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = () => {
     setStep('form');
+    setErrorMessage('');
     onClose();
   };
 
@@ -338,8 +370,36 @@ export default function DonationModal({ isOpen, onClose }) {
               </div>
             </div>
 
+            {/* Cause Selector */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--color-primary-deep)', display: 'block', marginBottom: '6px' }}>
+                Designate Donation To:
+              </label>
+              <select
+                value={selectedCause}
+                onChange={(e) => setSelectedCause(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1.5px solid rgba(6, 75, 53, 0.15)',
+                  fontSize: '0.88rem',
+                  backgroundColor: '#FAFAF8',
+                  color: '#102A43',
+                  fontWeight: '500',
+                }}
+              >
+                <option value="Education Support">Government School Student Education</option>
+                <option value="School Needs">Government School Needs &amp; Desks</option>
+                <option value="Cancer Care">Cancer Patient Medication &amp; Care</option>
+                <option value="Leprosy Support">Leprosy Patients Care &amp; Rehabilitation</option>
+                <option value="Elderly Care">Old Age Abandoned Elderly Care</option>
+                <option value="General Support">General Corpus Fund (Highest Need)</option>
+              </select>
+            </div>
+
             {/* Payment Method Selector */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' }}>
               {[
                 { id: 'upi', label: 'UPI / QR Code', icon: QrCode },
                 { id: 'card', label: 'Debit / Card', icon: CreditCard },
@@ -373,9 +433,17 @@ export default function DonationModal({ isOpen, onClose }) {
               })}
             </div>
 
+            {errorMessage && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '14px' }}>
+                <AlertCircle size={16} />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             {/* Submit Button */}
             <button
               type="submit"
+              disabled={submitting}
               className="btn btn-primary"
               style={{
                 width: '100%',
@@ -383,10 +451,20 @@ export default function DonationModal({ isOpen, onClose }) {
                 fontSize: '1rem',
                 borderRadius: '9999px',
                 marginBottom: '14px',
+                opacity: submitting ? 0.75 : 1,
               }}
             >
-              <Heart size={18} fill="#FFFFFF" />
-              <span>Proceed to Donate ₹{currentTotal.toLocaleString('en-IN')}</span>
+              {submitting ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Recording Donation...</span>
+                </>
+              ) : (
+                <>
+                  <Heart size={18} fill="#FFFFFF" />
+                  <span>Proceed to Donate ₹{currentTotal.toLocaleString('en-IN')}</span>
+                </>
+              )}
             </button>
 
             {/* Trust badge */}
@@ -454,7 +532,7 @@ export default function DonationModal({ isOpen, onClose }) {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: 'var(--color-text-secondary)' }}>Receipt Reference:</span>
-                <strong>MBMCT-{Math.floor(100000 + Math.random() * 900000)}</strong>
+                <strong style={{ fontFamily: 'monospace', letterSpacing: '0.04em' }}>{txnRef || 'MBMCT-SUCCESS'}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ color: 'var(--color-text-secondary)' }}>Beneficiary Cause:</span>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2 } from 'lucide-react';
+import { submitContactApi } from '../services/api';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -10,15 +11,27 @@ export default function Contact() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [openFaq, setOpenFaq] = useState(0);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setFormData({ name: '', email: '', phone: '', subject: 'General Inquiry', message: '' });
-      setSubmitted(false);
-    }, 5000);
+    setSubmitting(true);
+    setErrorMessage('');
+    try {
+      const res = await submitContactApi(formData);
+      if (res && res.success) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', phone: '', subject: 'General Inquiry', message: '' });
+      } else {
+        setErrorMessage(res?.message || 'Failed to submit inquiry. Please try again.');
+      }
+    } catch (err) {
+      setErrorMessage('Server connection error. Please try again later.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const faqs = [
@@ -255,13 +268,30 @@ export default function Contact() {
                     style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', resize: 'vertical' }}
                   />
 
+                  {errorMessage && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.85rem' }}>
+                      <AlertCircle size={16} />
+                      <span>{errorMessage}</span>
+                    </div>
+                  )}
+
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="btn btn-primary"
-                    style={{ padding: '14px 28px', fontSize: '0.96rem', alignSelf: 'flex-start', borderRadius: '9999px' }}
+                    style={{ padding: '14px 28px', fontSize: '0.96rem', alignSelf: 'flex-start', borderRadius: '9999px', opacity: submitting ? 0.7 : 1 }}
                   >
-                    <Send size={16} />
-                    <span>Send Message</span>
+                    {submitting ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send size={16} />
+                        <span>Send Message</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

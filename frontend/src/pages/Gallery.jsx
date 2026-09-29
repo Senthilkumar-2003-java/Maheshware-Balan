@@ -6,7 +6,7 @@ import heroImg from '../assets/images/hero-children.jpg';
 import eduImg from '../assets/images/government-school-students.jpg';
 import needsImg from '../assets/images/government-school-needs.jpg';
 import cancerImg from '../assets/images/cancer-patient-support.jpg';
-import aidsImg from '../assets/images/aids-support.jpg';
+import leprosyImg from '../assets/images/leprosy-support.jpg';
 import seniorImg from '../assets/images/senior-citizen-support.jpg';
 import impactImg from '../assets/images/impact-children.jpg';
 import storyEdu from '../assets/images/story-education.jpg';
@@ -24,7 +24,7 @@ export default function Gallery() {
     { title: 'School Building Renewal', category: 'infrastructure', src: needsImg, caption: 'Renovated government primary school with fresh coats of paint and benches.' },
     { title: 'Empowering Young Dreams', category: 'education', src: heroImg, caption: 'Children with study books smiling with renewed hope for their future.' },
     { title: 'Compassionate Caregiver Visit', category: 'healthcare', src: cancerImg, caption: 'Volunteer holding hands with cancer patient during hospital garden session.' },
-    { title: 'Leprosy Care & Dignity', category: 'healthcare', src: aidsImg, caption: 'Providing dignified medical dressings, protective footwear, and community love for leprosy patients.' },
+    { title: 'Leprosy Care & Dignity', category: 'healthcare', src: leprosyImg, caption: 'Providing dignified medical dressings, protective footwear, and community love for leprosy patients.' },
     { title: 'Golden Years Companionship', category: 'elderly', src: seniorImg, caption: 'Senior citizens sharing laughter and wholesome nutrition at the elder care home.' },
     { title: 'Horizon of Possibility', category: 'education', src: impactImg, caption: 'Young student walking forward towards higher education and a bright career.' },
     { title: 'Seeds of Change', category: 'community', src: plantImg, caption: 'Community gardening and environmental awareness with young saplings.' },

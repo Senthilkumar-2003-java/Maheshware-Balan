@@ -1,10 +1,5 @@
 const { getPool } = require('../config/db');
 
-let fallbackVolunteers = [
-  { id: 1, full_name: 'Dr. Ramesh', email: 'ramesh@gmail.com', phone: '+91 98840 12300', preferred_area: 'Healthcare Support', availability: 'Weekends', status: 'Approved', created_at: new Date() },
-  { id: 2, full_name: 'Sneha Patel', email: 'sneha@gmail.com', phone: '+91 61234 90123', preferred_area: 'Community Welfare', availability: 'Flexible', status: 'Pending', created_at: new Date() },
-];
-
 async function submitVolunteer(req, res) {
   try {
     const { full_name, email, phone, preferred_area = 'Community Welfare', skills = '', availability = 'Weekends' } = req.body;
@@ -18,37 +13,23 @@ async function submitVolunteer(req, res) {
 
     const pool = getPool();
 
-    if (pool) {
-      const [result] = await pool.query(
-        'INSERT INTO volunteers (full_name, email, phone, preferred_area, skills, availability, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [full_name, email, phone, preferred_area, skills, availability, 'Pending']
-      );
-
-      return res.status(201).json({
-        success: true,
-        message: 'Volunteer application submitted successfully! Welcome to the MBMCT family.',
-        volunteerId: result.insertId,
-      });
-    } else {
-      const newVol = {
-        id: fallbackVolunteers.length + 1,
-        full_name,
-        email,
-        phone,
-        preferred_area,
-        skills,
-        availability,
-        status: 'Pending',
-        created_at: new Date(),
-      };
-      fallbackVolunteers.unshift(newVol);
-
-      return res.status(201).json({
-        success: true,
-        message: 'Volunteer application submitted (cached).',
-        volunteerId: newVol.id,
+    if (!pool) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable. Please check backend server and MySQL.',
       });
     }
+
+    const [result] = await pool.query(
+      'INSERT INTO volunteers (full_name, email, phone, preferred_area, skills, availability, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [full_name, email, phone, preferred_area, skills, availability, 'Pending']
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Volunteer application submitted successfully! Welcome to the MBMCT family.',
+      volunteerId: result.insertId,
+    });
   } catch (error) {
     console.error('Volunteer submit error:', error);
     return res.status(500).json({
@@ -62,25 +43,26 @@ async function getAllVolunteers(req, res) {
   try {
     const pool = getPool();
 
-    if (pool) {
-      const [rows] = await pool.query('SELECT * FROM volunteers ORDER BY created_at DESC');
-      return res.status(200).json({
-        success: true,
-        count: rows.length,
-        volunteers: rows,
-      });
-    } else {
-      return res.status(200).json({
-        success: true,
-        count: fallbackVolunteers.length,
-        volunteers: fallbackVolunteers,
+    if (!pool) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection unavailable.',
+        volunteers: [],
       });
     }
+
+    const [rows] = await pool.query('SELECT * FROM volunteers ORDER BY created_at DESC');
+    return res.status(200).json({
+      success: true,
+      count: rows.length,
+      volunteers: rows,
+    });
   } catch (error) {
     console.error('Get volunteers error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch volunteers.',
+      message: 'Failed to fetch volunteers from database.',
+      volunteers: [],
     });
   }
 }
@@ -91,16 +73,18 @@ async function updateVolunteerStatus(req, res) {
     const { status } = req.body;
 
     const pool = getPool();
-    if (pool) {
-      await pool.query('UPDATE volunteers SET status = ? WHERE id = ?', [status, id]);
-    } else {
-      const item = fallbackVolunteers.find((v) => v.id === parseInt(id));
-      if (item) item.status = status;
+    if (!pool) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection unavailable.',
+      });
     }
+
+    await pool.query('UPDATE volunteers SET status = ? WHERE id = ?', [status, id]);
 
     return res.status(200).json({
       success: true,
-      message: 'Volunteer status updated.',
+      message: 'Volunteer status updated successfully.',
     });
   } catch (error) {
     console.error('Update volunteer status error:', error);

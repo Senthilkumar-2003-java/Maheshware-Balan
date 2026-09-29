@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import eduImg from '../assets/images/government-school-students.jpg';
 import needsImg from '../assets/images/government-school-needs.jpg';
 import cancerImg from '../assets/images/cancer-patient-support.jpg';
-import aidsImg from '../assets/images/aids-support.jpg';
+import leprosyImg from '../assets/images/leprosy-support.jpg';
 import seniorImg from '../assets/images/senior-citizen-support.jpg';
 
 export default function ProgramsPage({ onOpenDonate }) {
@@ -69,7 +69,7 @@ export default function ProgramsPage({ onOpenDonate }) {
       category: 'healthcare',
       title: 'Leprosy Patients Care & Rehabilitation',
       tagline: 'Dignity, Ulcer Wound Care, Nutrition & Social Rehabilitation',
-      image: aidsImg,
+      image: leprosyImg,
       icon: Ribbon,
       color: '#6B2D67',
       description: 'Individuals affected by leprosy often suffer from severe societal isolation, physical disabilities, and chronic ulcers. Our trust provides regular antiseptic dressings, ulcer care kits, specialized protective footwear, nutritious groceries, and unconditional human dignity.',

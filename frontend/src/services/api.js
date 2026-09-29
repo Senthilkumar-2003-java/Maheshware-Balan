@@ -168,3 +168,37 @@ export async function getBeneficiariesApi() {
     return { success: false, beneficiaries: [], error: err.message };
   }
 }
+
+export async function addBeneficiaryApi(beneficiaryData) {
+  try {
+    const res = await fetch(`${API_BASE}/beneficiaries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify(beneficiaryData),
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to add beneficiary:', err.message);
+    return { success: false, message: 'Cannot connect to server. Please try again.' };
+  }
+}
+
+export async function updateBeneficiaryStatusApi(id, status) {
+  try {
+    const res = await fetch(`${API_BASE}/beneficiaries/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify({ status }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to update beneficiary status:', err.message);
+    return { success: false, message: 'Failed to update status.' };
+  }
+}
