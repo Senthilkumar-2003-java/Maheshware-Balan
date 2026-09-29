@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home Page -->
+  <url>
+    <loc>https://maheswaribalan.org/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/" />
+  </url>
+
+  <!-- About Us Page -->
+  <url>
+    <loc>https://maheswaribalan.org/about</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/about?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/about?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/about?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/about?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/about?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/about?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/about" />
+  </url>
+
+  <!-- Programs Page -->
+  <url>
+    <loc>https://maheswaribalan.org/programs</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/programs?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/programs?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/programs?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/programs?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/programs?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/programs?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/programs" />
+  </url>
+
+  <!-- Donations Page -->
+  <url>
+    <loc>https://maheswaribalan.org/donations</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/donations?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/donations?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/donations?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/donations?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/donations?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/donations?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/donations" />
+  </url>
+
+  <!-- Gallery Page -->
+  <url>
+    <loc>https://maheswaribalan.org/gallery</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/gallery?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/gallery?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/gallery?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/gallery?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/gallery?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/gallery?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/gallery" />
+  </url>
+
+  <!-- Testimonials Page -->
+  <url>
+    <loc>https://maheswaribalan.org/testimonials</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/testimonials?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/testimonials?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/testimonials?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/testimonials?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/testimonials?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/testimonials?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/testimonials" />
+  </url>
+
+  <!-- Contact Page -->
+  <url>
+    <loc>https://maheswaribalan.org/contact</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://maheswaribalan.org/contact?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ta" href="https://maheswaribalan.org/contact?lang=ta" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://maheswaribalan.org/contact?lang=hi" />
+    <xhtml:link rel="alternate" hreflang="te" href="https://maheswaribalan.org/contact?lang=te" />
+    <xhtml:link rel="alternate" hreflang="ml" href="https://maheswaribalan.org/contact?lang=ml" />
+    <xhtml:link rel="alternate" hreflang="kn" href="https://maheswaribalan.org/contact?lang=kn" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://maheswaribalan.org/contact" />
+  </url>
+
+</urlset>

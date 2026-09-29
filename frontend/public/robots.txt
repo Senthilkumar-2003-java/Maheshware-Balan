@@ -1,0 +1,27 @@
+# Robots.txt for Maheswari & Balan Memorial Charitable Trust
+# Website: https://maheswaribalan.org
+
+User-agent: *
+# Allow public pages
+Allow: /
+Allow: /about
+Allow: /programs
+Allow: /gallery
+Allow: /donations
+Allow: /testimonials
+Allow: /contact
+
+# STRICTLY DISALLOW Admin Portal and internal endpoints (Never index admin/login)
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/login
+Disallow: /admin/dashboard
+Disallow: /api/admin/
+Disallow: /*?*token=
+Disallow: /*?*admin=
+
+# Crawl Delay
+Crawl-delay: 2
+
+# Sitemap Reference
+Sitemap: https://maheswaribalan.org/sitemap.xml

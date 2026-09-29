@@ -1,27 +1,11 @@
 {
-  "name": "maheswari-balan",
+  "name": "maheswari-balan-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
   "scripts": {
-    "dev": "node node_modules/vite/bin/vite.js",
-    "build": "node node_modules/vite/bin/vite.js build",
-    "lint": "oxlint",
-    "preview": "node node_modules/vite/bin/vite.js preview"
-  },
-  "dependencies": {
-    "canvas-confetti": "^1.9.4",
-    "lucide-react": "^1.48.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.4",
-    "sharp": "^0.35.5"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "oxlint": "^1.81.0",
-    "vite": "^8.3.0"
+    "dev": "npm --prefix frontend run dev",
+    "frontend": "npm --prefix frontend run dev",
+    "backend": "npm --prefix backend start",
+    "build": "npm --prefix frontend run build"
   }
 }

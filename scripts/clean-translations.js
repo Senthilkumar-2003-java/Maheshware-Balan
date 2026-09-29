@@ -1,0 +1,324 @@
+const fs = require('fs');
+
+const path = 'frontend/src/translations/translations.js';
+const content = fs.readFileSync(path, 'utf8');
+
+// Let's write a cleanly structured translations.js file
+const en = {
+  requestByCall: "Request by Call",
+  ourOffices: "Our Offices",
+  login: "Admin Login",
+  navHome: "Home",
+  navAbout: "About Us",
+  navPrograms: "Programs",
+  navImpact: "Impact & Stories",
+  navGallery: "Gallery",
+  navContact: "Contact Us",
+  donateBtn: "Donate Now",
+  volunteerBtn: "Join as Volunteer",
+  
+  heroBadge: "100% Tax Exempted Under Section 80G",
+  heroTitle: "Serve with Love & Compassion",
+  heroSubtitle: "Transforming underserved lives through quality education, life-saving cancer care, leprosy patient rehabilitation, and dignity for senior citizens across Tamil Nadu.",
+  heroCta: "Support Our Mission",
+  heroSecondaryCta: "Explore Programs",
+  
+  programsTitle: "Our Core Initiatives",
+  programsSubtitle: "Targeted support programs crafted to break cycles of poverty and illness.",
+  eduTitle: "Child Education & School Needs",
+  eduDesc: "Providing uniforms, books, school fees, and tuition for underprivileged government school students.",
+  healthTitle: "Cancer Care & Medical Camps",
+  healthDesc: "Funding life-saving chemotherapy, post-surgical care, and organizing free rural health screenings.",
+  elderlyTitle: "Elderly & Bedridden Care",
+  elderlyDesc: "Providing dignified palliative care, monthly grocery kits, and medical aid to abandoned seniors.",
+  leprosyTitle: "Leprosy Patients Care & Rehabilitation",
+  leprosyDesc: "Medical dressing, ulcer care kits, nutritional support, assistive footwear, and stigma-free social rehabilitation.",
+
+  impactTitle: "Direct, Measurable & Transparent Impact",
+  impactSubtitle: "Every rupee donated is directly accounted for with 100% audit compliance and 80G tax benefits.",
+  metricDonations: "Total Donations Raised",
+  metricBeneficiaries: "Direct Beneficiaries",
+  metricSuccessRate: "Program Efficiency",
+  metricVolunteers: "Active Community Volunteers",
+
+  ctaTitle: "Be the Reason Someone Smiles Today",
+  ctaSubtitle: "Your compassionate contribution directly empowers a child with education, heals a patient, or feeds a senior citizen.",
+  ctaBtn: "Make a Difference Today",
+  taxExemptBadge: "All donations are 100% tax exempted under Section 80G",
+
+  footerAbout: "Maheswari & Balan Memorial Charitable Trust is a registered non-profit organization dedicated to serving marginalized communities with utmost transparency, dignity, and love.",
+  footerQuickLinks: "Quick Navigation",
+  footerPrograms: "Our Programs",
+  footerContact: "Contact Trust Office",
+  footerRights: "All Rights Reserved. Maheswari & Balan Memorial Charitable Trust."
+};
+
+const ta = {
+  requestByCall: "தொலைபேசி அழைப்பு",
+  ourOffices: "எங்கள் அலுவலகங்கள்",
+  login: "நிர்வாகி உள்நுழைவு",
+  navHome: "முகப்பு",
+  navAbout: "எங்களைப் பற்றி",
+  navPrograms: "திட்டங்கள்",
+  navImpact: "சாதனைகள் & கதைகள்",
+  navGallery: "புகைப்படங்கள்",
+  navContact: "தொடர்புக்கு",
+  donateBtn: "நன்கொடை அளியுங்கள்",
+  volunteerBtn: "தன்னார்வலராக இணையுங்கள்",
+
+  heroBadge: "80G பிரிவின் கீழ் 100% வரிவிலக்கு பெற்றது",
+  heroTitle: "அன்போடும் கருணையோடும் சேவை செய்வோம்",
+  heroSubtitle: "தரமான கல்வி, புற்றுநோய் சிகிச்சை நிதி, தொழுநோய் மறுவாழ்வு மற்றும் ஆதரவற்ற முதியோரின் கண்ணியமான வாழ்வுக்கு உதவும் அறக்கட்டளை.",
+  heroCta: "எங்கள் பணியில் இணையுங்கள்",
+  heroSecondaryCta: "திட்டங்களை அறிய",
+
+  programsTitle: "எங்கள் முதன்மை நலத்திட்டங்கள்",
+  programsSubtitle: "வறுமை மற்றும் நோயின் பிடியிலிருந்து மக்களை மீட்கும் அர்ப்பணிப்பு மிக்க சேவைகள்.",
+  eduTitle: "குழந்தைகள் கல்வி & பள்ளி தேவைகள்",
+  eduDesc: "அரசு பள்ளி ஏழை குழந்தைகளுக்கு சீருடை, புத்தகங்கள் மற்றும் கல்விக்கட்டண உதவிகள்.",
+  healthTitle: "புற்றுநோய் சிகிச்சை & மருத்துவ முகாம்கள்",
+  healthDesc: "உயிர்காக்கும் கீமோதெரபி சிகிச்சை நிதி மற்றும் இலவச கிராமப்புற மருத்துவ முகாம்கள்.",
+  elderlyTitle: "முதியோர் மற்றும் படுக்கை நோயாளி பராமரிப்பு",
+  elderlyDesc: "ஆதரவற்ற முதியவர்களுக்கு மாத மளிகைப் பொருட்கள், மருத்துவ உதவி மற்றும் கண்ணியமான பராமரிப்பு.",
+  leprosyTitle: "தொழுநோய் பாதிக்கப்பட்டோர் பராமரிப்பு & மறுவாழ்வு",
+  leprosyDesc: "மருத்துவ சிகிச்சைகள், புண் பராமரிப்பு மருந்துகள், ஊட்டச்சத்து உணவு மற்றும் மாற்று காலணிகள் வழங்குதல்.",
+
+  impactTitle: "நேரடியான, வெளிப்படையான சாதனைகள்",
+  impactSubtitle: "நீங்கள் அளிக்கும் ஒவ்வொரு ரூபாயும் 80G வரிவிலக்குடன் முழு தணிக்கை செய்யப்பட்டு உரியவர்களுக்கு சேர்கிறது.",
+  metricDonations: "திரட்டப்பட்ட மொத்த நிதி",
+  metricBeneficiaries: "நேரடி பயனாளிகள்",
+  metricSuccessRate: "திட்டத்தின் செயல்திறன்",
+  metricVolunteers: "செயல்பாட்டு தன்னார்வலர்கள்",
+
+  ctaTitle: "ஒருவரது புன்னகைக்கு இன்று நீங்களே காரணமாகுங்கள்",
+  ctaSubtitle: "உங்கள் சிறிய அன்பான உதவி, ஒரு குடும்பத்திற்கு கல்வி, மருந்து மற்றும் உணவளிக்கும்.",
+  ctaBtn: "இன்றே உதவுங்கள்",
+  taxExemptBadge: "அனைத்து நன்கொடைகளுக்கும் 80G பிரிவின் கீழ் 100% வரிவிலக்கு உண்டு",
+
+  footerAbout: "மகேஸ்வரி & பாலன் நினைவு அறக்கட்டளை என்பது நேர்மை, அன்பு மற்றும் வெளிப்படைத்தன்மையுடன் மக்களுக்கு சேவை செய்யும் பதிவு செய்யப்பட்ட அரசு தொண்டு நிறுவனம்.",
+  footerQuickLinks: "விரைவு இணைப்புகள்",
+  footerPrograms: "எங்கள் திட்டங்கள்",
+  footerContact: "அறக்கட்டளை அலுவலகம்",
+  footerRights: "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. மகேஸ்வரி & பாலன் நினைவு அறக்கட்டளை."
+};
+
+const hi = {
+  requestByCall: "कॉल द्वारा संपर्क करें",
+  ourOffices: "हमारे कार्यालय",
+  login: "एडमिन लॉगिन",
+  navHome: "होम",
+  navAbout: "हमारे बारे में",
+  navPrograms: "कार्यक्रम",
+  navImpact: "प्रभाव और कहानियां",
+  navGallery: "गैलरी",
+  navContact: "संपर्क करें",
+  donateBtn: "दान करें",
+  volunteerBtn: "स्वयंसेवक बनें",
+
+  heroBadge: "धारा 80G के तहत 100% कर छूट प्राप्त",
+  heroTitle: "प्रेम और करुणा के साथ सेवा करें",
+  heroSubtitle: "गुणवत्तापूर्ण शिक्षा, कैंसर देखभाल, कुष्ठ रोग पुनर्वास और वरिष्ठ नागरिकों के सम्मान के लिए समर्पित।",
+  heroCta: "हमारे मिशन से जुड़ें",
+  heroSecondaryCta: "कार्यक्रम देखें",
+
+  programsTitle: "हमारी प्रमुख पहलें",
+  programsSubtitle: "गरीबी और बीमारी के चक्र को तोड़ने के लिए समर्पित कार्यक्रम।",
+  eduTitle: "बाल शिक्षा और स्कूली सहायता",
+  eduDesc: "सरकारी स्कूलों के जरूरतमंद छात्रों के लिए किताबें, यूनिफॉर्म और फीस सहायता।",
+  healthTitle: "कैंसर सहायता और चिकित्सा शिविर",
+  healthDesc: "कैंसर रोगियों के लिए जीवन रक्षक कीमोथेरेपी और मुफ्त ग्रामीण स्वास्थ्य जांच।",
+  elderlyTitle: "बुजुर्गों और लाचारों की देखभाल",
+  elderlyDesc: "बेसहारा बुजुर्गों को मासिक राशन, दवाएं और सम्मानजनक देखभाल।",
+  leprosyTitle: "कुष्ठ रोग पीड़ितों की देखभाल और पुनर्वास",
+  leprosyDesc: "नियमित चिकित्सा ड्रेसिंग, अल्सर देखभाल किट, पौष्टिक भोजन और सामाजिक पुनर्वास सहायता।",
+
+  impactTitle: "प्रत्यक्ष और पारदर्शी परिणाम",
+  impactSubtitle: "आपके द्वारा दान किया गया हर रुपया 100% ऑडिट अनुपालन और 80G लाभ के साथ सीधे जरूरतमंदों तक पहुंचता है।",
+  metricDonations: "कुल एकत्रित दान",
+  metricBeneficiaries: "प्रत्यक्ष लाभार्थी",
+  metricSuccessRate: "कार्यक्रम दक्षता",
+  metricVolunteers: "सक्रिय स्वयंसेवक",
+
+  ctaTitle: "आज किसी के चेहरे पर मुस्कान की वजह बनें",
+  ctaSubtitle: "आपका छोटा सा योगदान एक बच्चे को शिक्षा, मरीज को इलाज और बुजुर्ग को सहारा देता है।",
+  ctaBtn: "आज ही योगदान दें",
+  taxExemptBadge: "धारा 80G के तहत सभी दान 100% कर मुक्त हैं",
+
+  footerAbout: "माहेश्वरी और बालन मेमोरियल चैरिटेबल ट्रस्ट एक पंजीकृत गैर-लाभकारी संगठन है।",
+  footerQuickLinks: "त्वरित नेविगेशन",
+  footerPrograms: "हमारे कार्यक्रम",
+  footerContact: "ट्रस्ट कार्यालय संपर्क",
+  footerRights: "सर्वाधिकार सुरक्षित। माहेश्वरी और बालन मेमोरियल चैरिटेबल ट्रस्ट।"
+};
+
+const te = {
+  requestByCall: "కాల్ ద్వారా సంప్రదించండి",
+  ourOffices: "మా కార్యాలయాలు",
+  login: "అడ్మిన్ లాగిన్",
+  navHome: "హోమ్",
+  navAbout: "మా గురించి",
+  navPrograms: "కార్యక్రమాలు",
+  navImpact: "ఫలితాలు & కథనాలు",
+  navGallery: "గ్యాలరీ",
+  navContact: "సంప్రదించండి",
+  donateBtn: "విరాళం ఇవ్వండి",
+  volunteerBtn: "వాలంటీర్‌గా చేరండి",
+
+  heroBadge: "సెక్షన్ 80G కింద 100% పన్ను మినహాయింపు",
+  heroTitle: "ప్రేమ మరియు కరుణతో సేవ చేద్దాం",
+  heroSubtitle: "నాణ్యమైన విద్య, క్యాన్సర్ వైద్యం, కుష్టు వ్యాధిగ్రస్తుల పునరావాసం మరియు వృద్ధుల సంరక్షణ కోసం నిరంతర కృషి.",
+  heroCta: "మా లక్ష్యంలో చేరండి",
+  heroSecondaryCta: "కార్యక్రమాలను చూడండి",
+
+  programsTitle: "మా ముఖ్య కార్యక్రమాలు",
+  programsSubtitle: "పేదరికం మరియు వ్యాధుల నివారణకు అంకితమైన సేవా కార్యక్రమాలు.",
+  eduTitle: "పిల్లల విద్య & పాఠశాల అవసరాలు",
+  eduDesc: "ప్రభుత్వ పాఠశాల విద్యార్థులకు యూనిఫాంలు, పుస్తకాలు మరియు ఫీజు సహాయం.",
+  healthTitle: "క్యాన్సర్ చికిత్స & ఉచిత వైద్య శిబిరాలు",
+  healthDesc: "కీమోథెరపీ చికిత్స ఖర్చులు మరియు ఉచిత గ్రామీణ వైద్య శిబిరాలు.",
+  elderlyTitle: "వృద్ధుల సంరక్షణ & సాయం",
+  elderlyDesc: "ఆదరణ లేని వృద్ధులకు నెలవారీ నిత్యావసరాలు మరియు మందుల సాయం.",
+  leprosyTitle: "కుష్టు వ్యాధిగ్రస్తుల సంరక్షణ & పునరావాసం",
+  leprosyDesc: "నిరంతర వైద్య చికిత్స, పౌష్టికాహారం మరియు సమాజంలో గౌరవప్రదమైన జీవనానికి సహాయం.",
+
+  impactTitle: "ప్రత్యక్ష మరియు పారదర్శక ఫలితాలు",
+  impactSubtitle: "మీ ప్రతి రూపాయి 80G ఆదాయపు పన్ను మినహాయింపుతో నేరుగా బాధితులకు చేరుతుంది.",
+  metricDonations: "సేకరించిన మొత్తం విరాళాలు",
+  metricBeneficiaries: "ప్రత్యక్ష లబ్ధిదారులు",
+  metricSuccessRate: "కార్యక్రమ సమర్థత",
+  metricVolunteers: "క్రియాశీల వాలంటీర్లు",
+
+  ctaTitle: "ఈ రోజు ఒకరి చిరునవ్వుకు మీరే కారణం కావచ్చు",
+  ctaSubtitle: "మీ చిన్న సహాయం నిరుపేద కుటుంబాలకు చదువు, మందులు మరియు ఆహారం అందిస్తుంది.",
+  ctaBtn: "ఇప్పుడే సాయం చేయండి",
+  taxExemptBadge: "80G కింద అన్ని విరాళాలకు 100% పన్ను మినహాయింపు కలదు",
+
+  footerAbout: "మహేశ్వరి & బాలన్ మెమోరియల్ ఛారిటబుల్ ట్రస్ట్ నిరుపేదలకు పారదర్శకతతో సేవ చేయడానికి స్థాపించబడిన సంస్థ.",
+  footerQuickLinks: "త్వరిత లింకులు",
+  footerPrograms: "మా కార్యక్రమాలు",
+  footerContact: "ట్రస్ట్ కార్యాలయ వివరాలు",
+  footerRights: "అన్ని హక్కులూ ప్రత్యేకించబడ్డాయి. మహేశ్వరి & బాలన్ మెమోరియల్ ఛారిటబుల్ ట్రస్ట్."
+};
+
+const ml = {
+  requestByCall: "ഫോണിൽ വിളിക്കുക",
+  ourOffices: "ഞങ്ങളുടെ ഓഫീസുകൾ",
+  login: "അഡ്മിൻ ലോഗിൻ",
+  navHome: "ഹോം",
+  navAbout: "ഞങ്ങളെക്കുറിച്ച്",
+  navPrograms: "പദ്ധതികൾ",
+  navImpact: "നേട്ടങ്ങളും കഥകളും",
+  navGallery: "ചിത്രശാല",
+  navContact: "ബന്ധപ്പെടുക",
+  donateBtn: "സംഭാവന നൽകുക",
+  volunteerBtn: "വളണ്ടിയറാകൂ",
+
+  heroBadge: "വകുപ്പ് 80G പ്രകാരം 100% നികുതിയിളവ്",
+  heroTitle: "സ്നേഹത്തോടും കാരുണ്യത്തോടും സേവിക്കുക",
+  heroSubtitle: "വിദ്യാഭ്യാസം, കാൻസർ ചികിത്സ, കുഷ്ഠരോഗികളുടെ പുനരധിവാസം, വൃദ്ധജന സംരക്ഷണം എന്നിവയ്ക്കായി സമർപ്പിതം.",
+  heroCta: "ഞങ്ങളോടൊപ്പം ചേരൂ",
+  heroSecondaryCta: "പദ്ധതികൾ കാണുക",
+
+  programsTitle: "ഞങ്ങളുടെ പ്രധാന സേവനങ്ങൾ",
+  programsSubtitle: "ദാരിദ്ര്യവും രോഗവും അകറ്റാൻ ആത്മാർത്ഥമായ പിന്തുണ.",
+  eduTitle: "കുട്ടികളുടെ വിദ്യാഭ്യാസ പിന്തുണ",
+  eduDesc: "യൂണിഫോം, പുസ്തകങ്ങൾ, ഫീസ് എന്നിവ നൽകി വിദ്യാർത്ഥികളെ ശാക്തീകരിക്കുന്നു.",
+  healthTitle: "കാൻസർ ചികിത്സയും മെഡിക്കൽ ക്യാമ്പുകളും",
+  healthDesc: "കീമോതെറാപ്പി ചികിത്സാ സഹായവും സൗജന്യ ആരോഗ്യ ക്യാമ്പുകളും.",
+  elderlyTitle: "മുതിർന്ന പൗരന്മാരുടെ സംരക്ഷണം",
+  elderlyDesc: "ആശരണരായ വയോധികർക്ക് സൗജന്യ ഭക്ഷണവും മരുന്നുകളും ഉറപ്പാക്കുന്നു.",
+  leprosyTitle: "കുഷ്ഠരോഗികളുടെ സംരക്ഷണവും പുനരധിവാസവും",
+  leprosyDesc: "വൈദ്യസഹായം, മുറിവ് പരിചരണ കിറ്റുകൾ, പോഷകാഹാരം, പുനരധിവാസ സേവനങ്ങൾ.",
+
+  impactTitle: "നേരിട്ടുള്ളതും സുതാര്യവുമായ മാറ്റം",
+  impactSubtitle: "നിങ്ങൾ നൽകുന്ന ഓരോ രൂപയും 80G ഇളവോടെ അർഹരായവരിലേക്ക് നേരിട്ടെത്തുന്നു.",
+  metricDonations: "സമാഹരിച്ച ആകെ സംഭാവനകൾ",
+  metricBeneficiaries: "നേരിട്ടുള്ള ഗുണഭോക്താക്കൾ",
+  metricSuccessRate: "പ്രവർത്തന മികവ്",
+  metricVolunteers: "സന്നദ്ധപ്രവർത്തകർ",
+
+  ctaTitle: "ഇന്നൊരു പുഞ്ചിരിക്ക് നിങ്ങളും കാരണമാകൂ",
+  ctaSubtitle: "നിങ്ങളുടെ ചെറിയൊരു സഹായം ഒരു ജീവിതത്തെ പുതുക്കിപ്പണിയുന്നു.",
+  ctaBtn: "ഇപ്പോൾ തന്നെ സഹായിക്കൂ",
+  taxExemptBadge: "എല്ലാ സംഭാവനകൾക്കും 80G പ്രകാരം 100% നികുതിയിളവ് ലഭ്യമാണ്",
+
+  footerAbout: "മഹേശ്വരി & ബാലൻ മെമ്മോറിയൽ ചാരിറ്റബിൾ ട്രസ്റ്റ് സ്നേഹത്തോടും സുതാര്യതയോടും കൂടി പ്രവർത്തിക്കുന്ന ഒരു രജിസ്റ്റർ ചെയ്ത സ്ഥാപനമാണ്.",
+  footerQuickLinks: "ദ്രുത ലിങ്കുകൾ",
+  footerPrograms: "ഞങ്ങളുടെ പദ്ധതികൾ",
+  footerContact: "ഓഫീസ് വിലാസം",
+  footerRights: "എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം. മഹേശ്വരി & ബാലൻ മെമ്മോറിയൽ ചാരിറ്റബിൾ ട്രസ്റ്റ്."
+};
+
+const kn = {
+  requestByCall: "ಕರೆ ಮೂಲಕ ಸಂಪರ್ಕಿಸಿ",
+  ourOffices: "ನಮ್ಮ ಕಚೇರಿಗಳು",
+  login: "ಅಡ್ಮಿನ್ ಲಾಗಿನ್",
+  navHome: "ಮುಖಪುಟ",
+  navAbout: "ನಮ್ಮ ಬಗ್ಗೆ",
+  navPrograms: "ಕಾರ್ಯಕ್ರಮಗಳು",
+  navImpact: "ಪ್ರಭಾವ & ಕಥೆಗಳು",
+  navGallery: "ಗ್ಯಾಲರಿ",
+  navContact: "ಸಂಪರ್ಕಿಸಿ",
+  donateBtn: "ದೇಣಿಗೆ ನೀಡಿ",
+  volunteerBtn: "ಸ್ವಯಂಸೇವಕರಾಗಿ",
+
+  heroBadge: "ವಿಭಾಗ 80G ಅಡಿಯಲ್ಲಿ 100% ತೆರಿಗೆ ವಿನಾಯಿತಿ",
+  heroTitle: "ಪ್ರೀತಿ ಮತ್ತು ಸಹಾನುಭೂತಿಯಿಂದ ಸೇವೆ",
+  heroSubtitle: "ಗುಣಮಟ್ಟದ ಶಿಕ್ಷಣ, ಕ್ಯಾನ್ಸರ್ ಆರೈಕೆ, ಕುಷ್ಠರೋಗಿಗಳ ಪುನರ್ವಸತಿ ಮತ್ತು ಹಿರಿಯ ನಾಗರಿಕರ ಗೌರವಕ್ಕಾಗಿ ಶ್ರಮಿಸುವ ಸಂಸ್ಥೆ.",
+  heroCta: "ನಮ್ಮ ಮಿಷನ್‌ಗೆ ಸೇರಿ",
+  heroSecondaryCta: "ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ನೋಡಿ",
+
+  programsTitle: "ನಮ್ಮ ಪ್ರಮುಖ ಉಪಕ್ರಮಗಳು",
+  programsSubtitle: "ಬಡತನ ಮತ್ತು ಅನಾರೋಗ್ಯವನ್ನು ತೊಡೆದುಹಾಕಲು ಸಮರ್ಪಿತ ಕಾರ್ಯಕ್ರಮಗಳು.",
+  eduTitle: "ಮಕ್ಕಳ ಶಿಕ್ಷಣ ಮತ್ತು ಶಾಲೆ ಅಗತ್ಯಗಳು",
+  eduDesc: "ಸರ್ಕಾರಿ ಶಾಲಾ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಸಮವಸ್ತ್ರ, ಪುಸ್ತಕಗಳು ಮತ್ತು ಶಾಲಾ ಶುಲ್ಕ ನೆರವು.",
+  healthTitle: "ಕ್ಯಾನ್ಸರ್ ಆರೈಕೆ & ಉಚಿತ ಆರೋಗ್ಯ ಶಿಬಿರ",
+  healthDesc: "ಕೀಮೋಥೆರಪಿ ವೆಚ್ಚ ಮತ್ತು ಗ್ರಾಮೀಣ ಉಚಿತ ಆರೋಗ್ಯ ತಪಾಸಣೆ ಶಿಬಿರಗಳು.",
+  elderlyTitle: "ಹಿರಿಯ ನಾಗರಿಕರ ಆರೈಕೆ",
+  elderlyDesc: "ಆಶ್ರಯವಿಲ್ಲದ ಹಿರಿಯರಿಗೆ ಮಾಸಿಕ ದಿನಸಿ ಮತ್ತು ಉಚಿತ ಔಷಧಿ ವಿತರಣೆ.",
+  leprosyTitle: "ಕುಷ್ಠರೋಗಿಗಳ ಆರೈಕೆ ಮತ್ತು ಪುನರ್ವಸತಿ",
+  leprosyDesc: "ನಿರಂತರ ವೈದ್ಯಕೀಯ ಚಿಕಿತ್ಸೆ, ಪೌಷ್ಟಿಕ ಆಹಾರ ಮತ್ತು ಗೌರವಾನ್ವಿತ ಸಮಾಜ ಪುನರ್ವಸತಿ ನೆರವು.",
+
+  impactTitle: "ನೇರ ಮತ್ತು ಪಾರದರ್ಶಕ ಬದಲಾವಣೆ",
+  impactSubtitle: "ನಿಮ್ಮ ಪ್ರತಿಯೊಂದು ರೂಪಾಯಿಯೂ 80G ತೆರಿಗೆ ವಿನಾಯಿತಿಯೊಂದಿಗೆ ಅರ್ಹರಿಗೆ ತಲುಪುತ್ತದೆ.",
+  metricDonations: "ಒಟ್ಟು ಸಂಗ್ರಹಿಸಿದ ದೇಣಿಗೆ",
+  metricBeneficiaries: "ನೇರ ಫಲಾನುಭವಿಗಳು",
+  metricSuccessRate: "ಕಾರ್ಯಕ್ರಮ ದಕ್ಷತೆ",
+  metricVolunteers: "ಸಕ್ರಿಯ ಸ್ವಯಂಸೇವಕರು",
+
+  ctaTitle: "ಇಂದು ಒಬ್ಬರ ಮುಗುಳುನಗೆಗೆ ನೀವೇ ಕಾರಣರಾಗಿ",
+  ctaSubtitle: "ನಿಮ್ಮ ಪುಟ್ಟ ನೆರವು ಬಡ ಕುಟುಂಬಕ್ಕೆ ಶಿಕ್ಷಣ, ಆಹಾರ ಮತ್ತು ಔಷಧಿ ನೀಡುತ್ತದೆ.",
+  ctaBtn: "ಇಂದೇ ನೆರವಾಗಿ",
+  taxExemptBadge: "ಎಲ್ಲಾ ದೇಣಿಗೆಗಳಿಗೆ 80G ಅಡಿಯಲ್ಲಿ 100% ತೆರಿಗೆ ವಿನಾಯಿತಿ ಇದೆ",
+
+  footerAbout: "ಮಹೇಶ್ವರಿ & ಬಾಲನ್ ಸ್ಮಾರಕ ಚಾರಿಟೇಬಲ್ ಟ್ರಸ್ಟ್ ಜನರಿಗೆ ಪಾರದರ್ಶಕತೆ ಮತ್ತು ಪ್ರೀತಿಯಿಂದ ಸೇವೆ ಸಲ್ಲಿಸುವ ನೋಂದಾಯಿತ ಸಂಸ್ಥೆ.",
+  footerQuickLinks: "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು",
+  footerPrograms: "ನಮ್ಮ ಯೋಜನೆಗಳು",
+  footerContact: "ಟ್ರಸ್ಟ್ ಕಚೇರಿ ಸಂಪರ್ಕ",
+  footerRights: "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ. ಮಹೇಶ್ವರಿ & ಬಾಲನ್ ಸ್ಮಾರಕ ಚಾರಿಟೇಬಲ್ ಟ್ರಸ್ಟ್."
+};
+
+const fullCode = `// Multi-language translation dictionaries
+// English (Default), Tamil, Hindi, Telugu, Malayalam, Kannada
+
+export const languageList = [
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
+  { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
+  { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+];
+
+export const translations = {
+  en: ${JSON.stringify(en, null, 2)},
+  ta: ${JSON.stringify(ta, null, 2)},
+  hi: ${JSON.stringify(hi, null, 2)},
+  te: ${JSON.stringify(te, null, 2)},
+  ml: ${JSON.stringify(ml, null, 2)},
+  kn: ${JSON.stringify(kn, null, 2)}
+};
+`;
+
+fs.writeFileSync(path, fullCode, 'utf8');
+console.log('Successfully wrote clean translations.js!');
