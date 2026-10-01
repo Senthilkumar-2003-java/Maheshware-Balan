@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart, UserPlus, Share2, Megaphone, Users, Sparkles } from 'lucide-react';
-import sunsetBg from '../assets/images/donation-hope.jpg';
+import sunsetBg from '../assets/images/donation-hope.png';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {

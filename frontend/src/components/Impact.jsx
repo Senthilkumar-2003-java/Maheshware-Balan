@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, GraduationCap, PlusSquare, Users, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import impactBg from '../assets/images/impact-children.jpg';
+import impactBg from '../assets/images/impact-children.png';
 
 function useCountUp(target, duration = 1600) {
   const [count, setCount] = useState(0);

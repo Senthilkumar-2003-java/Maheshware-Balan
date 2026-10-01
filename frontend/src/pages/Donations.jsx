@@ -380,11 +380,11 @@ export default function Donations({ onOpenDonate }) {
                   <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem' }}>Direct Bank Transfer / NEFT / RTGS</h4>
                 </div>
                 <div style={{ fontSize: '0.85rem', lineHeight: '1.8', color: 'var(--color-text-secondary)' }}>
-                  <div><strong>Account Name:</strong> Maheswari &amp; Balan Memorial Charitable Trust</div>
-                  <div><strong>Bank:</strong> State Bank of India (SBI)</div>
-                  <div><strong>Account Number:</strong> XXXXXXXXXX (Registered Trust Account)</div>
-                  <div><strong>IFSC Code:</strong> SBIN000XXXX</div>
-                  <div><strong>Branch:</strong> Tamil Nadu, India</div>
+                  <div><strong>Account Name:</strong> MAHESWARI AND BALAN MEMORIAL CHARITABLE TRUST </div>
+                  <div><strong>Bank:</strong> UNION BANK OF INDIA</div>
+                  <div><strong>Account Number:</strong> 334101010201339 (Registered Trust Account)</div>
+                  <div><strong>IFSC Code:</strong> UBIN0533416</div>
+                  <div><strong>Branch:</strong> SALEM MAIN</div>
                 </div>
               </div>
 

@@ -3,11 +3,11 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // Story images
-import storyEdu from '../assets/images/story-education.jpg';
-import storyHealth from '../assets/images/story-healthcare.jpg';
-import storyComm from '../assets/images/story-community.jpg';
-import storySenior from '../assets/images/story-senior-care.jpg';
-import plantImg from '../assets/images/plant-growth-hands.jpg';
+import storyEdu from '../assets/images/story-education.png';
+import storyHealth from '../assets/images/story-healthcare.png';
+import storyComm from '../assets/images/story-community.png';
+import storySenior from '../assets/images/story-senior-care.png';
+import plantImg from '../assets/images/plant-growth-hands.png';
 
 export default function OurStory() {
   return (
