@@ -8,12 +8,12 @@ import needsImg from '../assets/images/government-school-needs.jpg';
 import cancerImg from '../assets/images/cancer-patient-support.jpg';
 import leprosyImg from '../assets/images/leprosy-support.jpg';
 import seniorImg from '../assets/images/senior-citizen-support.jpg';
-import impactImg from '../assets/images/impact-children.jpg';
-import storyEdu from '../assets/images/story-education.jpg';
-import storyHealth from '../assets/images/story-healthcare.jpg';
-import storyComm from '../assets/images/story-community.jpg';
-import plantImg from '../assets/images/plant-growth-hands.jpg';
-import sunsetImg from '../assets/images/donation-hope.jpg';
+import impactImg from '../assets/images/impact-children.png';
+import storyEdu from '../assets/images/story-education.png';
+import storyHealth from '../assets/images/story-healthcare.png';
+import storyComm from '../assets/images/story-community.png';
+import plantImg from '../assets/images/plant-growth-hands.png';
+import sunsetImg from '../assets/images/donation-hope.png';
 
 export default function Gallery() {
   const [filter, setFilter] = useState('all');
