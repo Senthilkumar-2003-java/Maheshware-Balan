@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heart, Shield, Award, Users, CheckCircle2, ArrowRight, Eye, Target, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import plantImg from '../assets/images/plant-growth-hands.jpg';
+import plantImg from '../assets/images/plant-growth-hands.png';
 import heroImg from '../assets/images/hero-children.jpg';
 
 export default function About({ onOpenDonate }) {
