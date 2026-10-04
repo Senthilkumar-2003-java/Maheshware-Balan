@@ -5,22 +5,13 @@ import {
   ShieldCheck, Home, Users, BookOpen, Image, HandHeart, MessageSquare 
 } from 'lucide-react';
 import Logo from './Logo';
-import { changeGoogleTranslate } from '../utils/useAppleScrollReveal';
-
-export const googleLanguages = [
-  { code: 'en', name: 'English', nativeName: 'English' },
-  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-  { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
-  { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
-  { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar({ onOpenDonate }) {
+  const { language, setLanguage, t, languageList } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState('en');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,30 +26,21 @@ export default function Navbar({ onOpenDonate }) {
     setLangDropdownOpen(false);
   }, [location]);
 
-  // Read google translate cookie if set
-  useEffect(() => {
-    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-    if (match && match[1]) {
-      setCurrentLang(match[1]);
-    }
-  }, []);
-
   const handleSelectLanguage = (langCode) => {
-    setCurrentLang(langCode);
+    setLanguage(langCode);
     setLangDropdownOpen(false);
-    changeGoogleTranslate(langCode);
   };
 
-  const currentLangObj = googleLanguages.find(l => l.code === currentLang) || googleLanguages[0];
+  const currentLangObj = (languageList || []).find(l => l.code === language) || { code: 'en', name: 'English', nativeName: 'English' };
 
   const navLinks = [
-    { name: 'Home', path: '/', icon: Home },
-    { name: 'About Us', path: '/about', icon: Users },
-    { name: 'Programs', path: '/programs', icon: BookOpen },
-    { name: 'Gallery', path: '/gallery', icon: Image },
-    { name: 'Donations', path: '/donations', icon: HandHeart },
-    { name: 'Volunteer', path: '/volunteer', icon: Users },
-    { name: 'Contact Us', path: '/contact', icon: MessageSquare },
+    { name: t('navHome'), path: '/', icon: Home },
+    { name: t('navAbout'), path: '/about', icon: Users },
+    { name: t('navPrograms'), path: '/programs', icon: BookOpen },
+    { name: t('navGallery'), path: '/gallery', icon: Image },
+    { name: t('navDonations'), path: '/donations', icon: HandHeart },
+    { name: t('navVolunteer'), path: '/volunteer', icon: Users },
+    { name: t('navContact'), path: '/contact', icon: MessageSquare },
   ];
 
   return (
@@ -159,9 +141,9 @@ export default function Navbar({ onOpenDonate }) {
                   zIndex: 1300,
                 }}>
                   <div style={{ padding: '6px 12px 6px', fontSize: '0.68rem', color: '#173F73', borderBottom: '1px solid #F1F5F9', fontWeight: '700', letterSpacing: '0.04em' }}>
-                    GOOGLE TRANSLATE
+                    LANGUAGE / மொழி
                   </div>
-                  {googleLanguages.map((item) => (
+                  {(languageList || []).map((item) => (
                     <button
                       key={item.code}
                       onClick={() => handleSelectLanguage(item.code)}
@@ -171,9 +153,9 @@ export default function Navbar({ onOpenDonate }) {
                         padding: '8px 12px', 
                         borderRadius: '8px',
                         fontSize: '0.82rem',
-                        fontWeight: currentLang === item.code ? '700' : '500',
-                        color: currentLang === item.code ? '#173F73' : '#334155',
-                        backgroundColor: currentLang === item.code ? 'rgba(23,63,115,0.08)' : 'transparent',
+                        fontWeight: language === item.code ? '700' : '500',
+                        color: language === item.code ? '#173F73' : '#334155',
+                        backgroundColor: language === item.code ? 'rgba(23,63,115,0.08)' : 'transparent',
                         cursor: 'pointer', 
                         border: 'none',
                         display: 'flex', 
@@ -336,13 +318,13 @@ export default function Navbar({ onOpenDonate }) {
           padding: '16px',
           animation: 'navFadeDown 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
         }}>
-          {/* Google Translate Quick Language Badges */}
+          {/* Quick Language Badges */}
           <div style={{ marginBottom: '14px' }}>
             <div style={{ fontSize: '0.7rem', fontWeight: '700', color: '#173F73', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
-              Select Language (Google Translate)
+              Select Language / மொழியை தேர்ந்தெடுக்கவும்
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {googleLanguages.map((item) => (
+              {(languageList || []).map((item) => (
                 <button
                   key={item.code}
                   onClick={() => handleSelectLanguage(item.code)}
@@ -350,11 +332,11 @@ export default function Navbar({ onOpenDonate }) {
                     padding: '6px 12px',
                     borderRadius: '9999px',
                     fontSize: '0.8rem',
-                    fontWeight: currentLang === item.code ? '700' : '500',
-                    color: currentLang === item.code ? '#FFFFFF' : '#173F73',
-                    backgroundColor: currentLang === item.code ? '#173F73' : '#F1F5F9',
+                    fontWeight: language === item.code ? '700' : '500',
+                    color: language === item.code ? '#FFFFFF' : '#173F73',
+                    backgroundColor: language === item.code ? '#173F73' : '#F1F5F9',
                     border: '1px solid',
-                    borderColor: currentLang === item.code ? '#173F73' : '#CBD5E1',
+                    borderColor: language === item.code ? '#173F73' : '#CBD5E1',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}

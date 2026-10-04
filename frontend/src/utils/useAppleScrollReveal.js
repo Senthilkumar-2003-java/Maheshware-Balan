@@ -68,19 +68,3 @@ export function useAppleScrollReveal(routeKey) {
   }, [routeKey]);
 }
 
-/**
- * Google Translate Language Switcher helper.
- * Sets the googtrans cookie and triggers the Google Translate widget.
- */
-export function changeGoogleTranslate(langCode) {
-  document.cookie = `googtrans=/en/${langCode}; path=/;`;
-  document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname};`;
-
-  const select = document.querySelector('.goog-te-combo');
-  if (select) {
-    select.value = langCode;
-    select.dispatchEvent(new Event('change'));
-  } else {
-    window.location.reload();
-  }
-}
