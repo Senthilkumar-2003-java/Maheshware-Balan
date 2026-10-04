@@ -45,13 +45,16 @@ export default function Navbar({ onOpenDonate }) {
 
   return (
     <header style={{
-      position: 'sticky',
+      position: 'fixed',
       top: 0,
-      zIndex: 1000,
-      backgroundColor: 'rgba(255, 255, 255, 0.92)',
+      left: 0,
+      right: 0,
+      width: '100%',
+      zIndex: 1100,
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'saturate(180%) blur(20px)',
       WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-      boxShadow: scrolled ? '0 4px 24px rgba(0, 0, 0, 0.07)' : '0 1px 3px rgba(0,0,0,0.03)',
+      boxShadow: scrolled ? '0 4px 24px rgba(0, 0, 0, 0.08)' : '0 1px 3px rgba(0,0,0,0.03)',
       transition: 'all 0.3s ease',
     }}>
 
@@ -77,7 +80,7 @@ export default function Navbar({ onOpenDonate }) {
           <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShieldCheck size={14} color="#F5D061" />
             <span style={{ opacity: 0.95, letterSpacing: '0.01em', color: '#F8FAFC' }}>
-              100% Tax Exempted under Section 80G • Registered NGO (Reg. No. 142/2021)
+              Tax Exempted under Section 80G • Registered NGO (Reg. No. BOOK-4/35/2026)
             </span>
           </div>
 

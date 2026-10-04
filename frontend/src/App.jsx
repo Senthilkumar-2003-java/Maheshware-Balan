@@ -38,14 +38,14 @@ function ProtectedRoute({ children }) {
   return isLoggedIn ? children : <Navigate to="/admin/login" replace />;
 }
 
-// Public layout — shows Navbar + Footer
+// Public layout — shows Navbar + Footer with offset for fixed navbar
 function PublicLayout({ children, onOpenDonate }) {
   return (
-    <>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar onOpenDonate={onOpenDonate} />
-      <div style={{ flex: 1 }}>{children}</div>
+      <div style={{ flex: 1, paddingTop: '104px' }}>{children}</div>
       <Footer onOpenDonate={onOpenDonate} />
-    </>
+    </div>
   );
 }
 
