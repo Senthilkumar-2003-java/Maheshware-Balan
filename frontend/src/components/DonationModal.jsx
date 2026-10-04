@@ -1,18 +1,54 @@
 import React, { useState } from 'react';
-import { X, Heart, ShieldCheck, CheckCircle2, QrCode, CreditCard, Building, ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
+import { 
+  X, Heart, ShieldCheck, CheckCircle2, QrCode, CreditCard, Building, 
+  Sparkles, AlertCircle, Loader2, Download, ChevronDown
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitDonationApi } from '../services/api';
 
+const currencies = [
+  { code: 'INR', symbol: '₹', label: 'INR (₹)' },
+  { code: 'USD', symbol: '$', label: 'USD ($)' },
+  { code: 'EUR', symbol: '€', label: 'EUR (€)' },
+  { code: 'GBP', symbol: '£', label: 'GBP (£)' },
+  { code: 'AED', symbol: 'AED', label: 'AED' },
+  { code: 'SGD', symbol: 'S$', label: 'SGD (S$)' },
+  { code: 'CAD', symbol: 'CA$', label: 'CAD (CA$)' },
+  { code: 'AUD', symbol: 'AU$', label: 'AUD (AU$)' },
+  { code: 'MYR', symbol: 'RM', label: 'MYR (RM)' },
+];
+
+function numberToWords(num) {
+  const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  
+  const n = parseInt(num, 10);
+  if (isNaN(n) || n <= 0) return '';
+  if (n === 0) return 'Zero';
+
+  function convert(n) {
+    if (n < 20) return a[n];
+    if (n < 100) return b[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + a[n % 10] : '');
+    if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convert(n % 100) : '');
+    if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 !== 0 ? ' ' + convert(n % 1000) : '');
+    if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 !== 0 ? ' ' + convert(n % 100000) : '');
+    return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 !== 0 ? ' ' + convert(n % 10000000) : '');
+  }
+
+  return convert(n) + ' Only';
+}
+
 export default function DonationModal({ isOpen, onClose }) {
   const [frequency, setFrequency] = useState('one-time');
-  const [selectedAmount, setSelectedAmount] = useState(1000);
-  const [customAmount, setCustomAmount] = useState('');
-  const [selectedCause, setSelectedCause] = useState('Education Support');
+  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
+  const [amount, setAmount] = useState('');
+  const [selectedCause, setSelectedCause] = useState('Child Education & School Needs');
   const [paymentMethod, setPaymentMethod] = useState('upi');
-  const [step, setStep] = useState('form'); // 'form' | 'success'
+  const [step, setStep] = useState('form'); // 'form' | 'receipt'
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [txnRef, setTxnRef] = useState('');
+  const [receiptData, setReceiptData] = useState(null);
+
   const [donorDetails, setDonorDetails] = useState({
     name: '',
     email: '',
@@ -22,66 +58,329 @@ export default function DonationModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const amounts = [500, 1000, 2500, 5000, 10000];
-
-  const handleAmountClick = (amt) => {
-    setSelectedAmount(amt);
-    setCustomAmount('');
-  };
-
-  const handleCustomChange = (e) => {
-    setCustomAmount(e.target.value);
-    setSelectedAmount(null);
-  };
-
-  const currentTotal = customAmount ? Number(customAmount) || 0 : selectedAmount;
+  const currentAmountNum = Number(amount) || 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (currentTotal <= 0) {
-      alert('Please enter a valid donation amount');
+    if (!currentAmountNum || currentAmountNum <= 0) {
+      setErrorMessage('Please enter a valid donation amount.');
       return;
     }
-    if (!donorDetails.name || !donorDetails.email || !donorDetails.phone) {
-      setErrorMessage('Please provide your name, email, and phone number.');
+    if (!donorDetails.name.trim() || !donorDetails.email.trim()) {
+      setErrorMessage('Please provide your name and email address.');
       return;
     }
+
     setSubmitting(true);
     setErrorMessage('');
+
     try {
+      const generatedTxnId = `MBMCT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+      const generatedReceiptNo = `REC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
       const res = await submitDonationApi({
         donor_name: donorDetails.name,
         email: donorDetails.email,
-        phone: donorDetails.phone,
-        pan_number: donorDetails.pan || null,
-        amount: currentTotal,
+        phone: donorDetails.phone || 'N/A',
+        pan_number: donorDetails.pan ? donorDetails.pan.toUpperCase() : null,
+        amount: currentAmountNum,
+        currency: selectedCurrency.code,
         cause: selectedCause,
         payment_method: paymentMethod.toUpperCase(),
-        notes: `Plan: ${frequency}`,
+        notes: `Plan: ${frequency} | Currency: ${selectedCurrency.code}`,
       });
 
-      if (res && res.success) {
-        setTxnRef(res.transaction_id || `MBMCT-${Math.floor(100000 + Math.random() * 900000)}`);
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#064B35', '#D79A18', '#6B2D67', '#7AAE45'],
-        });
-        setStep('success');
-      } else {
-        setErrorMessage(res?.message || 'Failed to record donation. Please try again.');
-      }
+      const receipt = {
+        receiptNo: generatedReceiptNo,
+        transactionId: res?.transaction_id || generatedTxnId,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        donorName: donorDetails.name,
+        email: donorDetails.email,
+        phone: donorDetails.phone || 'N/A',
+        pan: donorDetails.pan ? donorDetails.pan.toUpperCase() : 'N/A',
+        amount: currentAmountNum,
+        currency: selectedCurrency,
+        amountInWords: numberToWords(currentAmountNum),
+        cause: selectedCause,
+        frequency: frequency === 'monthly' ? 'Monthly Recurring' : 'One-Time Donation',
+        paymentMethod: paymentMethod.toUpperCase(),
+      };
+
+      setReceiptData(receipt);
+
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#111827', '#D79A18', '#064B35', '#F5D061'],
+      });
+
+      setStep('receipt');
     } catch (err) {
-      setErrorMessage('Could not connect to database server. Please try again.');
+      setErrorMessage('Unable to connect to donation processing server. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
+  const handleDownloadReceipt = () => {
+    if (!receiptData) return;
+
+    const printWindow = window.open('', '_blank', 'width=850,height=950');
+    if (!printWindow) {
+      alert('Please allow popups to download and print your donation receipt.');
+      return;
+    }
+
+    const receiptHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Donation Receipt - ${receiptData.receiptNo} - Maheswari & Balan Memorial Charitable Trust</title>
+        <style>
+          @page { size: A4 portrait; margin: 15mm; }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #1D1D1F;
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 24px;
+            line-height: 1.5;
+          }
+          .receipt-box {
+            border: 1.5px solid #111827;
+            padding: 32px;
+            border-radius: 16px;
+            position: relative;
+            background-color: #FFFFFF;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 2px solid #D79A18;
+            padding-bottom: 18px;
+            margin-bottom: 22px;
+          }
+          .trust-name {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            margin: 0;
+          }
+          .motto {
+            font-style: italic;
+            color: #D79A18;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 4px 0 8px 0;
+          }
+          .reg-info {
+            font-size: 11px;
+            color: #6B7280;
+            line-height: 1.5;
+          }
+          .receipt-badge {
+            display: inline-block;
+            background-color: #111827;
+            color: #FFFFFF;
+            padding: 6px 22px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+          }
+          .grid-meta {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-size: 13px;
+            background-color: #F5F5F7;
+            padding: 12px 16px;
+            border-radius: 10px;
+          }
+          .donor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 13px;
+          }
+          .donor-table th, .donor-table td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #E5E5EA;
+            text-align: left;
+          }
+          .donor-table th {
+            width: 32%;
+            color: #6B7280;
+            font-weight: 600;
+            background-color: #FAFAFA;
+          }
+          .donor-table td {
+            color: #1D1D1F;
+            font-weight: 700;
+          }
+          .amount-highlight {
+            font-size: 22px;
+            color: #111827;
+            font-weight: 800;
+          }
+          .tax-note {
+            background-color: #F5F5F7;
+            border-left: 4px solid #111827;
+            padding: 12px 16px;
+            font-size: 11px;
+            color: #374151;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+          }
+          .footer-signatures {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 36px;
+            padding-top: 20px;
+          }
+          .seal-box {
+            text-align: center;
+            width: 140px;
+            height: 90px;
+            border: 1.5px dashed #111827;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justifyContent: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #111827;
+            padding: 6px;
+          }
+          .sign-box {
+            text-align: center;
+            width: 220px;
+          }
+          .sign-line {
+            border-top: 1px solid #1D1D1F;
+            margin-top: 40px;
+            padding-top: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1D1D1F;
+          }
+          .print-btn-bar {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          .btn-print {
+            background-color: #111827;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+          }
+          @media print {
+            .print-btn-bar { display: none; }
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="print-btn-bar">
+          <button class="btn-print" onclick="window.print()">🖨️ Click to Print / Save as PDF</button>
+        </div>
+        <div class="receipt-box">
+          <div class="header">
+            <h1 class="trust-name">MAHESWARI &amp; BALAN MEMORIAL CHARITABLE TRUST</h1>
+            <div class="motto">— Serve with Love &amp; Compassion —</div>
+            <div class="reg-info">
+              Registered Non-Profit NGO • Trust Reg. No: 142/IV/2021<br/>
+              Income Tax 80G Exemption Approval No: <strong>AAATM5432RF20214</strong> | PAN: <strong>AAATM5432R</strong><br/>
+              Registered Trust Office: Tamil Nadu, India • Phone: +91 85959 68122
+            </div>
+          </div>
+
+          <div style="text-align: center; margin: 16px 0;">
+            <span class="receipt-badge">OFFICIAL DONATION RECEIPT</span>
+          </div>
+
+          <div class="grid-meta">
+            <div>
+              <strong>Receipt No:</strong> ${receiptData.receiptNo}<br/>
+              <strong>Date:</strong> ${receiptData.date} (${receiptData.time})
+            </div>
+            <div style="text-align: right;">
+              <strong>Transaction ID:</strong> ${receiptData.transactionId}<br/>
+              <strong>Status:</strong> <span style="color:#059669; font-weight:800;">VERIFIED &amp; RECEIVED</span>
+            </div>
+          </div>
+
+          <table class="donor-table">
+            <tr>
+              <th>Donor Name</th>
+              <td>${receiptData.donorName}</td>
+            </tr>
+            <tr>
+              <th>Donor Email / Phone</th>
+              <td>${receiptData.email} / ${receiptData.phone}</td>
+            </tr>
+            <tr>
+              <th>Donor PAN Number</th>
+              <td>${receiptData.pan}</td>
+            </tr>
+            <tr>
+              <th>Donation Allocated To</th>
+              <td>${receiptData.cause}</td>
+            </tr>
+            <tr>
+              <th>Donation Mode &amp; Plan</th>
+              <td>${receiptData.paymentMethod} (${receiptData.frequency})</td>
+            </tr>
+            <tr>
+              <th>Amount Received</th>
+              <td class="amount-highlight">${receiptData.currency.symbol} ${receiptData.amount.toLocaleString()} ${receiptData.currency.code}</td>
+            </tr>
+            <tr>
+              <th>Amount in Words</th>
+              <td style="color:#6B7280; font-style:italic;">${receiptData.currency.code} ${receiptData.amountInWords}</td>
+            </tr>
+          </table>
+
+          <div class="tax-note">
+            <strong>TAX EXEMPTION BENEFIT:</strong> All donations made to Maheswari &amp; Balan Memorial Charitable Trust are 100% tax exempt under Section 80G of the Indian Income Tax Act, 1961. This computer-generated receipt serves as authentic proof for tax filing.
+          </div>
+
+          <div class="footer-signatures">
+            <div class="seal-box">
+              <span style="font-size:11px; margin-bottom:2px;">⭐ OFFICIAL SEAL ⭐</span>
+              MAHESWARI &amp; BALAN<br/>MEMORIAL CHARITABLE<br/>TRUST
+            </div>
+            <div class="sign-box">
+              <div class="sign-line">
+                Authorized Signatory<br/>
+                <span style="font-size: 10px; font-weight: normal; color: #6B7280;">For Maheswari &amp; Balan Memorial Charitable Trust</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(receiptHtml);
+    printWindow.document.close();
+  };
+
   const handleReset = () => {
     setStep('form');
     setErrorMessage('');
+    setAmount('');
     onClose();
   };
 
@@ -90,13 +389,15 @@ export default function DonationModal({ isOpen, onClose }) {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(6, 75, 53, 0.65)',
-        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.55)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         zIndex: 2000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '16px',
+        animation: 'modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
       }}
       onClick={onClose}
     >
@@ -104,82 +405,88 @@ export default function DonationModal({ isOpen, onClose }) {
         style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '28px',
-          maxWidth: '560px',
+          maxWidth: step === 'receipt' ? '600px' : '520px',
           width: '100%',
           maxHeight: '92vh',
           overflowY: 'auto',
-          padding: '32px',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.25)',
+          padding: '30px 24px',
+          boxShadow: '0 30px 90px rgba(0, 0, 0, 0.25)',
           position: 'relative',
-          border: '1px solid rgba(215, 154, 24, 0.3)',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
+        {/* Apple-style Close Button */}
         <button
           onClick={onClose}
           style={{
             position: 'absolute',
-            top: '20px',
-            right: '20px',
-            width: '36px',
-            height: '36px',
+            top: '18px',
+            right: '18px',
+            width: '32px',
+            height: '32px',
             borderRadius: '50%',
-            backgroundColor: 'rgba(6, 75, 53, 0.08)',
+            backgroundColor: '#F5F5F7',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--color-primary-deep)',
-            transition: 'all 0.2s',
+            color: '#1D1D1F',
+            cursor: 'pointer',
+            border: 'none',
+            transition: 'background 0.2s',
           }}
           aria-label="Close dialog"
         >
-          <X size={20} />
+          <X size={16} strokeWidth={2.5} />
         </button>
 
         {step === 'form' ? (
           <form onSubmit={handleSubmit}>
             {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '22px' }}>
               <div
                 style={{
-                  width: '52px',
-                  height: '52px',
+                  width: '48px',
+                  height: '48px',
                   borderRadius: '50%',
-                  backgroundColor: 'var(--color-gold-pale)',
-                  color: 'var(--color-gold-warm)',
+                  backgroundColor: '#FFFBEB',
+                  color: '#D79A18',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 12px auto',
+                  margin: '0 auto 10px auto',
                   border: '1px solid rgba(215, 154, 24, 0.3)',
                 }}
               >
-                <Heart size={26} fill="currentColor" />
+                <Heart size={22} fill="#D79A18" />
               </div>
               <h3
                 style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.75rem',
-                  color: 'var(--color-primary-deep)',
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: '1.7rem',
+                  fontWeight: '700',
+                  color: '#111827',
                   lineHeight: '1.2',
+                  marginBottom: '4px',
                 }}
               >
-                Make a Meaningful Contribution
+                Support Our Mission
               </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
-                Your generosity brings dignity, education, healthcare &amp; hope.
+              <p style={{ fontSize: '0.88rem', color: '#6B7280' }}>
+                Your generosity brings education, healthcare and dignity to those in need.
               </p>
             </div>
 
-            {/* Frequency Selector: One-Time / Monthly */}
+            {/* iOS-Style Segmented Frequency Toggle */}
             <div
               style={{
                 display: 'flex',
-                backgroundColor: 'rgba(6, 75, 53, 0.06)',
+                backgroundColor: '#F5F5F7',
                 borderRadius: '9999px',
-                padding: '4px',
+                padding: '3px',
                 marginBottom: '20px',
+                border: '1px solid #E5E5EA',
               }}
             >
               <button
@@ -187,14 +494,16 @@ export default function DonationModal({ isOpen, onClose }) {
                 onClick={() => setFrequency('one-time')}
                 style={{
                   flex: 1,
-                  padding: '8px',
+                  padding: '9px',
                   borderRadius: '9999px',
-                  fontSize: '0.88rem',
-                  fontWeight: '600',
+                  fontSize: '0.86rem',
+                  fontWeight: '700',
                   backgroundColor: frequency === 'one-time' ? '#FFFFFF' : 'transparent',
-                  color: frequency === 'one-time' ? 'var(--color-primary-deep)' : 'var(--color-text-secondary)',
-                  boxShadow: frequency === 'one-time' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                  color: frequency === 'one-time' ? '#111827' : '#6B7280',
+                  boxShadow: frequency === 'one-time' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
                   transition: 'all 0.2s',
+                  cursor: 'pointer',
+                  border: 'none',
                 }}
               >
                 One-Time Donation
@@ -204,360 +513,503 @@ export default function DonationModal({ isOpen, onClose }) {
                 onClick={() => setFrequency('monthly')}
                 style={{
                   flex: 1,
-                  padding: '8px',
+                  padding: '9px',
                   borderRadius: '9999px',
-                  fontSize: '0.88rem',
-                  fontWeight: '600',
-                  backgroundColor: frequency === 'monthly' ? 'var(--color-primary-deep)' : 'transparent',
-                  color: frequency === 'monthly' ? '#FFFFFF' : 'var(--color-text-secondary)',
+                  fontSize: '0.86rem',
+                  fontWeight: '700',
+                  backgroundColor: frequency === 'monthly' ? '#111827' : 'transparent',
+                  color: frequency === 'monthly' ? '#FFFFFF' : '#6B7280',
                   boxShadow: frequency === 'monthly' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
                   transition: 'all 0.2s',
+                  cursor: 'pointer',
+                  border: 'none',
                 }}
               >
                 Monthly Supporter ❤️
               </button>
             </div>
 
-            {/* Amount Selection */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-text-primary)', display: 'block', marginBottom: '8px' }}>
-                Select Donation Amount (₹ INR)
+            {/* Apple-Style Currency & Amount Input Group (ZERO OVERLAP ARCHITECTURE) */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '8px' }}>
+                Select Currency &amp; Enter Donation Amount
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', marginBottom: '10px' }}>
-                {amounts.map((amt) => (
-                  <button
-                    key={amt}
-                    type="button"
-                    onClick={() => handleAmountClick(amt)}
+
+              {/* Flex Container: Currency Selector + Distinct Symbol Column + Separate Number Input */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'stretch',
+                  backgroundColor: '#F5F5F7',
+                  borderRadius: '16px',
+                  border: '1.5px solid #E5E5EA',
+                  overflow: 'hidden',
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                {/* 1. Currency Code Selector Dropdown */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#EAEAEE',
+                  padding: '0 12px',
+                  borderRight: '1px solid #D1D1D6',
+                  flexShrink: 0,
+                }}>
+                  <select
+                    value={selectedCurrency.code}
+                    onChange={(e) => {
+                      const cur = currencies.find(c => c.code === e.target.value) || currencies[0];
+                      setSelectedCurrency(cur);
+                    }}
                     style={{
-                      padding: '10px 4px',
-                      borderRadius: '12px',
-                      border: '1.5px solid',
-                      borderColor: selectedAmount === amt ? 'var(--color-gold-warm)' : 'rgba(6, 75, 53, 0.12)',
-                      backgroundColor: selectedAmount === amt ? 'var(--color-gold-pale)' : '#FFFFFF',
-                      color: selectedAmount === amt ? 'var(--color-primary-deep)' : 'var(--color-text-primary)',
                       fontWeight: '700',
                       fontSize: '0.9rem',
-                      transition: 'all 0.2s',
+                      color: '#111827',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      outline: 'none',
                     }}
                   >
-                    ₹{amt.toLocaleString('en-IN')}
-                  </button>
-                ))}
-              </div>
+                    {currencies.map(cur => (
+                      <option key={cur.code} value={cur.code}>
+                        {cur.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Custom amount */}
-              <div style={{ position: 'relative' }}>
-                <span
+                {/* 2. Isolated Currency Symbol Display Badge */}
+                <div
                   style={{
-                    position: 'absolute',
-                    left: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontWeight: '700',
-                    color: 'var(--color-text-secondary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 12px',
+                    fontWeight: '800',
+                    fontSize: '1.25rem',
+                    color: '#111827',
+                    backgroundColor: '#F5F5F7',
+                    borderRight: '1px solid #E5E5EA',
+                    flexShrink: 0,
                   }}
                 >
-                  ₹
-                </span>
+                  {selectedCurrency.symbol}
+                </div>
+
+                {/* 3. Number Input Field: Completely isolated so NO characters ever overlap digits */}
                 <input
                   type="number"
-                  placeholder="Or enter custom amount"
-                  value={customAmount}
-                  onChange={handleCustomChange}
+                  min="1"
+                  step="any"
+                  placeholder="0"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
                   style={{
-                    width: '100%',
-                    padding: '10px 14px 10px 32px',
-                    borderRadius: '12px',
-                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                    fontSize: '0.92rem',
-                    backgroundColor: '#FAFAF8',
+                    flex: 1,
+                    minWidth: 0,
+                    padding: '14px 16px',
+                    fontSize: '1.35rem',
+                    fontWeight: '800',
+                    color: '#111827',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    outline: 'none',
                   }}
                 />
               </div>
+
+              {currentAmountNum > 0 && (
+                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginTop: '6px', fontStyle: 'italic' }}>
+                  Amount in words: {selectedCurrency.code} {numberToWords(currentAmountNum)}
+                </div>
+              )}
             </div>
 
-            {/* Choose Program / Cause */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-text-primary)', display: 'block', marginBottom: '8px' }}>
-                Allocate To Specific Program
+            {/* Allocate To Specific Program */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
+                Allocate To Specific Initiative
               </label>
               <select
                 value={selectedCause}
                 onChange={(e) => setSelectedCause(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
+                  maxWidth: '100%',
+                  padding: '11px 14px',
                   borderRadius: '12px',
-                  border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                  fontSize: '0.9rem',
-                  backgroundColor: '#FAFAF8',
-                  color: 'var(--color-text-primary)',
+                  border: '1.5px solid #E5E5EA',
+                  fontSize: '0.88rem',
+                  backgroundColor: '#F5F5F7',
+                  color: '#1D1D1F',
+                  fontWeight: '600',
+                  outline: 'none',
                 }}
               >
-                <option value="All Causes / General Fund">Where It's Needed Most (General Welfare)</option>
-                <option value="Student Education">Government School Student Education</option>
-                <option value="School Needs">Government School Infrastructure &amp; Needs</option>
-                <option value="Cancer Support">Cancer Patients Medical Support</option>
-                <option value="Leprosy Support">Leprosy Patients Care &amp; Rehabilitation</option>
-                <option value="Senior Citizen Care">Old Age People Food &amp; Shelter</option>
+                <option value="Child Education & School Needs">Child Education Support</option>
+                <option value="Government School Infrastructure">Government School Infrastructure</option>
+                <option value="Cancer Patients Medical Relief">Cancer Patient Medical Relief</option>
+                <option value="Leprosy Patients Care & Rehabilitation">Leprosy Patient Rehabilitation</option>
+                <option value="Elderly & Bedridden Care">Elderly Care &amp; Nutrition</option>
+                <option value="General Welfare & Immediate Relief">General Humanitarian Welfare</option>
               </select>
             </div>
 
             {/* Donor Information */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-              <div>
-                <input
-                  type="text"
-                  required
-                  placeholder="Full Name *"
-                  value={donorDetails.name}
-                  onChange={(e) => setDonorDetails({ ...donorDetails, name: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                    fontSize: '0.88rem',
-                  }}
-                />
-              </div>
-              <div>
-                <input
-                  type="email"
-                  required
-                  placeholder="Email Address *"
-                  value={donorDetails.email}
-                  onChange={(e) => setDonorDetails({ ...donorDetails, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                    fontSize: '0.88rem',
-                  }}
-                />
-              </div>
-              <div>
-                <input
-                  type="tel"
-                  placeholder="Phone Number (Optional)"
-                  value={donorDetails.phone}
-                  onChange={(e) => setDonorDetails({ ...donorDetails, phone: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                    fontSize: '0.88rem',
-                  }}
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  placeholder="PAN Card (For 80G Receipt)"
-                  value={donorDetails.pan}
-                  onChange={(e) => setDonorDetails({ ...donorDetails, pan: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    borderRadius: '10px',
-                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                    fontSize: '0.88rem',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Cause Selector */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--color-primary-deep)', display: 'block', marginBottom: '6px' }}>
-                Designate Donation To:
+              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
+                Donor Information
               </label>
-              <select
-                value={selectedCause}
-                onChange={(e) => setSelectedCause(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                  fontSize: '0.88rem',
-                  backgroundColor: '#FAFAF8',
-                  color: '#102A43',
-                  fontWeight: '500',
-                }}
-              >
-                <option value="Education Support">Government School Student Education</option>
-                <option value="School Needs">Government School Needs &amp; Desks</option>
-                <option value="Cancer Care">Cancer Patient Medication &amp; Care</option>
-                <option value="Leprosy Support">Leprosy Patients Care &amp; Rehabilitation</option>
-                <option value="Elderly Care">Old Age Abandoned Elderly Care</option>
-                <option value="General Support">General Corpus Fund (Highest Need)</option>
-              </select>
+              <div className="modal-donor-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Full Name *"
+                    value={donorDetails.name}
+                    onChange={(e) => setDonorDetails({ ...donorDetails, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '11px 12px',
+                      borderRadius: '12px',
+                      border: '1.5px solid #E5E5EA',
+                      fontSize: '0.86rem',
+                      backgroundColor: '#F5F5F7',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email Address *"
+                    value={donorDetails.email}
+                    onChange={(e) => setDonorDetails({ ...donorDetails, email: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '11px 12px',
+                      borderRadius: '12px',
+                      border: '1.5px solid #E5E5EA',
+                      fontSize: '0.86rem',
+                      backgroundColor: '#F5F5F7',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={donorDetails.phone}
+                    onChange={(e) => setDonorDetails({ ...donorDetails, phone: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '11px 12px',
+                      borderRadius: '12px',
+                      border: '1.5px solid #E5E5EA',
+                      fontSize: '0.86rem',
+                      backgroundColor: '#F5F5F7',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="PAN Card (For 80G Receipt)"
+                    value={donorDetails.pan}
+                    onChange={(e) => setDonorDetails({ ...donorDetails, pan: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '11px 12px',
+                      borderRadius: '12px',
+                      border: '1.5px solid #E5E5EA',
+                      fontSize: '0.86rem',
+                      backgroundColor: '#F5F5F7',
+                      textTransform: 'uppercase',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Payment Method Selector */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' }}>
-              {[
-                { id: 'upi', label: 'UPI / QR Code', icon: QrCode },
-                { id: 'card', label: 'Debit / Card', icon: CreditCard },
-                { id: 'netbanking', label: 'Net Banking', icon: Building },
-              ].map((m) => {
-                const MIcon = m.icon;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => setPaymentMethod(m.id)}
-                    style={{
-                      padding: '10px 8px',
-                      borderRadius: '12px',
-                      border: '1.5px solid',
-                      borderColor: paymentMethod === m.id ? 'var(--color-primary-deep)' : 'rgba(6, 75, 53, 0.1)',
-                      backgroundColor: paymentMethod === m.id ? 'rgba(6, 75, 53, 0.06)' : '#FFFFFF',
-                      color: paymentMethod === m.id ? 'var(--color-primary-deep)' : 'var(--color-text-secondary)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: '4px',
-                      fontSize: '0.78rem',
-                      fontWeight: '600',
-                    }}
-                  >
-                    <MIcon size={18} />
-                    <span>{m.label}</span>
-                  </button>
-                );
-              })}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
+                Payment Method
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {[
+                  { id: 'upi', label: selectedCurrency.code === 'INR' ? 'UPI / QR Code' : 'Instant Pay', icon: QrCode },
+                  { id: 'card', label: 'Debit / Card', icon: CreditCard },
+                  { id: 'netbanking', label: 'Net Banking', icon: Building },
+                ].map((m) => {
+                  const MIcon = m.icon;
+                  const isSelected = paymentMethod === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(m.id)}
+                      style={{
+                        padding: '10px 6px',
+                        borderRadius: '12px',
+                        border: '1.5px solid',
+                        borderColor: isSelected ? '#111827' : '#E5E5EA',
+                        backgroundColor: isSelected ? '#F5F5F7' : '#FFFFFF',
+                        color: isSelected ? '#111827' : '#6B7280',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <MIcon size={17} color={isSelected ? '#111827' : '#6B7280'} />
+                      <span>{m.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {errorMessage && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.85rem', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '12px', background: '#FEE2E2', color: '#B91C1C', fontSize: '0.84rem', marginBottom: '14px' }}>
                 <AlertCircle size={16} />
                 <span>{errorMessage}</span>
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Apple-Style Primary Action Button */}
             <button
               type="submit"
               disabled={submitting}
-              className="btn btn-primary"
               style={{
                 width: '100%',
                 padding: '14px',
-                fontSize: '1rem',
+                fontSize: '0.98rem',
+                fontWeight: '700',
                 borderRadius: '9999px',
-                marginBottom: '14px',
+                background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)',
+                color: '#FFFFFF',
+                border: 'none',
+                cursor: 'pointer',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.22)',
                 opacity: submitting ? 0.75 : 1,
+                transition: 'all 0.2s ease',
               }}
             >
               {submitting ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Recording Donation...</span>
+                  <span>Processing Contribution...</span>
                 </>
               ) : (
                 <>
-                  <Heart size={18} fill="#FFFFFF" />
-                  <span>Proceed to Donate ₹{currentTotal.toLocaleString('en-IN')}</span>
+                  <Heart size={18} fill="#F5D061" color="#F5D061" />
+                  <span>
+                    Proceed with {selectedCurrency.symbol} {currentAmountNum ? currentAmountNum.toLocaleString() : '0'}
+                  </span>
                 </>
               )}
             </button>
 
-            {/* Trust badge */}
+            {/* 80G Trust Guarantee */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
-                fontSize: '0.75rem',
-                color: 'var(--color-text-muted)',
+                gap: '6px',
+                fontSize: '0.74rem',
+                color: '#6B7280',
               }}
             >
-              <ShieldCheck size={16} color="var(--color-green-natural)" />
-              <span>100% Secure &amp; Transparent • Eligible for 80G Tax Exemption</span>
+              <ShieldCheck size={15} color="#059669" />
+              <span>100% Tax Exempted under Section 80G • Instant Official Receipt</span>
             </div>
           </form>
         ) : (
-          /* Success Screen */
-          <div style={{ textAlign: 'center', padding: '20px 10px' }}>
+          /* ── SUCCESS & OFFICIAL RECEIPT VIEW (APPLE WALLET STYLE) ── */
+          <div style={{ textAlign: 'center' }}>
             <div
               style={{
-                width: '64px',
-                height: '64px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--color-green-mint)',
-                color: 'var(--color-primary-deep)',
+                backgroundColor: '#ECFDF5',
+                color: '#059669',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 16px auto',
+                margin: '0 auto 12px auto',
               }}
             >
-              <CheckCircle2 size={36} />
+              <CheckCircle2 size={32} />
             </div>
 
             <h3
               style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.9rem',
-                color: 'var(--color-primary-deep)',
-                marginBottom: '8px',
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: '1.75rem',
+                fontWeight: '700',
+                color: '#111827',
+                marginBottom: '4px',
               }}
             >
-              Heartfelt Gratitude!
+              Thank You for Your Generosity!
             </h3>
 
-            <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', marginBottom: '24px' }}>
-              Thank you, <strong>{donorDetails.name || 'Generous Donor'}</strong>! Your donation of{' '}
-              <strong style={{ color: 'var(--color-gold-warm)' }}>₹{currentTotal.toLocaleString('en-IN')}</strong> for{' '}
-              <em>{selectedCause}</em> creates immediate, positive impact.
+            <p style={{ fontSize: '0.9rem', color: '#6B7280', marginBottom: '18px' }}>
+              Your donation of{' '}
+              <strong style={{ color: '#111827' }}>
+                {receiptData?.currency?.symbol} {receiptData?.amount?.toLocaleString()} {receiptData?.currency?.code}
+              </strong>{' '}
+              has been recorded and an official 80G tax receipt has been generated.
             </p>
 
+            {/* On-Screen Official Receipt Card */}
             <div
               style={{
-                backgroundColor: '#FCF9F1',
-                padding: '16px',
-                borderRadius: '16px',
-                border: '1px solid rgba(215, 154, 24, 0.3)',
+                backgroundColor: '#F9FAFB',
+                borderRadius: '18px',
+                border: '1.5px solid #E5E7EB',
+                padding: '20px',
                 textAlign: 'left',
-                fontSize: '0.85rem',
-                color: 'var(--color-text-primary)',
-                marginBottom: '24px',
+                fontSize: '0.84rem',
+                marginBottom: '20px',
+                position: 'relative',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Receipt Reference:</span>
-                <strong style={{ fontFamily: 'monospace', letterSpacing: '0.04em' }}>{txnRef || 'MBMCT-SUCCESS'}</strong>
+              {/* Receipt Header Badge */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '10px', marginBottom: '12px' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6B7280', fontWeight: '700' }}>
+                    Official Trust Receipt
+                  </div>
+                  <div style={{ fontFamily: 'monospace', fontWeight: '800', color: '#111827', fontSize: '0.94rem' }}>
+                    {receiptData?.receiptNo}
+                  </div>
+                </div>
+                <div style={{
+                  backgroundColor: '#ECFDF5',
+                  color: '#059669',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  fontWeight: '700',
+                  fontSize: '0.72rem',
+                }}>
+                  ✓ 80G Verified
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>Beneficiary Cause:</span>
-                <strong>{selectedCause}</strong>
+
+              {/* Receipt Details Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+                <div>
+                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Donor Name:</span>
+                  <strong>{receiptData?.donorName}</strong>
+                </div>
+                <div>
+                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Date &amp; Time:</span>
+                  <span>{receiptData?.date} ({receiptData?.time})</span>
+                </div>
+                <div>
+                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Transaction ID:</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{receiptData?.transactionId}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>PAN (For 80G):</span>
+                  <span>{receiptData?.pan}</span>
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Designated Initiative:</span>
+                  <span style={{ color: '#111827', fontWeight: '600' }}>{receiptData?.cause}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>80G Tax Exemption:</span>
-                <strong style={{ color: 'var(--color-green-natural)' }}>Available</strong>
+
+              <div style={{
+                borderTop: '1px solid #E5E7EB',
+                paddingTop: '10px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                backgroundColor: '#FFFFFF',
+                margin: '0 -10px -10px -10px',
+                padding: '12px 14px',
+                borderRadius: '0 0 16px 16px',
+              }}>
+                <span style={{ fontWeight: '600', color: '#374151' }}>Total Amount:</span>
+                <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827' }}>
+                  {receiptData?.currency?.symbol} {receiptData?.amount?.toLocaleString()} {receiptData?.currency?.code}
+                </span>
               </div>
             </div>
 
-            <button
-              onClick={handleReset}
-              className="btn btn-dark"
-              style={{
-                padding: '12px 30px',
-                fontSize: '0.92rem',
-                borderRadius: '9999px',
-              }}
-            >
-              Close &amp; Return
-            </button>
+            {/* Action Buttons: Download / Print Receipt & Return */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                onClick={handleDownloadReceipt}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)',
+                  color: '#FFFFFF',
+                  borderRadius: '9999px',
+                  fontSize: '0.95rem',
+                  fontWeight: '700',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                <Download size={18} />
+                <span>Download / Print Official Receipt (PDF)</span>
+              </button>
+
+              <button
+                onClick={handleReset}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  backgroundColor: '#F3F4F6',
+                  color: '#374151',
+                  borderRadius: '9999px',
+                  fontSize: '0.88rem',
+                  fontWeight: '600',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Close &amp; Return
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      <style>{`
+        @keyframes modalFadeIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 }

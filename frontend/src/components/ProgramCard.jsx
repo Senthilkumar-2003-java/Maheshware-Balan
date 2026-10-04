@@ -2,23 +2,23 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function ProgramCard({ title, description, image, icon: Icon, link, iconColor = '#064B35' }) {
+export default function ProgramCard({ title, description, image, icon: Icon, link, iconColor = '#173F73' }) {
   return (
     <div className="program-card" style={{
       backgroundColor: '#FFFFFF',
-      borderRadius: '16px',
+      borderRadius: '18px',
       overflow: 'hidden',
-      boxShadow: '0 4px 20px rgba(6,75,53,0.07)',
-      border: '1px solid rgba(6,75,53,0.07)',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)',
+      border: '1px solid rgba(0, 0, 0, 0.06)',
       display: 'flex',
       flexDirection: 'column',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      transition: 'transform 0.35s ease, box-shadow 0.35s ease',
     }}>
-      {/* Image — 4:3 like reference card images */}
+      {/* Image Container — Unobstructed 16:10 framing, heads & bodies fully visible */}
       <div style={{
         position: 'relative',
         width: '100%',
-        paddingBottom: '75%',   /* 4:3 ratio */
+        paddingBottom: '62%',   /* 16:10 ratio — unobstructed */
         overflow: 'hidden',
         backgroundColor: '#F5F0E4',
         flexShrink: 0,
@@ -33,48 +33,48 @@ export default function ProgramCard({ title, description, image, icon: Icon, lin
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'center',
-            transition: 'transform 0.45s ease',
+            objectPosition: 'center 22%',
+            transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         />
+
+        {/* Top-Right Sleek Glass Badge — Never blocks image bottom */}
+        {Icon && (
+          <div style={{
+            position: 'absolute',
+            top: '12px',
+            right: '12px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.94)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: iconColor,
+            zIndex: 3,
+          }}>
+            <Icon size={18} strokeWidth={2.2} />
+          </div>
+        )}
       </div>
 
-      {/* Floating icon — centered, overlapping image/content border */}
+      {/* Content Block — Fully separated from image */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        marginTop: '-22px',
-        zIndex: 2,
-        position: 'relative',
-      }}>
-        <div style={{
-          width: '44px',
-          height: '44px',
-          borderRadius: '50%',
-          backgroundColor: '#FFFFFF',
-          boxShadow: '0 4px 14px rgba(6,75,53,0.13)',
-          border: '2px solid rgba(215,154,24,0.22)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: iconColor,
-        }}>
-          <Icon size={20} strokeWidth={2} />
-        </div>
-      </div>
-
-      {/* Content */}
-      <div style={{
-        padding: '12px 16px 20px 16px',
+        padding: '18px 20px 22px 20px',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
+        alignItems: 'flex-start',
+        textAlign: 'left',
         flexGrow: 1,
       }}>
         <h3 style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: '1.03rem',
+          fontSize: '1.08rem',
           fontWeight: '700',
           color: '#17231F',
           marginBottom: '8px',
@@ -84,10 +84,10 @@ export default function ProgramCard({ title, description, image, icon: Icon, lin
         </h3>
 
         <p style={{
-          fontSize: '0.8rem',
-          lineHeight: '1.52',
+          fontSize: '0.84rem',
+          lineHeight: '1.58',
           color: '#5B625E',
-          marginBottom: '14px',
+          marginBottom: '16px',
           flexGrow: 1,
         }}>
           {description}
@@ -99,29 +99,30 @@ export default function ProgramCard({ title, description, image, icon: Icon, lin
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '5px',
-            fontSize: '0.8rem',
+            gap: '6px',
+            fontSize: '0.84rem',
             fontWeight: '700',
-            color: '#6B2D67',
+            color: '#173F73',
             textDecoration: 'none',
             transition: 'gap 0.2s, color 0.2s',
           }}
         >
-          Learn More <ArrowRight size={13} />
+          <span>Learn More</span>
+          <ArrowRight size={14} />
         </Link>
       </div>
 
       <style>{`
         .program-card:hover {
           transform: translateY(-6px);
-          box-shadow: 0 12px 32px rgba(6,75,53,0.12);
+          box-shadow: 0 14px 34px rgba(23, 63, 115, 0.12);
         }
         .program-card:hover .card-img {
-          transform: scale(1.05);
+          transform: scale(1.04);
         }
         .program-card:hover .learn-more-link {
-          color: #064B35;
-          gap: 8px;
+          color: #D79A18;
+          gap: 9px;
         }
       `}</style>
     </div>

@@ -66,14 +66,17 @@ export default function Testimonials() {
     >
       <div style={{ maxWidth: '1380px', margin: '0 auto', padding: '0 24px' }}>
         {/* Header Row */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px',
-          marginBottom: '32px',
-        }}>
+        <div
+          className="apple-reveal"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px',
+            marginBottom: '32px',
+          }}
+        >
           <div>
             <div style={{
               display: 'inline-flex',
@@ -136,7 +139,7 @@ export default function Testimonials() {
           {testimonials.map((item, index) => (
             <div
               key={index}
-              className="testimonial-card"
+              className={`testimonial-card apple-reveal-scale apple-reveal-delay-${index + 1}`}
               style={{
                 backgroundColor: '#FCF9F1',
                 borderRadius: '18px',

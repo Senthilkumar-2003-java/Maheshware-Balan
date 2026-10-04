@@ -3,6 +3,7 @@ import { Heart, Shield, Award, Users, CheckCircle2, ArrowRight, Eye, Target, Spa
 import { Link } from 'react-router-dom';
 import plantImg from '../assets/images/plant-growth-hands.png';
 import heroImg from '../assets/images/hero-children.jpg';
+import bannerAbout from '../assets/images/banner-about.jpg';
 
 export default function About({ onOpenDonate }) {
   const values = [
@@ -14,12 +15,12 @@ export default function About({ onOpenDonate }) {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* Page Header */}
+      {/* Page Header (Balanced Scrim — Image vivid, Text crisp) */}
       <section
         style={{
-          backgroundColor: '#064B35',
+          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerAbout}) center 15% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '80px 0 60px 0',
+          padding: '110px 0 85px 0',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
@@ -27,41 +28,56 @@ export default function About({ onOpenDonate }) {
       >
         <div className="container">
           <div
+            className="banner-animate-1"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              fontSize: '0.8rem',
+              fontSize: '0.82rem',
               fontWeight: '700',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: 'var(--color-gold-soft)',
-              marginBottom: '12px',
+              color: '#F5D061',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              padding: '6px 16px',
+              borderRadius: '9999px',
+              border: '1px solid rgba(245, 208, 97, 0.4)',
+              marginBottom: '16px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-gold-warm)', display: 'inline-block' }}></span>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#F5D061', display: 'inline-block' }}></span>
             ABOUT OUR TRUST
           </div>
           <h1
+            className="banner-animate-2"
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
+              fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
               fontWeight: '700',
+              color: '#FFFFFF',
+              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
               lineHeight: '1.2',
               marginBottom: '16px',
             }}
           >
             Rooted in Kindness. <br />
-            <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-editorial)', color: 'var(--color-gold-soft)' }}>
+            <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-editorial)', color: '#F5D061' }}>
               Dedicated to Human Flourishing.
             </span>
           </h1>
           <p
+            className="banner-animate-3"
             style={{
               fontSize: '1.1rem',
-              color: 'rgba(255, 255, 255, 0.85)',
+              color: '#F8FAFC',
               maxWidth: '680px',
               margin: '0 auto',
+              lineHeight: '1.6',
+              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
+              fontWeight: '500',
             }}
           >
             Maheswari &amp; Balan Memorial Charitable Trust was established to carry forward the timeless spirit of compassionate service, ensuring quality education and healthcare reach every deserving human being.

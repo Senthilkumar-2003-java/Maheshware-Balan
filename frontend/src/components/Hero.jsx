@@ -90,7 +90,7 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
             </p>
 
             {/* CTA Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '18px', marginBottom: '32px' }}>
+            <div className="hero-cta-group" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '18px', marginBottom: '32px' }}>
               <button
                 onClick={onOpenDonate}
                 style={{
@@ -112,7 +112,7 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(215,154,24,0.35)'; }}
               >
                 <Heart size={16} fill="#FFFFFF" color="#FFFFFF" />
-                <span>{t('heroDonateBtn')}</span>
+                <span>{t('heroDonateBtn') || 'Donate Now'}</span>
                 <ArrowRight size={16} />
               </button>
 
@@ -143,7 +143,7 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
                   <Play size={16} fill="#FFFFFF" style={{ marginLeft: '2px' }} />
                 </span>
                 <span style={{ textAlign: 'left' }}>
-                  <span style={{ display: 'block', fontSize: '0.92rem', fontWeight: '700', color: '#17231F' }}>{t('heroStoryBtn')}</span>
+                  <span style={{ display: 'block', fontSize: '0.92rem', fontWeight: '700', color: '#17231F' }}>{t('heroStoryBtn') || 'Watch Our Story'}</span>
                   <span style={{ display: 'block', fontSize: '0.78rem', color: '#5B625E', fontWeight: '500' }}>See the Impact</span>
                 </span>
               </button>
@@ -191,7 +191,7 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
           {/* ── RIGHT COLUMN: Hero Image ── */}
           <div style={{ position: 'relative', alignSelf: 'stretch', display: 'flex', alignItems: 'stretch' }}>
             {/* Main image — organic rounded left-top, square bottom-right matching reference */}
-            <div style={{
+            <div className="hero-img-box" style={{
               position: 'relative',
               width: '100%',
               borderRadius: '28px 28px 28px 120px',
@@ -208,42 +208,10 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'right center',
+                  objectPosition: 'center 35%',
                   display: 'block',
                 }}
               />
-              {/* Bottom gradient for text contrast */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(6,75,53,0.22) 100%)',
-                pointerEvents: 'none',
-              }} />
-            </div>
-
-            {/* Handwritten quote badge — top-right rotated, matching reference */}
-            <div style={{
-              position: 'absolute',
-              top: '-10px',
-              right: '10px',
-              backgroundColor: 'rgba(255,255,255,0.96)',
-              padding: '11px 18px',
-              borderRadius: '14px',
-              boxShadow: '0 8px 28px rgba(6,75,53,0.1)',
-              border: '1px solid rgba(215,154,24,0.28)',
-              transform: 'rotate(5deg)',
-              textAlign: 'center',
-              zIndex: 5,
-            }}>
-              <div style={{
-                fontFamily: "'Caveat', cursive",
-                fontSize: '1.35rem',
-                lineHeight: '1.2',
-                color: '#064B35',
-                fontWeight: '700',
-              }}>
-                Every Child<br />Deserves<br />a Chance ♡
-              </div>
             </div>
 
             {/* Subtle gold ambient blob */}
@@ -274,10 +242,37 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
 
       <style>{`
         @media (max-width: 900px) {
-          .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .hero-grid { 
+            grid-template-columns: 1fr !important; 
+            gap: 28px !important; 
+          }
+          .hero-grid > div:first-child {
+            padding-bottom: 10px !important;
+          }
         }
         @media (max-width: 600px) {
-          .hero-features { grid-template-columns: repeat(2, 1fr) !important; }
+          .hero-grid {
+            gap: 24px !important;
+          }
+          .hero-features { 
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 12px !important;
+            padding-top: 18px !important;
+          }
+          .hero-cta-group {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 12px !important;
+          }
+          .hero-cta-group button {
+            justify-content: center !important;
+            width: 100% !important;
+          }
+          .hero-img-box {
+            border-radius: 20px !important;
+            min-height: 220px !important;
+            max-height: 280px !important;
+          }
         }
       `}</style>
     </section>

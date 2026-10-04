@@ -77,42 +77,9 @@ CREATE TABLE IF NOT EXISTS beneficiaries (
 );
 
 -- ========================================================
--- Initial Seed Data
+-- Initial Admin User (Clean Setup - No Dummy Records)
 -- ========================================================
 
 -- Insert Initial Admin User
 INSERT IGNORE INTO admin_users (full_name, email, password, role)
 VALUES ('Senthilkumar', 'senthilkumar@gmail.com', '$2a$10$w82Jz7rQe.kH3wZ5m9eXk.B5E8v7Y6q8w3f6z7q9w2f7z6y8w2f7', 'SuperAdmin');
-
--- Insert Sample Real-world Donations
-INSERT INTO donations (donor_name, email, phone, amount, cause, payment_method, transaction_id, status)
-VALUES 
-('Arun Prakash', 'arun@gmail.com', '+91 98401 23456', 50000.00, 'Education Support', 'UPI', 'TXN_20260901_01', 'Completed'),
-('Priya Sundaram', 'priya@gmail.com', '+91 87544 11223', 25000.00, 'Cancer Care', 'Net Banking', 'TXN_20260902_02', 'Completed'),
-('Karthik Raja', 'karthik@gmail.com', '+91 94431 88990', 10000.00, 'Old Age Support', 'Credit Card', 'TXN_20260903_03', 'Completed'),
-('Deepa Manikandan', 'deepa@gmail.com', '+91 91234 56780', 5000.00, 'Leprosy Support', 'UPI', 'TXN_20260904_04', 'Completed'),
-('Manojkumar', 'manoj@gmail.com', '+91 97890 12345', 15000.00, 'General Support', 'UPI', 'TXN_20260905_05', 'Completed')
-ON DUPLICATE KEY UPDATE id=id;
-
--- Insert Sample Contact Messages
-INSERT INTO contacts (name, email, phone, subject, message, status)
-VALUES 
-('Rajesh V', 'rajesh@gmail.com', '+91 98410 99887', 'Child Education Sponsorship', 'I would like to sponsor 3 government school students for the upcoming academic year.', 'New'),
-('Meena Kumari', 'meena@gmail.com', '+91 80560 33445', 'Volunteer for Cancer Camp', 'Can our medical team volunteer in your upcoming rural health checkup camp?', 'New')
-ON DUPLICATE KEY UPDATE id=id;
-
--- Insert Sample Volunteers
-INSERT INTO volunteers (full_name, email, phone, preferred_area, availability, status)
-VALUES
-('Dr. Ramesh', 'ramesh@gmail.com', '+91 98840 12300', 'Healthcare Support', 'Weekends', 'Approved'),
-('Sneha Patel', 'sneha@gmail.com', '+91 61234 90123', 'Community Welfare', 'Flexible', 'Pending')
-ON DUPLICATE KEY UPDATE id=id;
-
--- Insert Sample Beneficiaries
-INSERT INTO beneficiaries (full_name, program_area, assistance_amount, status)
-VALUES
-('Kavitha S', 'Education', 12000.00, 'Approved'),
-('Ravi Kumar', 'Cancer Care', 45000.00, 'Approved'),
-('Lakshmi Ammal', 'Elderly Care', 8000.00, 'Pending'),
-('Selvam P', 'Leprosy Support', 15000.00, 'Approved')
-ON DUPLICATE KEY UPDATE id=id;

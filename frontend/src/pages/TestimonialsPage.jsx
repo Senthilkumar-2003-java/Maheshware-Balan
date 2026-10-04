@@ -7,6 +7,7 @@ import tStudent from '../assets/images/testimonial-student.jpg';
 import tPatient from '../assets/images/testimonial-patient.jpg';
 import tSenior from '../assets/images/testimonial-senior.jpg';
 import tParent from '../assets/images/testimonial-parent.jpg';
+import bannerTestimonials from '../assets/images/banner-testimonials.jpg';
 
 export default function TestimonialsPage({ onOpenDonate }) {
   const stories = [
@@ -46,37 +47,49 @@ export default function TestimonialsPage({ onOpenDonate }) {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* Header */}
+      {/* Header (Balanced Scrim — Image vivid, Text crisp) */}
       <section
         style={{
-          backgroundColor: '#064B35',
+          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerTestimonials}) center 15% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '80px 0 60px 0',
+          padding: '110px 0 85px 0',
           textAlign: 'center',
+          position: 'relative',
         }}
       >
         <div className="container">
           <div
+            className="banner-animate-1"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              fontSize: '0.8rem',
+              fontSize: '0.82rem',
               fontWeight: '700',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: 'var(--color-gold-soft)',
-              marginBottom: '12px',
+              color: '#F5D061',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              padding: '6px 16px',
+              borderRadius: '9999px',
+              border: '1px solid rgba(245, 208, 97, 0.4)',
+              marginBottom: '16px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
-            <Quote size={16} />
+            <Quote size={16} color="#F5D061" />
             VOICES OF HOPE
           </div>
           <h1
+            className="banner-animate-2"
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
+              fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
               fontWeight: '700',
+              color: '#FFFFFF',
+              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
               lineHeight: '1.2',
               marginBottom: '16px',
             }}
@@ -84,11 +97,15 @@ export default function TestimonialsPage({ onOpenDonate }) {
             Stories of Courage &amp; Transformation
           </h1>
           <p
+            className="banner-animate-3"
             style={{
-              fontSize: '1.1rem',
-              color: 'rgba(255, 255, 255, 0.85)',
-              maxWidth: '640px',
+              fontSize: '1.12rem',
+              color: '#F8FAFC',
+              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
+              maxWidth: '660px',
               margin: '0 auto',
+              lineHeight: '1.6',
+              fontWeight: '500',
             }}
           >
             Read authentic experiences from the students, patients, families, and community members touched by our initiatives.

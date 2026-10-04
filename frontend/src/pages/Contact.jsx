@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2, X, Heart, Sparkles } from 'lucide-react';
 import { submitContactApi } from '../services/api';
 import confetti from 'canvas-confetti';
+import bannerContact from '../assets/images/banner-contact.jpg';
 
 // ── Beautiful Success Popup Overlay ──
 function SuccessPopup({ onClose }) {
@@ -208,14 +209,16 @@ export default function Contact() {
       {/* Header */}
       <section
         style={{
-          backgroundColor: '#064B35',
+          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.32) 0%, rgba(16, 24, 40, 0.58) 100%), url(${bannerContact}) center 25% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '80px 0 60px 0',
+          padding: '85px 0 65px 0',
           textAlign: 'center',
+          position: 'relative',
         }}
       >
         <div className="container">
           <div
+            className="banner-animate-1"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -224,30 +227,44 @@ export default function Contact() {
               fontWeight: '700',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: 'var(--color-gold-soft)',
-              marginBottom: '12px',
+              color: '#F5D061',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              padding: '6px 16px',
+              borderRadius: '9999px',
+              border: '1px solid rgba(245, 208, 97, 0.4)',
+              marginBottom: '16px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
-            <MessageSquare size={16} />
+            <MessageSquare size={16} color="#F5D061" />
             GET IN TOUCH
           </div>
           <h1
+            className="banner-animate-2"
             style={{
               fontFamily: 'var(--font-serif)',
               fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
               fontWeight: '700',
               lineHeight: '1.2',
               marginBottom: '16px',
+              color: '#FFFFFF',
+              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
             }}
           >
             We Are Here to Listen
           </h1>
           <p
+            className="banner-animate-3"
             style={{
               fontSize: '1.1rem',
-              color: 'rgba(255, 255, 255, 0.85)',
+              color: '#F8FAFC',
               maxWidth: '640px',
               margin: '0 auto',
+              lineHeight: '1.6',
+              textShadow: '0 2px 12px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
+              fontWeight: '500',
             }}
           >
             Whether you wish to sponsor a program, partner with our trust, volunteer, or seek assistance for a beneficiary, reach out to us anytime.
@@ -357,15 +374,15 @@ export default function Contact() {
                 Fill out the form below and our trust office will respond within 24–48 hours.
               </p>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="contact-form-row">
                     <input
                       type="text"
                       required
                       placeholder="Your Name *"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8' }}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(16, 43, 80, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', outline: 'none' }}
                     />
                     <input
                       type="email"
@@ -373,22 +390,22 @@ export default function Contact() {
                       placeholder="Email Address *"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8' }}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(16, 43, 80, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', outline: 'none' }}
                     />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div className="contact-form-row">
                     <input
                       type="tel"
                       placeholder="Phone Number (Optional)"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8' }}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(16, 43, 80, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', outline: 'none' }}
                     />
                     <select
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8' }}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(16, 43, 80, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', color: '#1E293B', outline: 'none' }}
                     >
                       <option value="General Inquiry">General Inquiry</option>
                       <option value="Donation & 80G">Donation &amp; 80G Receipt</option>
@@ -404,7 +421,7 @@ export default function Contact() {
                     placeholder="Write your message here *"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    style={{ padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', resize: 'vertical' }}
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid rgba(16, 43, 80, 0.15)', fontSize: '0.9rem', backgroundColor: '#FAFAF8', resize: 'vertical', outline: 'none' }}
                   />
 
                   {errorMessage && (
@@ -493,6 +510,17 @@ export default function Contact() {
         @media (max-width: 900px) {
           .contact-grid {
             grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .contact-form-row {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .contact-card {
+            padding: 22px 18px !important;
+            border-radius: 18px !important;
           }
         }
       `}</style>

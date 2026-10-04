@@ -82,7 +82,7 @@ export default function Impact({ onOpenDonate }) {
           className="impact-grid"
         >
           {/* LEFT: Heading + text + CTA */}
-          <div>
+          <div className="apple-reveal-left">
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -169,6 +169,7 @@ export default function Impact({ onOpenDonate }) {
               return (
                 <div
                   key={idx}
+                  className={`apple-reveal apple-reveal-delay-${idx + 1}`}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -221,7 +222,7 @@ export default function Impact({ onOpenDonate }) {
           {/* RIGHT: Handwritten script — "Hope Changes Lives ♡" */}
           <div
             style={{ textAlign: 'center' }}
-            className="impact-handwriting-col"
+            className="impact-handwriting-col apple-reveal-right apple-reveal-delay-3"
           >
             <div
               style={{

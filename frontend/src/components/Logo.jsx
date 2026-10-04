@@ -76,9 +76,9 @@ export default function Logo({ variant = 'dark', className = '' }) {
 
       {/* Typography block matching reference */}
       <div className="logo-text" style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{
+        <div className="logo-title" style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: '1.38rem',
+          fontSize: '1.35rem',
           fontWeight: '700',
           letterSpacing: '0.01em',
           lineHeight: '1.1',
@@ -89,26 +89,26 @@ export default function Logo({ variant = 'dark', className = '' }) {
           <span style={{ color: isLight ? '#A7F3D0' : '#064B35' }}> Balan</span>
         </div>
         
-        <div style={{
-          fontSize: '0.58rem',
+        <div className="logo-sub" style={{
+          fontSize: '0.55rem',
           fontWeight: '700',
-          letterSpacing: '0.19em',
+          letterSpacing: '0.16em',
           textTransform: 'uppercase',
           color: isLight ? 'rgba(255,255,255,0.75)' : '#6B2D67',
           marginTop: '1px',
           display: 'flex',
           alignItems: 'center',
-          gap: '5px'
+          gap: '4px'
         }}>
-          <span style={{ display: 'inline-block', height: '1px', width: '10px', background: isLight ? 'rgba(255,255,255,0.4)' : '#D79A18' }}></span>
+          <span style={{ display: 'inline-block', height: '1px', width: '8px', background: isLight ? 'rgba(255,255,255,0.4)' : '#D79A18' }}></span>
           MEMORIAL CHARITABLE TRUST
-          <span style={{ display: 'inline-block', height: '1px', width: '10px', background: isLight ? 'rgba(255,255,255,0.4)' : '#D79A18' }}></span>
+          <span style={{ display: 'inline-block', height: '1px', width: '8px', background: isLight ? 'rgba(255,255,255,0.4)' : '#D79A18' }}></span>
         </div>
 
-        <div style={{
+        <div className="logo-motto" style={{
           fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontStyle: 'italic',
-          fontSize: '0.78rem',
+          fontSize: '0.74rem',
           color: isLight ? '#FCD34D' : '#4F8A35',
           marginTop: '0px',
           letterSpacing: '0.02em',
@@ -117,6 +117,20 @@ export default function Logo({ variant = 'dark', className = '' }) {
           — Serve with Love &amp; Compassion —
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .logo-symbol { width: 36px !important; height: 36px !important; }
+          .logo-title { font-size: 1.08rem !important; }
+          .logo-sub { font-size: 0.48rem !important; letter-spacing: 0.1em !important; }
+          .logo-motto { font-size: 0.65rem !important; }
+        }
+        @media (max-width: 440px) {
+          .logo-symbol { width: 32px !important; height: 32px !important; }
+          .logo-title { font-size: 0.98rem !important; }
+          .logo-motto { display: none !important; }
+        }
+      `}</style>
     </Link>
   );
 }

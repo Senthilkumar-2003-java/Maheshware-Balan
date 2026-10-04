@@ -55,7 +55,9 @@ export const translations = {
   "footerQuickLinks": "Quick Navigation",
   "footerPrograms": "Our Programs",
   "footerContact": "Contact Trust Office",
-  "footerRights": "All Rights Reserved. Maheswari & Balan Memorial Charitable Trust."
+  "footerRights": "All Rights Reserved. Maheswari & Balan Memorial Charitable Trust.",
+  "heroDonateBtn": "Donate Now",
+  "heroStoryBtn": "Watch Our Story"
 },
   ta: {
   "requestByCall": "தொலைபேசி அழைப்பு",
@@ -98,7 +100,12 @@ export const translations = {
   "footerQuickLinks": "விரைவு இணைப்புகள்",
   "footerPrograms": "எங்கள் திட்டங்கள்",
   "footerContact": "அறக்கட்டளை அலுவலகம்",
-  "footerRights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. மகேஸ்வரி & பாலன் நினைவு அறக்கட்டளை."
+  "footerRights": "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. மகேஸ்வரி & பாலன் நினைவு அறக்கட்டளை.",
+  "navDonations": "நன்கொடைகள்",
+  "navTestimonials": "சான்றுகள்",
+  "donateNow": "நன்கொடை அளியுங்கள்",
+  "heroDonateBtn": "நன்கொடை அளியுங்கள்",
+  "heroStoryBtn": "எங்கள் சேவை கதை"
 },
   hi: {
   "requestByCall": "कॉल द्वारा संपर्क करें",
@@ -141,7 +148,12 @@ export const translations = {
   "footerQuickLinks": "त्वरित नेविगेशन",
   "footerPrograms": "हमारे कार्यक्रम",
   "footerContact": "ट्रस्ट कार्यालय संपर्क",
-  "footerRights": "सर्वाधिकार सुरक्षित। माहेश्वरी और बालन मेमोरियल चैरिटेबल ट्रस्ट।"
+  "footerRights": "सर्वाधिकार सुरक्षित। माहेश्वरी और बालन मेमोरियल चैरिटेबल ट्रस्ट।",
+  "navDonations": "दान",
+  "navTestimonials": "प्रशंसापत्र",
+  "donateNow": "दान करें",
+  "heroDonateBtn": "दान करें",
+  "heroStoryBtn": "हमारी कहानी देखें"
 },
   te: {
   "requestByCall": "కాల్ ద్వారా సంప్రదించండి",
@@ -184,7 +196,12 @@ export const translations = {
   "footerQuickLinks": "త్వరిత లింకులు",
   "footerPrograms": "మా కార్యక్రమాలు",
   "footerContact": "ట్రస్ట్ కార్యాలయ వివరాలు",
-  "footerRights": "అన్ని హక్కులూ ప్రత్యేకించబడ్డాయి. మహేశ్వరి & బాలన్ మెమోరియల్ ఛారిటబుల్ ట్రస్ట్."
+  "footerRights": "అన్ని హక్కులూ ప్రత్యేకించబడ్డాయి. మహేశ్వరి & బాలన్ మెమోరియల్ ఛారిటబుల్ ట్రస్ట్.",
+  "navDonations": "విరాళాలు",
+  "navTestimonials": "అభిప్రాయాలు",
+  "donateNow": "విరాళం ఇవ్వండి",
+  "heroDonateBtn": "విరాళం ఇవ్వండి",
+  "heroStoryBtn": "మా కథ చూడండి"
 },
   ml: {
   "requestByCall": "ഫോണിൽ വിളിക്കുക",
@@ -227,7 +244,12 @@ export const translations = {
   "footerQuickLinks": "ദ്രുത ലിങ്കുകൾ",
   "footerPrograms": "ഞങ്ങളുടെ പദ്ധതികൾ",
   "footerContact": "ഓഫീസ് വിലാസം",
-  "footerRights": "എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം. മഹേശ്വരി & ബാലൻ മെമ്മോറിയൽ ചാരിറ്റബിൾ ട്രസ്റ്റ്."
+  "footerRights": "എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം. മഹേശ്വരി & ബാലൻ മെമ്മോറിയൽ ചാരിറ്റബിൾ ട്രസ്റ്റ്.",
+  "navDonations": "സംഭാവനകൾ",
+  "navTestimonials": "സാക്ഷ്യപത്രങ്ങൾ",
+  "donateNow": "സംഭാവന നൽകുക",
+  "heroDonateBtn": "സംഭാവന നൽകുക",
+  "heroStoryBtn": "ഞങ്ങളുടെ കഥ കാണുക"
 },
   kn: {
   "requestByCall": "ಕರೆ ಮೂಲಕ ಸಂಪರ್ಕಿಸಿ",
@@ -270,6 +292,11 @@ export const translations = {
   "footerQuickLinks": "ತ್ವರಿತ ಲಿಂಕ್‌ಗಳು",
   "footerPrograms": "ನಮ್ಮ ಯೋಜನೆಗಳು",
   "footerContact": "ಟ್ರಸ್ಟ್ ಕಚೇರಿ ಸಂಪರ್ಕ",
-  "footerRights": "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ. ಮಹೇಶ್ವರಿ & ಬಾಲನ್ ಸ್ಮಾರಕ ಚಾರಿಟೇಬಲ್ ಟ್ರಸ್ಟ್."
+  "footerRights": "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ. ಮಹೇಶ್ವರಿ & ಬಾಲನ್ ಸ್ಮಾರಕ ಚಾರಿಟೇಬಲ್ ಟ್ರಸ್ಟ್.",
+  "navDonations": "ದೇಣಿಗೆಗಳು",
+  "navTestimonials": "ಪ್ರಶಂಸಾಪತ್ರಗಳು",
+  "donateNow": "ದೇಣಿಗೆ ನೀಡಿ",
+  "heroDonateBtn": "ದೇಣಿಗೆ ನೀಡಿ",
+  "heroStoryBtn": "ನಮ್ಮ ಕಥೆಯನ್ನು ವೀಕ್ಷಿಸಿ"
 }
 };

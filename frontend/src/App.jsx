@@ -7,6 +7,7 @@ import VideoModal from './components/VideoModal';
 import VolunteerModal from './components/VolunteerModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { useAppleScrollReveal } from './utils/useAppleScrollReveal';
 
 // Pages
 import Home from './pages/Home';
@@ -14,7 +15,7 @@ import About from './pages/About';
 import ProgramsPage from './pages/ProgramsPage';
 import Gallery from './pages/Gallery';
 import Donations from './pages/Donations';
-import TestimonialsPage from './pages/TestimonialsPage';
+import Volunteer from './pages/Volunteer';
 import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -50,6 +51,9 @@ function AppRoutes() {
   const [videoOpen, setVideoOpen] = useState(false);
   const [volunteerOpen, setVolunteerOpen] = useState(false);
   const location = useLocation();
+
+  // Apple-style scroll reveal — re-observe on every route change
+  useAppleScrollReveal(location.pathname);
 
   // Admin routes — no Navbar/Footer
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -90,7 +94,8 @@ function AppRoutes() {
             <Route path="/programs" element={<ProgramsPage onOpenDonate={() => setDonateOpen(true)} />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/donations" element={<Donations onOpenDonate={() => setDonateOpen(true)} />} />
-            <Route path="/testimonials" element={<TestimonialsPage onOpenDonate={() => setDonateOpen(true)} />} />
+            <Route path="/volunteer" element={<Volunteer onOpenDonate={() => setDonateOpen(true)} />} />
+            <Route path="/testimonials" element={<Navigate to="/volunteer" replace />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
 

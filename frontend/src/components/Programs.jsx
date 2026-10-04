@@ -68,14 +68,17 @@ export default function Programs() {
     >
       <div style={{ maxWidth: '1380px', margin: '0 auto', padding: '0 24px' }}>
         {/* Section Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px',
-          marginBottom: '32px',
-        }}>
+        <div
+          className="apple-reveal-left"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px',
+            marginBottom: '32px',
+          }}
+        >
           <div>
             {/* Eyebrow */}
             <div style={{
@@ -147,15 +150,19 @@ export default function Programs() {
           className="programs-grid"
         >
           {programsData.map((item, index) => (
-            <ProgramCard
+            <div
               key={index}
-              title={item.title}
-              description={item.description}
-              image={item.image}
-              icon={item.icon}
-              link={item.link}
-              iconColor={item.iconColor}
-            />
+              className={`apple-reveal-scale apple-reveal-delay-${index + 1}`}
+            >
+              <ProgramCard
+                title={item.title}
+                description={item.description}
+                image={item.image}
+                icon={item.icon}
+                link={item.link}
+                iconColor={item.iconColor}
+              />
+            </div>
           ))}
         </div>
       </div>

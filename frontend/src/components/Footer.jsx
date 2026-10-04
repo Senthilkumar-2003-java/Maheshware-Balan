@@ -101,7 +101,7 @@ export default function Footer({ onOpenDonate }) {
               { name: 'Our Programs', path: '/programs' },
               { name: 'Gallery', path: '/gallery' },
               { name: 'Donations', path: '/donations' },
-              { name: 'Testimonials', path: '/testimonials' },
+              { name: 'Volunteer', path: '/volunteer' },
               { name: 'Contact', path: '/contact' },
             ].map((item) => (
               <Link
@@ -300,10 +300,10 @@ export default function Footer({ onOpenDonate }) {
                 </button>
               </li>
               {[
-                { name: 'Volunteer With Us', path: '/contact' },
+                { name: 'Volunteer With Us', path: '/volunteer' },
                 { name: 'Partner With Us', path: '/about' },
                 { name: 'Photo Gallery', path: '/gallery' },
-                { name: 'Beneficiary Stories', path: '/testimonials' },
+                { name: 'Our Programs', path: '/programs' },
               ].map((item) => (
                 <li key={item.name}>
                   <Link

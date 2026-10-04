@@ -43,7 +43,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
           className="cta-grid"
         >
           {/* Left Column: Heading, Subtitle, Buttons */}
-          <div>
+          <div className="apple-reveal-left">
             {/* Title with small icon */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <h2
@@ -113,6 +113,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 1 */}
             <div
               onClick={onOpenDonate}
+              className={`action-box apple-reveal-scale apple-reveal-delay-2`}
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -131,6 +132,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 2 */}
             <div
               onClick={onOpenVolunteer}
+              className={`action-box apple-reveal-scale apple-reveal-delay-3`}
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -149,6 +151,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 3 */}
             <div
               onClick={handleShare}
+              className={`action-box apple-reveal-scale apple-reveal-delay-4`}
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -166,7 +169,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
           </div>
 
           {/* Right Column: Handwritten Script */}
-          <div style={{ textAlign: 'center' }} className="cta-handwriting-col">
+          <div style={{ textAlign: 'center' }} className="cta-handwriting-col apple-reveal-right apple-reveal-delay-3">
             <div
               className="font-handwriting"
               style={{

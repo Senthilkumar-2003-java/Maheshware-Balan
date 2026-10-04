@@ -43,7 +43,7 @@ export default function OurStory() {
           className="story-grid"
         >
           {/* ── LEFT: Overlapping circle collage ── */}
-          <div style={{ position: 'relative', height: '340px' }} className="story-collage">
+          <div style={{ position: 'relative', height: '340px' }} className="story-collage apple-reveal-left">
             {/* Botanical vine SVG */}
             <svg viewBox="0 0 200 180" style={{
               position: 'absolute',
@@ -119,7 +119,7 @@ export default function OurStory() {
           </div>
 
           {/* ── MIDDLE: Text content ── */}
-          <div style={{ padding: '0 8px' }}>
+          <div style={{ padding: '0 8px' }} className="apple-reveal apple-reveal-delay-2">
             {/* Eyebrow */}
             <div style={{
               display: 'inline-flex',
@@ -197,7 +197,7 @@ export default function OurStory() {
           </div>
 
           {/* ── RIGHT: Quote card + plant image ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }} className="apple-reveal-right apple-reveal-delay-3">
             {/* Quote box */}
             <div style={{
               backgroundColor: '#FFFFFF',
