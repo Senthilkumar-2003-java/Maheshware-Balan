@@ -76,11 +76,12 @@ export default function VolunteerModal({ isOpen, onClose }) {
         style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '28px',
-          maxWidth: '540px',
+          maxWidth: 'min(94vw, 540px)',
           width: '100%',
+          boxSizing: 'border-box',
           maxHeight: '92vh',
           overflowY: 'auto',
-          padding: '32px',
+          padding: 'clamp(20px, 4vw, 32px) clamp(16px, 4vw, 24px)',
           boxShadow: '0 24px 60px rgba(0, 0, 0, 0.25)',
           position: 'relative',
           border: '1px solid rgba(215, 154, 24, 0.3)',
@@ -157,7 +158,7 @@ export default function VolunteerModal({ isOpen, onClose }) {
                 }}
               />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', width: '100%', boxSizing: 'border-box' }}>
                 <input
                   type="email"
                   required
@@ -165,6 +166,8 @@ export default function VolunteerModal({ isOpen, onClose }) {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
                     padding: '11px 14px',
                     borderRadius: '12px',
                     border: '1.5px solid rgba(6, 75, 53, 0.15)',
@@ -179,6 +182,8 @@ export default function VolunteerModal({ isOpen, onClose }) {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
                     padding: '11px 14px',
                     borderRadius: '12px',
                     border: '1.5px solid rgba(6, 75, 53, 0.15)',
@@ -188,7 +193,7 @@ export default function VolunteerModal({ isOpen, onClose }) {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', width: '100%', boxSizing: 'border-box' }}>
                 <div>
                   <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-text-secondary)', display: 'block', marginBottom: '4px' }}>
                     Area of Interest

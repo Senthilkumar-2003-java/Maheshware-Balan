@@ -39,69 +39,81 @@ export default function Gallery() {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* Header (Balanced Scrim — Image vivid, Text crisp) */}
+      {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerGallery}) center 15% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerGallery}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '110px 0 85px 0',
-          textAlign: 'center',
+          minHeight: '520px',
+          padding: '50px 0 55px 0',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
           position: 'relative',
         }}
       >
-        <div className="container">
+        <div className="container" style={{ width: '100%', boxSizing: 'border-box' }}>
           <div
-            className="banner-animate-1"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: '#F5D061',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              padding: '6px 16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(245, 208, 97, 0.4)',
-              marginBottom: '16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-            }}
-          >
-            <Camera size={16} color="#F5D061" />
-            MOMENTS OF IMPACT
-          </div>
-          <h1
-            className="banner-animate-2"
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
-              lineHeight: '1.2',
-              marginBottom: '16px',
-            }}
-          >
-            Our Photo Gallery
-          </h1>
-          <p
-            className="banner-animate-3"
-            style={{
-              fontSize: '1.12rem',
-              color: '#F8FAFC',
-              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
-              maxWidth: '660px',
+              maxWidth: '820px',
               margin: '0 auto',
-              lineHeight: '1.6',
-              fontWeight: '500',
+              textAlign: 'center',
+              padding: '10px 16px',
             }}
           >
-            Glimpses into the real lives transformed, schools rebuilt, and human spirits uplifted through your compassionate support.
-          </p>
+            <div
+              className="banner-animate-1"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: '#F5D061',
+                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(245, 208, 97, 0.45)',
+                marginBottom: '16px',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <Camera size={15} color="#F5D061" />
+              <span>MOMENTS OF IMPACT</span>
+            </div>
+            <h1
+              className="banner-animate-2"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
+                fontWeight: '700',
+                color: '#FFFFFF',
+                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
+                lineHeight: '1.2',
+                marginBottom: '16px',
+              }}
+            >
+              Our Photo Gallery
+            </h1>
+            <p
+              className="banner-animate-3"
+              style={{
+                fontSize: '1.1rem',
+                color: '#FFFFFF',
+                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                lineHeight: '1.65',
+                fontWeight: '500',
+                maxWidth: '720px',
+                margin: '0 auto',
+              }}
+            >
+              Glimpses into the real lives transformed, schools rebuilt, and human spirits uplifted through your compassionate support.
+            </p>
+          </div>
         </div>
       </section>
 

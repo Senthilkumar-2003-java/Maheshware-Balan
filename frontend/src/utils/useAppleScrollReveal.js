@@ -1,23 +1,24 @@
 import { useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Apple-style smooth scroll reveal hook using IntersectionObserver.
- * Observes ALL reveal variants:
- *  - .apple-reveal          (slide up from below)
- *  - .apple-reveal-left     (slide from left)
- *  - .apple-reveal-right    (slide from right)
- *  - .apple-reveal-scale    (scale + slide up)
+ * Apple-style Scroll-Driven Reveal System using GSAP ScrollTrigger
+ * with smooth momentum, fluid scale/transforms, and mobile responsiveness.
  *
- * Adds class `is-visible` when element enters viewport.
- * Stagger delays are handled entirely in CSS via .apple-reveal-delay-N classes.
- *
- * @param {string} [routeKey] - Pass location.pathname so the observer
- *   re-runs on every route change, picking up new page elements.
+ * Supports:
+ *  - .apple-reveal         (smooth slide up + subtle fade)
+ *  - .apple-reveal-left    (smooth drift from left)
+ *  - .apple-reveal-right   (smooth drift from right)
+ *  - .apple-reveal-scale   (subtle 3D scale-up)
+ *  - .apple-parallax       (subtle scroll-driven parallax for banners/images)
  */
 export function useAppleScrollReveal(routeKey) {
   useEffect(() => {
-    // Small delay so the new page DOM has rendered before querying
     const timeoutId = setTimeout(() => {
+      // 1. Reveal elements with ScrollTrigger batch
       const SELECTORS = [
         '.apple-reveal',
         '.apple-reveal-left',
@@ -26,35 +27,44 @@ export function useAppleScrollReveal(routeKey) {
       ].join(', ');
 
       const elements = document.querySelectorAll(SELECTORS);
-      if (!elements.length) return;
+      if (elements.length > 0) {
+        elements.forEach((el) => {
+          // If already visible, don't re-trigger abruptly
+          if (el.classList.contains('is-visible')) return;
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              // Once visible, unobserve to save resources
-              observer.unobserve(entry.target);
-            }
+          ScrollTrigger.create({
+            trigger: el,
+            start: 'top 88%',
+            once: true,
+            onEnter: () => {
+              el.classList.add('is-visible');
+            },
           });
-        },
-        {
-          threshold: 0.08,
-          rootMargin: '0px 0px -40px 0px',
-        }
-      );
+        });
+      }
 
-      elements.forEach((el) => {
-        // Reset for re-entry on new page
-        el.classList.remove('is-visible');
-        observer.observe(el);
+      // 2. Parallax effect on hero or page banners for that iconic Apple depth
+      const bannerImgs = document.querySelectorAll('.page-banner img, .hero-bg img, .apple-parallax');
+      bannerImgs.forEach((img) => {
+        gsap.to(img, {
+          yPercent: 12,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: img.parentElement || img,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+          },
+        });
       });
 
-      return () => observer.disconnect();
-    }, 80); // 80ms delay — enough for React to paint the new page
+      // Refresh ScrollTrigger to compute new geometry
+      ScrollTrigger.refresh();
+    }, 120);
 
-    return () => clearTimeout(timeoutId);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [routeKey]);
 }
 
@@ -63,7 +73,6 @@ export function useAppleScrollReveal(routeKey) {
  * Sets the googtrans cookie and triggers the Google Translate widget.
  */
 export function changeGoogleTranslate(langCode) {
-  // Set cookie for Google Translate
   document.cookie = `googtrans=/en/${langCode}; path=/;`;
   document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname};`;
 
@@ -72,7 +81,6 @@ export function changeGoogleTranslate(langCode) {
     select.value = langCode;
     select.dispatchEvent(new Event('change'));
   } else {
-    // Google Translate widget not yet loaded — reload to apply cookie
     window.location.reload();
   }
 }

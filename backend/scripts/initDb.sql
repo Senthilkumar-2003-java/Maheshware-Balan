@@ -83,3 +83,4 @@ CREATE TABLE IF NOT EXISTS beneficiaries (
 -- Insert Initial Admin User
 INSERT IGNORE INTO admin_users (full_name, email, password, role)
 VALUES ('Senthilkumar', 'senthilkumar@gmail.com', '$2a$10$w82Jz7rQe.kH3wZ5m9eXk.B5E8v7Y6q8w3f6z7q9w2f7z6y8w2f7', 'SuperAdmin');
+*

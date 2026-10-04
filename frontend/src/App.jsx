@@ -8,6 +8,9 @@ import VolunteerModal from './components/VolunteerModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { useAppleScrollReveal } from './utils/useAppleScrollReveal';
+import { useSmoothScroll } from './utils/useSmoothScroll';
+import ScrollProgressBar from './components/ScrollProgressBar';
+import ScrollToTopButton from './components/ScrollToTopButton';
 
 // Pages
 import Home from './pages/Home';
@@ -52,6 +55,9 @@ function AppRoutes() {
   const [volunteerOpen, setVolunteerOpen] = useState(false);
   const location = useLocation();
 
+  // Apple-style smooth scrolling with Lenis + GSAP ScrollTrigger
+  useSmoothScroll(location.pathname);
+
   // Apple-style scroll reveal — re-observe on every route change
   useAppleScrollReveal(location.pathname);
 
@@ -60,6 +66,8 @@ function AppRoutes() {
 
   return (
     <div className="app-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <ScrollProgressBar />
+      <ScrollToTopButton />
       <ScrollToTop />
 
       {isAdminRoute ? (

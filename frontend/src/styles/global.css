@@ -8,12 +8,37 @@
 }
 
 html, body {
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+}
+
+/* Lenis smooth scroll integration */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Fallback smooth scroll when lenis is not active */
+html:not(.lenis) {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -22,6 +47,7 @@ body {
   background-color: var(--color-ivory);
   line-height: 1.6;
   position: relative;
+  -webkit-overflow-scrolling: touch;
 }
 
 #root, .app-layout {
@@ -47,6 +73,25 @@ button, input, textarea, select {
   border: none;
   background: none;
   outline: none;
+  box-sizing: border-box;
+}
+
+select {
+  max-width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Universal responsive guard for all modal dialogs and cards */
+.modal-donor-grid, .contact-form-row {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 600px) {
+  .modal-donor-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 button {
@@ -344,49 +389,49 @@ font {
 /* Base reveal — slide up from below */
 .apple-reveal {
   opacity: 0;
-  transform: translateY(36px);
+  transform: translate3d(0, 32px, 0);
   transition:
-    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .apple-reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Slide from left */
 .apple-reveal-left {
   opacity: 0;
-  transform: translateX(-40px);
+  transform: translate3d(-36px, 0, 0);
   transition:
-    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .apple-reveal-left.is-visible {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Slide from right */
 .apple-reveal-right {
   opacity: 0;
-  transform: translateX(40px);
+  transform: translate3d(36px, 0, 0);
   transition:
-    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .apple-reveal-right.is-visible {
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Scale up from slightly smaller */
 .apple-reveal-scale {
   opacity: 0;
-  transform: scale(0.92) translateY(20px);
+  transform: scale(0.94) translate3d(0, 20px, 0);
   transition:
     opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
@@ -394,7 +439,7 @@ font {
 }
 .apple-reveal-scale.is-visible {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: scale(1) translate3d(0, 0, 0);
 }
 
 /* Stagger delay utilities — children animate in sequence */

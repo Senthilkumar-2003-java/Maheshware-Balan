@@ -9,6 +9,7 @@ import cancerImg from '../assets/images/cancer-patient-support.jpg';
 import leprosyImg from '../assets/images/leprosy-support.jpg';
 import seniorImg from '../assets/images/senior-citizen-support.jpg';
 import bannerPrograms from '../assets/images/banner-programs.jpg';
+import SEOFAQSection from '../components/SEOFAQSection';
 
 export default function ProgramsPage({ onOpenDonate }) {
   const [activeTab, setActiveTab] = useState('all');
@@ -105,69 +106,81 @@ export default function ProgramsPage({ onOpenDonate }) {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* Header (Balanced Scrim — Image vivid, Text crisp) */}
+      {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerPrograms}) center 15% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerPrograms}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '110px 0 85px 0',
-          textAlign: 'center',
+          minHeight: '520px',
+          padding: '50px 0 55px 0',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
           position: 'relative',
         }}
       >
-        <div className="container">
+        <div className="container" style={{ width: '100%', boxSizing: 'border-box' }}>
           <div
-            className="banner-animate-1"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: '#F5D061',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              padding: '6px 16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(245, 208, 97, 0.4)',
-              marginBottom: '16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-            }}
-          >
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#F5D061', display: 'inline-block' }}></span>
-            WHAT WE DO
-          </div>
-          <h1
-            className="banner-animate-2"
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
-              lineHeight: '1.2',
-              marginBottom: '16px',
-            }}
-          >
-            Our Humanitarian Programs
-          </h1>
-          <p
-            className="banner-animate-3"
-            style={{
-              fontSize: '1.12rem',
-              color: '#F8FAFC',
-              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
-              maxWidth: '680px',
+              maxWidth: '820px',
               margin: '0 auto',
-              lineHeight: '1.6',
-              fontWeight: '500',
+              textAlign: 'center',
+              padding: '10px 16px',
             }}
           >
-            Focused initiatives designed to address the most urgent needs in education, medical emergency relief, and social dignity.
-          </p>
+            <div
+              className="banner-animate-1"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: '#F5D061',
+                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(245, 208, 97, 0.45)',
+                marginBottom: '16px',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#F5D061', display: 'inline-block' }}></span>
+              WHAT WE DO
+            </div>
+            <h1
+              className="banner-animate-2"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
+                fontWeight: '700',
+                color: '#FFFFFF',
+                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
+                lineHeight: '1.2',
+                marginBottom: '16px',
+              }}
+            >
+              Our Humanitarian Programs
+            </h1>
+            <p
+              className="banner-animate-3"
+              style={{
+                fontSize: '1.1rem',
+                color: '#FFFFFF',
+                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                lineHeight: '1.65',
+                fontWeight: '500',
+                maxWidth: '720px',
+                margin: '0 auto',
+              }}
+            >
+              Focused initiatives designed to address the most urgent needs in education, medical emergency relief, and social dignity.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -338,6 +351,35 @@ export default function ProgramsPage({ onOpenDonate }) {
           })}
         </div>
       </section>
+
+      {/* SEO-Optimized FAQ Section for Programs */}
+      <SEOFAQSection
+        badge="PROGRAM IMPACT & DELIVERY"
+        title="Humanitarian Program FAQs"
+        subtitle="Learn how our educational scholarships, classroom repairs, cancer medication aid, and leprosy patient relief operate on the ground."
+        faqs={[
+          {
+            q: "How does the trust select government school students for educational sponsorship?",
+            a: "We work directly with headmasters and teachers in rural and semi-urban government schools. Beneficiaries are identified based on economic vulnerability, single-parent or orphaned status, and academic commitment. We provide school kits, uniforms, books, and after-school tutoring."
+          },
+          {
+            q: "What medical assistance is provided to low-income cancer patients?",
+            a: "Cancer therapy can be catastrophic for impoverished families. Our trust assists by funding chemotherapy medicines, prescription nutritional supplements, imaging diagnostics, and transportation to regional oncology treatment centers."
+          },
+          {
+            q: "How does the Leprosy Patient Care program support beneficiaries?",
+            a: "We provide monthly ulcer dressing and antiseptic wound-care kits, customized Microcellular Rubber (MCR) protective footwear to prevent foot ulcers, and high-protein grocery supplies, alongside unconditional social inclusion and emotional support."
+          },
+          {
+            q: "Can I sponsor an entire classroom or school infrastructure project?",
+            a: "Yes! Donors and corporate CSR partners can adopt a specific rural government school to build clean girl-student toilets, install UV/RO water filtration plants, create reading libraries, or supply modern smart boards and student desks."
+          },
+          {
+            q: "How can volunteers get involved in these initiatives?",
+            a: "Volunteers can participate in weekend student coaching sessions, help conduct geriatric health camps, assist in grocery kit distributions, or coordinate community awareness drives. Register through our volunteer portal to get started."
+          }
+        ]}
+      />
 
       <style>{`
         @media (max-width: 900px) {

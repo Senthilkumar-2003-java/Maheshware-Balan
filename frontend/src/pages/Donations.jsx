@@ -3,6 +3,7 @@ import { Heart, ShieldCheck, FileCheck, Landmark, ArrowRight, Sparkles, CheckCir
 import confetti from 'canvas-confetti';
 import { submitDonationApi } from '../services/api';
 import bannerDonations from '../assets/images/banner-donations.jpg';
+import SEOFAQSection from '../components/SEOFAQSection';
 
 export default function Donations({ onOpenDonate }) {
   const [amount, setAmount] = useState(2500);
@@ -76,69 +77,81 @@ export default function Donations({ onOpenDonate }) {
 
   return (
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
-      {/* Header (Balanced Scrim — Image vivid, Text crisp) */}
+      {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerDonations}) center 8% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerDonations}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
-          padding: '110px 0 85px 0',
-          textAlign: 'center',
+          minHeight: '520px',
+          padding: '50px 0 55px 0',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
           position: 'relative',
         }}
       >
-        <div className="container">
+        <div className="container" style={{ width: '100%', boxSizing: 'border-box' }}>
           <div
-            className="banner-animate-1"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontSize: '0.82rem',
-              fontWeight: '700',
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color: '#F5D061',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              padding: '6px 16px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(245, 208, 97, 0.4)',
-              marginBottom: '16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-            }}
-          >
-            <Heart size={16} fill="#F5D061" color="#F5D061" />
-            TRANSPARENT GIVING
-          </div>
-          <h1
-            className="banner-animate-2"
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
-              lineHeight: '1.2',
-              marginBottom: '16px',
-            }}
-          >
-            Empower a Life Today
-          </h1>
-          <p
-            className="banner-animate-3"
-            style={{
-              fontSize: '1.12rem',
-              color: '#F8FAFC',
-              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
-              maxWidth: '660px',
+              maxWidth: '820px',
               margin: '0 auto',
-              lineHeight: '1.6',
-              fontWeight: '500',
+              textAlign: 'center',
+              padding: '10px 16px',
             }}
           >
-            Every contribution directly finances quality schooling for children, life-saving medicines for cancer fighters, and warm dignified care for our elders.
-          </p>
+            <div
+              className="banner-animate-1"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: '#F5D061',
+                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(245, 208, 97, 0.45)',
+                marginBottom: '16px',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <Heart size={15} fill="#F5D061" color="#F5D061" />
+              <span>TRANSPARENT GIVING</span>
+            </div>
+            <h1
+              className="banner-animate-2"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
+                fontWeight: '700',
+                color: '#FFFFFF',
+                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
+                lineHeight: '1.2',
+                marginBottom: '16px',
+              }}
+            >
+              Empower a Life Today
+            </h1>
+            <p
+              className="banner-animate-3"
+              style={{
+                fontSize: '1.1rem',
+                color: '#FFFFFF',
+                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                lineHeight: '1.65',
+                fontWeight: '500',
+                maxWidth: '720px',
+                margin: '0 auto',
+              }}
+            >
+              Every contribution directly finances quality schooling for children, life-saving medicines for cancer fighters, and warm dignified care for our elders.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -256,11 +269,15 @@ export default function Donations({ onOpenDonate }) {
                       onChange={(e) => setCause(e.target.value)}
                       style={{
                         width: '100%',
-                        padding: '11px 14px',
+                        maxWidth: '100%',
+                        boxSizing: 'border-box',
+                        padding: '12px 14px',
                         borderRadius: '12px',
                         border: '1.5px solid rgba(6, 75, 53, 0.15)',
-                        fontSize: '0.9rem',
+                        fontSize: '0.92rem',
                         backgroundColor: '#FAFAF8',
+                        color: '#1E293B',
+                        outline: 'none',
                       }}
                     >
                       <option value="Education Support">Government School Student Education</option>
@@ -273,14 +290,14 @@ export default function Donations({ onOpenDonate }) {
                   </div>
 
                   {/* Donor Info */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
                     <input
                       type="text"
                       required
                       placeholder="Your Full Name *"
                       value={donorInfo.name}
                       onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
-                      style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="email"
@@ -288,7 +305,7 @@ export default function Donations({ onOpenDonate }) {
                       placeholder="Email Address *"
                       value={donorInfo.email}
                       onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
-                      style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="tel"
@@ -296,14 +313,14 @@ export default function Donations({ onOpenDonate }) {
                       placeholder="Phone Number *"
                       value={donorInfo.phone}
                       onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value })}
-                      style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                     <input
                       type="text"
                       placeholder="PAN Number (For 80G Tax Exemption)"
                       value={donorInfo.pan}
                       onChange={(e) => setDonorInfo({ ...donorInfo, pan: e.target.value })}
-                      style={{ padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
+                      style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
                   </div>
 
@@ -429,6 +446,35 @@ export default function Donations({ onOpenDonate }) {
           </div>
         </div>
       </section>
+
+      {/* SEO-Optimized FAQ Section for Donors */}
+      <SEOFAQSection
+        badge="DONOR TRANSPARENCY & TAX BENEFITS"
+        title="Donation & Tax Exemption FAQs"
+        subtitle="Key details about our Section 80G tax certificates, secure payment gateways, and audited fund allocation."
+        faqs={[
+          {
+            q: "How does the Section 80G tax exemption benefit me as a donor?",
+            a: "Under Section 80G of the Indian Income Tax Act, 1961, donors are eligible to claim a 50% deduction on eligible donations from their taxable gross income. You will receive an official tax exemption certificate containing our Trust 80G registration number and PAN immediately via email."
+          },
+          {
+            q: "When and how will I receive my official donation receipt?",
+            a: "Your formal 80G tax exemption receipt is generated digitally right after your transaction is verified. You can print or download the PDF receipt directly from the on-screen confirmation, and a duplicate copy is sent to your registered email address."
+          },
+          {
+            q: "Is it safe to donate online through UPI, Cards, and NetBanking?",
+            a: "Yes, 100%. All online transactions are encrypted via bank-grade 256-bit SSL protocols. Donations go directly into the official registered Union Bank of India account of 'MAHESWARI AND BALAN MEMORIAL CHARITABLE TRUST'."
+          },
+          {
+            q: "Can I designate my donation to a specific school or patient?",
+            a: "Yes. When donating, you can select whether your funds should specifically go towards Government School Student Education, School Infrastructure & Sanitations, Cancer Patient Medications, Leprosy Patient Care, or Elderly Support."
+          },
+          {
+            q: "Can corporations contribute to MBMCT under their CSR programs?",
+            a: "Yes! Maheswari & Balan Memorial Charitable Trust is registered and compliant with Ministry of Corporate Affairs regulations for corporate CSR allocations under Section 135 of the Companies Act. We provide comprehensive CSR utilization and impact audit reports."
+          }
+        ]}
+      />
 
       <style>{`
         @media (max-width: 991px) {

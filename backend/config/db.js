@@ -5,9 +5,10 @@ require('dotenv').config();
 const {
   DB_HOST = 'localhost',
   DB_USER = 'root',
-  DB_PASSWORD = 'Senthil@2003',
-  DB_NAME = 'mbmct_db',
+  DB_PASSWORD = '',
+  DB_NAME = 'defaultdb',
   DB_PORT = 3306,
+  DB_SSL_MODE = 'DISABLED',
   DEFAULT_ADMIN_EMAIL = 'senthilkumar@gmail.com',
   DEFAULT_ADMIN_PASSWORD = 'Senthil@2003',
 } = process.env;
@@ -16,22 +17,30 @@ let pool = null;
 
 async function initDatabase() {
   try {
-    // 1. Connect without database first to ensure DB exists
-    const rootConnection = await mysql.createConnection({
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      port: Number(DB_PORT),
-    });
+    const isCloudOrSsl = 
+      DB_SSL_MODE === 'REQUIRED' || 
+      DB_HOST.includes('aivencloud.com') || 
+      Number(DB_PORT) !== 3306;
 
-    console.log('✅ Connected to MySQL server successfully.');
+    const sslConfig = isCloudOrSsl ? { rejectUnauthorized: false } : undefined;
 
-    // Create database if not exists
-    await rootConnection.query(
-      `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
-    );
-    console.log(`✅ Database "${DB_NAME}" is verified/created.`);
-    await rootConnection.end();
+    // 1. If localhost, ensure database exists
+    if (!isCloudOrSsl) {
+      try {
+        const rootConnection = await mysql.createConnection({
+          host: DB_HOST,
+          user: DB_USER,
+          password: DB_PASSWORD,
+          port: Number(DB_PORT),
+        });
+        await rootConnection.query(
+          `CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
+        );
+        await rootConnection.end();
+      } catch (e) {
+        console.warn('Notice: Skipped root DB creation, connecting directly to pool:', e.message);
+      }
+    }
 
     // 2. Create the shared connection pool
     pool = mysql.createPool({
@@ -40,12 +49,20 @@ async function initDatabase() {
       password: DB_PASSWORD,
       database: DB_NAME,
       port: Number(DB_PORT),
+      ssl: sslConfig,
       waitForConnections: true,
-      connectionLimit: 15,
+      connectionLimit: 10,
       queueLimit: 0,
       enableKeepAlive: true,
       keepAliveInitialDelay: 10000,
     });
+
+    console.log(`✅ Connecting to MySQL database "${DB_NAME}" at ${DB_HOST}:${DB_PORT} (SSL: ${isCloudOrSsl ? 'REQUIRED' : 'OFF'})...`);
+
+    // Test ping
+    const testConn = await pool.getConnection();
+    console.log('✅ Connected to MySQL server successfully.');
+    testConn.release();
 
     // 3. Create necessary tables if not exist
     await pool.query(`
@@ -69,8 +86,11 @@ async function initDatabase() {
         amount DECIMAL(12, 2) NOT NULL,
         currency VARCHAR(10) DEFAULT 'INR',
         cause VARCHAR(100) DEFAULT 'General Support',
-        payment_method VARCHAR(50) DEFAULT 'UPI',
+        payment_method VARCHAR(50) DEFAULT 'Razorpay',
         transaction_id VARCHAR(100) UNIQUE,
+        razorpay_order_id VARCHAR(100) DEFAULT NULL,
+        razorpay_payment_id VARCHAR(100) DEFAULT NULL,
+        razorpay_signature VARCHAR(255) DEFAULT NULL,
         status ENUM('Completed', 'Pending', 'Failed') DEFAULT 'Completed',
         tax_exemption_requested BOOLEAN DEFAULT TRUE,
         notes TEXT DEFAULT NULL,
@@ -130,11 +150,10 @@ async function initDatabase() {
       console.log(`✅ Default admin created: ${DEFAULT_ADMIN_EMAIL} with secure hash.`);
     }
 
-    console.log('✅ All MySQL tables and schema initialized successfully.');
+    console.log('✅ All MySQL tables and schema initialized successfully on Aiven Cloud MySQL.');
     return pool;
   } catch (error) {
     console.error('❌ MySQL Connection/Init Error:', error.message);
-    console.log('👉 Please ensure MySQL service is running on localhost:3306 with password Senthil@2003');
     return null;
   }
 }

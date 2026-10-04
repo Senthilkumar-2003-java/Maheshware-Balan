@@ -238,22 +238,25 @@ export default function Navbar({ onOpenDonate }) {
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="desktop-nav" style={{ display: 'none', alignItems: 'center', gap: '22px' }}>
+          <nav className="desktop-nav" style={{ display: 'none', alignItems: 'center', gap: 'clamp(4px, 1vw, 14px)' }}>
             {navLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 end={link.path === '/'}
+                className="desktop-nav-link"
                 style={({ isActive }) => ({
-                  fontSize: '0.88rem',
+                  fontSize: '0.86rem',
                   fontWeight: isActive ? '700' : '500',
-                  color: isActive ? '#173F73' : '#475569',
-                  position: 'relative',
-                  padding: '6px 0',
+                  color: isActive ? '#9C6F0A' : '#334155',
+                  backgroundColor: isActive ? 'rgba(215, 154, 24, 0.12)' : 'transparent',
+                  padding: '7px 12px',
+                  borderRadius: '9999px',
                   textDecoration: 'none',
-                  borderBottom: isActive ? '2.5px solid #D79A18' : '2.5px solid transparent',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                   whiteSpace: 'nowrap',
+                  outline: 'none',
+                  userSelect: 'none',
                 })}
               >
                 {link.name}
@@ -469,6 +472,10 @@ export default function Navbar({ onOpenDonate }) {
         @keyframes navFadeDown {
           from { opacity: 0; transform: translateY(-8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .desktop-nav-link:hover {
+          background-color: rgba(23, 63, 115, 0.06) !important;
+          color: #173F73 !important;
         }
         @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }

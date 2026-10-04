@@ -405,11 +405,12 @@ export default function DonationModal({ isOpen, onClose }) {
         style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '28px',
-          maxWidth: step === 'receipt' ? '600px' : '520px',
+          maxWidth: step === 'receipt' ? '600px' : 'min(94vw, 520px)',
           width: '100%',
+          boxSizing: 'border-box',
           maxHeight: '92vh',
           overflowY: 'auto',
-          padding: '30px 24px',
+          padding: 'clamp(20px, 4vw, 30px) clamp(16px, 4vw, 24px)',
           boxShadow: '0 30px 90px rgba(0, 0, 0, 0.25)',
           position: 'relative',
           border: '1px solid rgba(0, 0, 0, 0.08)',
@@ -523,9 +524,14 @@ export default function DonationModal({ isOpen, onClose }) {
                   transition: 'all 0.2s',
                   cursor: 'pointer',
                   border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
                 }}
               >
-                Monthly Supporter ❤️
+                <span>Monthly Supporter</span>
+                <Heart size={13} fill={frequency === 'monthly' ? '#D79A18' : '#6B7280'} color={frequency === 'monthly' ? '#D79A18' : '#6B7280'} />
               </button>
             </div>
 
@@ -663,7 +669,7 @@ export default function DonationModal({ isOpen, onClose }) {
               <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
                 Donor Information
               </label>
-              <div className="modal-donor-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+              <div className="modal-donor-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
                 <div>
                   <input
                     type="text"
