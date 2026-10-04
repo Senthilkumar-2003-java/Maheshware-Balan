@@ -9,7 +9,11 @@ async function createDonation(req, res) {
       pan_number = null,
       amount,
       cause = 'General Support',
-      payment_method = 'UPI',
+      payment_method = 'Razorpay',
+      transaction_id: clientTxnId,
+      razorpay_payment_id = null,
+      razorpay_order_id = null,
+      razorpay_signature = null,
       notes = null,
     } = req.body;
 
@@ -20,7 +24,7 @@ async function createDonation(req, res) {
       });
     }
 
-    const transaction_id = 'TXN_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    const transaction_id = clientTxnId || razorpay_payment_id || ('TXN_' + Date.now() + '_' + Math.floor(Math.random() * 10000));
     const pool = getPool();
 
     if (!pool) {
@@ -31,9 +35,22 @@ async function createDonation(req, res) {
     }
 
     const [result] = await pool.query(
-      `INSERT INTO donations (donor_name, email, phone, pan_number, amount, cause, payment_method, transaction_id, status, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Completed', ?)`,
-      [donor_name, email, phone, pan_number, parseFloat(amount), cause, payment_method, transaction_id, notes]
+      `INSERT INTO donations (donor_name, email, phone, pan_number, amount, cause, payment_method, transaction_id, razorpay_order_id, razorpay_payment_id, razorpay_signature, status, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Completed', ?)`,
+      [
+        donor_name,
+        email,
+        phone,
+        pan_number,
+        parseFloat(amount),
+        cause,
+        payment_method,
+        transaction_id,
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+        notes,
+      ]
     );
 
     return res.status(201).json({
@@ -122,8 +139,16 @@ async function getDonationStats(req, res) {
   }
 }
 
+async function getRazorpayKey(req, res) {
+  return res.status(200).json({
+    success: true,
+    keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_TjpUljZMeNnLXm',
+  });
+}
+
 module.exports = {
   createDonation,
   getAllDonations,
   getDonationStats,
+  getRazorpayKey,
 };

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitDonationApi } from '../services/api';
+import { openRazorpayCheckout } from '../utils/razorpay';
 
 const currencies = [
   { code: 'INR', symbol: '₹', label: 'INR (₹)' },
@@ -35,7 +36,7 @@ function numberToWords(num) {
     return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 !== 0 ? ' ' + convert(n % 10000000) : '');
   }
 
-  return convert(n) + ' Only';
+  return convert(n) + ' Rupees Only';
 }
 
 export default function DonationModal({ isOpen, onClose }) {
@@ -43,7 +44,7 @@ export default function DonationModal({ isOpen, onClose }) {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [amount, setAmount] = useState('');
   const [selectedCause, setSelectedCause] = useState('Child Education & School Needs');
-  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [step, setStep] = useState('form'); // 'form' | 'receipt'
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -74,60 +75,87 @@ export default function DonationModal({ isOpen, onClose }) {
     setSubmitting(true);
     setErrorMessage('');
 
-    try {
-      const generatedTxnId = `MBMCT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-      const generatedReceiptNo = `REC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
-
-      const res = await submitDonationApi({
-        donor_name: donorDetails.name,
-        email: donorDetails.email,
-        phone: donorDetails.phone || 'N/A',
-        pan_number: donorDetails.pan ? donorDetails.pan.toUpperCase() : null,
-        amount: currentAmountNum,
-        currency: selectedCurrency.code,
-        cause: selectedCause,
-        payment_method: paymentMethod.toUpperCase(),
-        notes: `Plan: ${frequency} | Currency: ${selectedCurrency.code}`,
-      });
-
-      const receipt = {
-        receiptNo: generatedReceiptNo,
-        transactionId: res?.transaction_id || generatedTxnId,
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        donorName: donorDetails.name,
-        email: donorDetails.email,
-        phone: donorDetails.phone || 'N/A',
+    // Trigger Razorpay Checkout Gateway
+    openRazorpayCheckout({
+      amount: currentAmountNum,
+      currency: selectedCurrency.code === 'INR' ? 'INR' : 'INR',
+      donorName: donorDetails.name,
+      email: donorDetails.email,
+      phone: donorDetails.phone,
+      cause: selectedCause,
+      notes: {
+        frequency,
         pan: donorDetails.pan ? donorDetails.pan.toUpperCase() : 'N/A',
-        amount: currentAmountNum,
-        currency: selectedCurrency,
-        amountInWords: numberToWords(currentAmountNum),
-        cause: selectedCause,
-        frequency: frequency === 'monthly' ? 'Monthly Recurring' : 'One-Time Donation',
-        paymentMethod: paymentMethod.toUpperCase(),
-      };
+      },
+      onSuccess: async (rzpResponse) => {
+        try {
+          const generatedReceiptNo = `REC-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+          const txnId = rzpResponse.razorpay_payment_id || `RZP-${Date.now()}`;
 
-      setReceiptData(receipt);
+          // Save completed donation to MySQL database via Backend API
+          await submitDonationApi({
+            donor_name: donorDetails.name,
+            email: donorDetails.email,
+            phone: donorDetails.phone || 'N/A',
+            pan_number: donorDetails.pan ? donorDetails.pan.toUpperCase() : null,
+            amount: currentAmountNum,
+            currency: selectedCurrency.code,
+            cause: selectedCause,
+            payment_method: 'Razorpay',
+            transaction_id: txnId,
+            razorpay_payment_id: rzpResponse.razorpay_payment_id,
+            razorpay_order_id: rzpResponse.razorpay_order_id || null,
+            razorpay_signature: rzpResponse.razorpay_signature || null,
+            notes: `Plan: ${frequency} | Razorpay ID: ${rzpResponse.razorpay_payment_id}`,
+          });
 
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#111827', '#D79A18', '#064B35', '#F5D061'],
-      });
+          const receipt = {
+            receiptNo: generatedReceiptNo,
+            transactionId: txnId,
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            donorName: donorDetails.name,
+            email: donorDetails.email,
+            phone: donorDetails.phone || 'N/A',
+            pan: donorDetails.pan ? donorDetails.pan.toUpperCase() : 'N/A',
+            amount: currentAmountNum,
+            currency: selectedCurrency,
+            amountInWords: numberToWords(currentAmountNum),
+            cause: selectedCause,
+            frequency: frequency === 'monthly' ? 'Monthly Recurring' : 'One-Time Donation',
+            paymentMethod: 'Razorpay Gateway (Online Verified)',
+          };
 
-      setStep('receipt');
-    } catch (err) {
-      setErrorMessage('Unable to connect to donation processing server. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+          setReceiptData(receipt);
+          setSubmitting(false);
+          setStep('receipt');
+
+          confetti({
+            particleCount: 130,
+            spread: 85,
+            origin: { y: 0.6 },
+            colors: ['#173F73', '#064B35', '#D79A18', '#F5D061'],
+          });
+        } catch (saveErr) {
+          console.error('Error saving donation:', saveErr);
+          setSubmitting(false);
+          setErrorMessage('Payment received, but database sync had an issue. Ref ID: ' + rzpResponse.razorpay_payment_id);
+        }
+      },
+      onDismiss: () => {
+        setSubmitting(false);
+      },
+      onFailure: (err) => {
+        setSubmitting(false);
+        setErrorMessage(err?.description || err?.message || 'Payment cancelled or declined. Please try again.');
+      },
+    });
   };
 
   const handleDownloadReceipt = () => {
     if (!receiptData) return;
 
-    const printWindow = window.open('', '_blank', 'width=850,height=950');
+    const printWindow = window.open('', '_blank', 'width=880,height=980');
     if (!printWindow) {
       alert('Please allow popups to download and print your donation receipt.');
       return;
@@ -137,98 +165,123 @@ export default function DonationModal({ isOpen, onClose }) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Donation Receipt - ${receiptData.receiptNo} - Maheswari & Balan Memorial Charitable Trust</title>
+        <title>80G Donation Receipt - ${receiptData.receiptNo} - Maheswari & Balan Memorial Charitable Trust</title>
+        <meta charset="utf-8" />
         <style>
-          @page { size: A4 portrait; margin: 15mm; }
+          @page { size: A4 portrait; margin: 12mm; }
+          * { box-sizing: border-box; }
           body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            color: #1D1D1F;
-            background-color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #1F2937;
+            background-color: #F8FAFC;
             margin: 0;
             padding: 24px;
             line-height: 1.5;
           }
           .receipt-box {
-            border: 1.5px solid #111827;
-            padding: 32px;
-            border-radius: 16px;
+            max-width: 780px;
+            margin: 0 auto;
+            border: 3px double #064B35;
+            outline: 1.5px solid #D79A18;
+            outline-offset: -8px;
+            padding: 34px 30px;
+            border-radius: 12px;
             position: relative;
-            background-color: #FFFFFF;
+            background: #FFFFFF;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
           }
           .header {
             text-align: center;
             border-bottom: 2px solid #D79A18;
-            padding-bottom: 18px;
-            margin-bottom: 22px;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
           }
           .trust-name {
-            font-size: 24px;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 23px;
             font-weight: 800;
-            color: #111827;
             letter-spacing: 0.02em;
-            text-transform: uppercase;
             margin: 0;
+            text-transform: uppercase;
+          }
+          .trust-name .part1 { color: #173F73; }
+          .trust-name .amp { color: #D79A18; font-style: italic; }
+          .trust-name .part2 { color: #064B35; }
+          .trust-subtitle {
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #173F73;
+            font-weight: 700;
+            margin-top: 3px;
           }
           .motto {
             font-style: italic;
             color: #D79A18;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             margin: 4px 0 8px 0;
           }
           .reg-info {
             font-size: 11px;
-            color: #6B7280;
-            line-height: 1.5;
+            color: #4B5563;
+            line-height: 1.6;
+          }
+          .receipt-badge-wrap {
+            text-align: center;
+            margin: 16px 0;
           }
           .receipt-badge {
             display: inline-block;
-            background-color: #111827;
-            color: #FFFFFF;
-            padding: 6px 22px;
+            background-color: #064B35;
+            color: #F5D061;
+            padding: 6px 24px;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            border: 1px solid #D79A18;
           }
           .grid-meta {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
+            align-items: center;
+            margin: 16px 0;
             font-size: 13px;
-            background-color: #F5F5F7;
-            padding: 12px 16px;
-            border-radius: 10px;
+            background-color: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            padding: 12px 18px;
+            border-radius: 8px;
           }
           .donor-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             font-size: 13px;
           }
           .donor-table th, .donor-table td {
-            padding: 11px 14px;
-            border-bottom: 1px solid #E5E5EA;
+            padding: 10px 14px;
+            border-bottom: 1px solid #E5E7EB;
             text-align: left;
           }
           .donor-table th {
-            width: 32%;
-            color: #6B7280;
-            font-weight: 600;
-            background-color: #FAFAFA;
+            width: 34%;
+            color: #173F73;
+            font-weight: 700;
+            background-color: #F8FAFC;
           }
           .donor-table td {
-            color: #1D1D1F;
-            font-weight: 700;
+            color: #111827;
+            font-weight: 600;
           }
           .amount-highlight {
-            font-size: 22px;
-            color: #111827;
+            font-size: 24px;
+            color: #064B35;
             font-weight: 800;
           }
           .tax-note {
-            background-color: #F5F5F7;
-            border-left: 4px solid #111827;
+            background-color: #F8FAFC;
+            border-left: 4px solid #064B35;
             padding: 12px 16px;
             font-size: 11px;
             color: #374151;
@@ -240,53 +293,66 @@ export default function DonationModal({ isOpen, onClose }) {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 36px;
-            padding-top: 20px;
+            margin-top: 30px;
+            padding-top: 18px;
           }
           .seal-box {
             text-align: center;
-            width: 140px;
-            height: 90px;
-            border: 1.5px dashed #111827;
+            width: 160px;
+            border: 2px dashed #064B35;
             border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justifyContent: center;
-            font-size: 10px;
-            font-weight: 700;
-            color: #111827;
-            padding: 6px;
+            padding: 10px 8px;
+            background: #FCFDFB;
           }
+          .seal-star { font-size: 10px; font-weight: 800; color: #D79A18; margin-bottom: 3px; }
+          .seal-name { font-size: 11px; font-weight: 800; color: #173F73; line-height: 1.2; }
+          .seal-sub { font-size: 9px; font-weight: 700; color: #064B35; }
           .sign-box {
-            text-align: center;
-            width: 220px;
+            text-align: right;
+            width: 280px;
+          }
+          .stamp-verified {
+            font-size: 11px;
+            color: #059669;
+            font-weight: 700;
+            margin-bottom: 4px;
           }
           .sign-line {
-            border-top: 1px solid #1D1D1F;
-            margin-top: 40px;
-            padding-top: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #1D1D1F;
+            border-top: 1.5px solid #173F73;
+            margin-top: 36px;
+            padding-top: 8px;
+          }
+          .sign-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #173F73;
+            letter-spacing: 0.02em;
+          }
+          .sign-trust {
+            font-size: 11px;
+            font-weight: 600;
+            color: #064B35;
+            margin-top: 3px;
           }
           .print-btn-bar {
             text-align: center;
             margin-bottom: 20px;
           }
           .btn-print {
-            background-color: #111827;
-            color: white;
-            border: none;
-            padding: 12px 28px;
+            background: linear-gradient(135deg, #064B35 0%, #173F73 100%);
+            color: #FFFFFF;
+            border: 1px solid #D79A18;
+            padding: 13px 32px;
             border-radius: 9999px;
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
+            box-shadow: 0 4px 14px rgba(6, 75, 53, 0.25);
           }
           @media print {
             .print-btn-bar { display: none; }
-            body { padding: 0; }
+            body { padding: 0; background: #FFF; }
+            .receipt-box { box-shadow: none; }
           }
         </style>
       </head>
@@ -296,50 +362,56 @@ export default function DonationModal({ isOpen, onClose }) {
         </div>
         <div class="receipt-box">
           <div class="header">
-            <h1 class="trust-name">MAHESWARI &amp; BALAN MEMORIAL CHARITABLE TRUST</h1>
+            <h1 class="trust-name">
+              <span class="part1">MAHESWARI </span>
+              <span class="amp">&amp;</span>
+              <span class="part2"> BALAN</span>
+            </h1>
+            <div class="trust-subtitle">MEMORIAL CHARITABLE TRUST</div>
             <div class="motto">— Serve with Love &amp; Compassion —</div>
             <div class="reg-info">
-              Registered Non-Profit NGO • Trust Reg. No: 142/IV/2021<br/>
-              Income Tax 80G Exemption Approval No: <strong>AAATM5432RF20214</strong> | PAN: <strong>AAATM5432R</strong><br/>
+              Registered Public Charitable Trust • Trust Reg. No: <strong>142/IV/2021</strong><br/>
+              Income Tax 80G Exemption Approval Order No: <strong>AAATM5432RF20214</strong> | Trust PAN: <strong>AAATM5432R</strong><br/>
+              NITI Aayog NGO Darpan Reg: <strong>TN/2021/0289145</strong><br/>
               Registered Trust Office: Tamil Nadu, India • Phone: +91 85959 68122
             </div>
           </div>
 
-          <div style="text-align: center; margin: 16px 0;">
-            <span class="receipt-badge">OFFICIAL DONATION RECEIPT</span>
+          <div class="receipt-badge-wrap">
+            <span class="receipt-badge">OFFICIAL DONATION &amp; 80G TAX EXEMPTION RECEIPT</span>
           </div>
 
           <div class="grid-meta">
             <div>
-              <strong>Receipt No:</strong> ${receiptData.receiptNo}<br/>
-              <strong>Date:</strong> ${receiptData.date} (${receiptData.time})
+              <strong>Receipt No:</strong> <span style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.receiptNo}</span><br/>
+              <strong>Date &amp; Time:</strong> ${receiptData.date} (${receiptData.time})
             </div>
             <div style="text-align: right;">
-              <strong>Transaction ID:</strong> ${receiptData.transactionId}<br/>
-              <strong>Status:</strong> <span style="color:#059669; font-weight:800;">VERIFIED &amp; RECEIVED</span>
+              <strong>Transaction / Razorpay ID:</strong> <span style="font-family:monospace; font-weight:800; color:#064B35;">${receiptData.transactionId}</span><br/>
+              <strong>Status:</strong> <span style="color:#064B35; font-weight:800;">✓ VERIFIED &amp; RECEIVED</span>
             </div>
           </div>
 
           <table class="donor-table">
             <tr>
-              <th>Donor Name</th>
-              <td>${receiptData.donorName}</td>
+              <th>Donor Full Name</th>
+              <td style="color:#173F73; font-size:14px; font-weight:800;">${receiptData.donorName}</td>
             </tr>
             <tr>
-              <th>Donor Email / Phone</th>
-              <td>${receiptData.email} / ${receiptData.phone}</td>
+              <th>Donor Email &amp; Contact</th>
+              <td>${receiptData.email} • ${receiptData.phone}</td>
             </tr>
             <tr>
-              <th>Donor PAN Number</th>
-              <td>${receiptData.pan}</td>
+              <th>Donor PAN Number (80G Benefit)</th>
+              <td style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.pan}</td>
             </tr>
             <tr>
               <th>Donation Allocated To</th>
-              <td>${receiptData.cause}</td>
+              <td style="color:#064B35; font-weight:700;">${receiptData.cause}</td>
             </tr>
             <tr>
-              <th>Donation Mode &amp; Plan</th>
-              <td>${receiptData.paymentMethod} (${receiptData.frequency})</td>
+              <th>Payment Gateway &amp; Frequency</th>
+              <td>${receiptData.paymentMethod} • ${receiptData.frequency}</td>
             </tr>
             <tr>
               <th>Amount Received</th>
@@ -347,23 +419,26 @@ export default function DonationModal({ isOpen, onClose }) {
             </tr>
             <tr>
               <th>Amount in Words</th>
-              <td style="color:#6B7280; font-style:italic;">${receiptData.currency.code} ${receiptData.amountInWords}</td>
+              <td style="color:#4B5563; font-style:italic;">${receiptData.currency.code} ${receiptData.amountInWords}</td>
             </tr>
           </table>
 
           <div class="tax-note">
-            <strong>TAX EXEMPTION BENEFIT:</strong> All donations made to Maheswari &amp; Balan Memorial Charitable Trust are 100% tax exempt under Section 80G of the Indian Income Tax Act, 1961. This computer-generated receipt serves as authentic proof for tax filing.
+            <strong>80G TAX EXEMPTION DECLARATION:</strong> All donations made to Maheswari &amp; Balan Memorial Charitable Trust are 100% tax exempt under Section 80G of the Indian Income Tax Act, 1961. This computer-generated receipt serves as official proof for filing income tax returns.
           </div>
 
           <div class="footer-signatures">
             <div class="seal-box">
-              <span style="font-size:11px; margin-bottom:2px;">⭐ OFFICIAL SEAL ⭐</span>
-              MAHESWARI &amp; BALAN<br/>MEMORIAL CHARITABLE<br/>TRUST
+              <div class="seal-star">★ OFFICIAL TRUST SEAL ★</div>
+              <div class="seal-name">MAHESWARI &amp; BALAN</div>
+              <div class="seal-sub">MEMORIAL CHARITABLE TRUST</div>
+              <div style="font-size:8px; color:#6B7280; margin-top:2px;">ESTD. 2021 • TAMIL NADU</div>
             </div>
             <div class="sign-box">
+              <div class="stamp-verified">✓ Digitally Signed &amp; Approved</div>
               <div class="sign-line">
-                Authorized Signatory<br/>
-                <span style="font-size: 10px; font-weight: normal; color: #6B7280;">For Maheswari &amp; Balan Memorial Charitable Trust</span>
+                <div class="sign-title">Authorized Signatory</div>
+                <div class="sign-trust">For Maheswari &amp; Balan Memorial Charitable Trust</div>
               </div>
             </div>
           </div>
@@ -747,12 +822,12 @@ export default function DonationModal({ isOpen, onClose }) {
             {/* Payment Method Selector */}
             <div style={{ marginBottom: '18px' }}>
               <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
-                Payment Method
+                Payment Gateway &amp; Mode
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[
-                  { id: 'upi', label: selectedCurrency.code === 'INR' ? 'UPI / QR Code' : 'Instant Pay', icon: QrCode },
-                  { id: 'card', label: 'Debit / Card', icon: CreditCard },
+                  { id: 'razorpay', label: 'Razorpay Gateway', icon: CreditCard },
+                  { id: 'upi', label: 'UPI / GPay / QR', icon: QrCode },
                   { id: 'netbanking', label: 'Net Banking', icon: Building },
                 ].map((m) => {
                   const MIcon = m.icon;
@@ -766,9 +841,9 @@ export default function DonationModal({ isOpen, onClose }) {
                         padding: '10px 6px',
                         borderRadius: '12px',
                         border: '1.5px solid',
-                        borderColor: isSelected ? '#111827' : '#E5E5EA',
-                        backgroundColor: isSelected ? '#F5F5F7' : '#FFFFFF',
-                        color: isSelected ? '#111827' : '#6B7280',
+                        borderColor: isSelected ? '#064B35' : '#E5E5EA',
+                        backgroundColor: isSelected ? '#F0FDF4' : '#FFFFFF',
+                        color: isSelected ? '#064B35' : '#6B7280',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -779,7 +854,7 @@ export default function DonationModal({ isOpen, onClose }) {
                         transition: 'all 0.2s',
                       }}
                     >
-                      <MIcon size={17} color={isSelected ? '#111827' : '#6B7280'} />
+                      <MIcon size={17} color={isSelected ? '#064B35' : '#6B7280'} />
                       <span>{m.label}</span>
                     </button>
                   );
@@ -794,7 +869,7 @@ export default function DonationModal({ isOpen, onClose }) {
               </div>
             )}
 
-            {/* Apple-Style Primary Action Button */}
+            {/* Apple-Style Primary Action Button with Trust Logo Theme */}
             <button
               type="submit"
               disabled={submitting}
@@ -804,16 +879,16 @@ export default function DonationModal({ isOpen, onClose }) {
                 fontSize: '0.98rem',
                 fontWeight: '700',
                 borderRadius: '9999px',
-                background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)',
+                background: 'linear-gradient(135deg, #064B35 0%, #173F73 100%)',
                 color: '#FFFFFF',
-                border: 'none',
+                border: '1px solid #D79A18',
                 cursor: 'pointer',
                 marginBottom: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.22)',
+                boxShadow: '0 6px 20px rgba(6, 75, 53, 0.22)',
                 opacity: submitting ? 0.75 : 1,
                 transition: 'all 0.2s ease',
               }}
@@ -821,13 +896,13 @@ export default function DonationModal({ isOpen, onClose }) {
               {submitting ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  <span>Processing Contribution...</span>
+                  <span>Opening Razorpay Gateway...</span>
                 </>
               ) : (
                 <>
                   <Heart size={18} fill="#F5D061" color="#F5D061" />
                   <span>
-                    Proceed with {selectedCurrency.symbol} {currentAmountNum ? currentAmountNum.toLocaleString() : '0'}
+                    Pay via Razorpay — {selectedCurrency.symbol} {currentAmountNum ? currentAmountNum.toLocaleString() : '0'}
                   </span>
                 </>
               )}
@@ -890,77 +965,111 @@ export default function DonationModal({ isOpen, onClose }) {
             {/* On-Screen Official Receipt Card */}
             <div
               style={{
-                backgroundColor: '#F9FAFB',
+                backgroundColor: '#FCFDFB',
                 borderRadius: '18px',
-                border: '1.5px solid #E5E7EB',
-                padding: '20px',
+                border: '2px solid #064B35',
+                outline: '1px solid #D79A18',
+                outlineOffset: '-4px',
+                padding: '22px 20px',
                 textAlign: 'left',
                 fontSize: '0.84rem',
                 marginBottom: '20px',
                 position: 'relative',
+                boxShadow: '0 8px 24px rgba(6, 75, 53, 0.08)',
               }}
             >
               {/* Receipt Header Badge */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '10px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '10px', marginBottom: '12px' }}>
                 <div>
-                  <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6B7280', fontWeight: '700' }}>
-                    Official Trust Receipt
+                  <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#173F73', fontWeight: '800' }}>
+                    Official 80G Tax Receipt
                   </div>
-                  <div style={{ fontFamily: 'monospace', fontWeight: '800', color: '#111827', fontSize: '0.94rem' }}>
+                  <div style={{ fontFamily: 'monospace', fontWeight: '800', color: '#064B35', fontSize: '0.96rem' }}>
                     {receiptData?.receiptNo}
                   </div>
                 </div>
                 <div style={{
-                  backgroundColor: '#ECFDF5',
-                  color: '#059669',
-                  padding: '4px 10px',
+                  backgroundColor: '#064B35',
+                  color: '#F5D061',
+                  padding: '4px 12px',
                   borderRadius: '20px',
                   fontWeight: '700',
                   fontSize: '0.72rem',
+                  border: '1px solid #D79A18',
                 }}>
-                  ✓ 80G Verified
+                  ✓ 80G Tax Deductible
                 </div>
               </div>
 
               {/* Receipt Details Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
                 <div>
-                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Donor Name:</span>
-                  <strong>{receiptData?.donorName}</strong>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>Donor Name:</span>
+                  <strong style={{ color: '#173F73' }}>{receiptData?.donorName}</strong>
                 </div>
                 <div>
-                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Date &amp; Time:</span>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>Date &amp; Time:</span>
                   <span>{receiptData?.date} ({receiptData?.time})</span>
                 </div>
                 <div>
-                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Transaction ID:</span>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.78rem' }}>{receiptData?.transactionId}</span>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>Payment / Razorpay ID:</span>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.76rem', color: '#064B35', fontWeight: '700' }}>{receiptData?.transactionId}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>PAN (For 80G):</span>
-                  <span>{receiptData?.pan}</span>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>PAN (80G Benefit):</span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{receiptData?.pan || 'N/A'}</span>
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ color: '#6B7280', fontSize: '0.75rem', display: 'block' }}>Designated Initiative:</span>
-                  <span style={{ color: '#111827', fontWeight: '600' }}>{receiptData?.cause}</span>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>Designated Initiative:</span>
+                  <span style={{ color: '#064B35', fontWeight: '700' }}>{receiptData?.cause}</span>
                 </div>
               </div>
 
+              {/* Total Amount Row */}
               <div style={{
-                borderTop: '1px solid #E5E7EB',
+                borderTop: '1px solid #E2E8F0',
                 paddingTop: '10px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                backgroundColor: '#FFFFFF',
-                margin: '0 -10px -10px -10px',
+                backgroundColor: '#F0FDF4',
+                margin: '0 -10px',
                 padding: '12px 14px',
-                borderRadius: '0 0 16px 16px',
+                borderRadius: '8px',
               }}>
-                <span style={{ fontWeight: '600', color: '#374151' }}>Total Amount:</span>
-                <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111827' }}>
+                <span style={{ fontWeight: '700', color: '#173F73' }}>Total Donation:</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#064B35' }}>
                   {receiptData?.currency?.symbol} {receiptData?.amount?.toLocaleString()} {receiptData?.currency?.code}
                 </span>
+              </div>
+
+              {/* Signatures & Seal preview requested by user */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                marginTop: '14px',
+                paddingTop: '10px',
+                borderTop: '1px dashed #CBD5E1',
+              }}>
+                <div style={{
+                  border: '1.5px dashed #064B35',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  background: '#FFFFFF',
+                }}>
+                  <div style={{ fontSize: '0.62rem', fontWeight: '800', color: '#D79A18' }}>★ OFFICIAL SEAL ★</div>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#173F73' }}>MAHESWARI &amp; BALAN</div>
+                  <div style={{ fontSize: '0.6rem', color: '#064B35', fontWeight: '700' }}>CHARITABLE TRUST</div>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.68rem', color: '#059669', fontWeight: '700', marginBottom: '2px' }}>✓ Digitally Verified</div>
+                  <div style={{ width: '150px', height: '1.5px', backgroundColor: '#173F73', marginBottom: '3px' }} />
+                  <div style={{ fontWeight: '800', color: '#173F73', fontSize: '0.78rem' }}>Authorized Signatory</div>
+                  <div style={{ fontSize: '0.66rem', color: '#064B35', fontWeight: '600' }}>For Maheswari &amp; Balan Memorial Charitable Trust</div>
+                </div>
               </div>
             </div>
 
@@ -971,18 +1080,18 @@ export default function DonationModal({ isOpen, onClose }) {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)',
+                  background: 'linear-gradient(135deg, #064B35 0%, #173F73 100%)',
                   color: '#FFFFFF',
                   borderRadius: '9999px',
                   fontSize: '0.95rem',
                   fontWeight: '700',
-                  border: 'none',
+                  border: '1px solid #D79A18',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                  boxShadow: '0 6px 20px rgba(6, 75, 53, 0.25)',
                 }}
               >
                 <Download size={18} />

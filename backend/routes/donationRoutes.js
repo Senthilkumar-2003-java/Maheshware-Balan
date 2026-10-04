@@ -4,8 +4,12 @@ const {
   createDonation,
   getAllDonations,
   getDonationStats,
+  getRazorpayKey,
 } = require('../controllers/donationController');
 const { authenticateAdmin } = require('../middleware/authMiddleware');
+
+// Public route: get Razorpay Key ID
+router.get('/razorpay-key', getRazorpayKey);
 
 // Public route: submit donation
 router.post('/', createDonation);
