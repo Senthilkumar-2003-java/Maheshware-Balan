@@ -49,7 +49,10 @@ export async function openRazorpayCheckout({
 
   try {
     const apiUrl = import.meta.env.VITE_API_URL || 'https://maheshware-balan.onrender.com/api';
-    const keyRes = await fetch(`${apiUrl}/donations/razorpay-key`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+    const keyRes = await fetch(`${apiUrl}/donations/razorpay-key`, { signal: controller.signal });
+    clearTimeout(timeoutId);
     if (keyRes.ok) {
       const keyData = await keyRes.json();
       if (keyData?.keyId) {
@@ -57,7 +60,7 @@ export async function openRazorpayCheckout({
       }
     }
   } catch (e) {
-    console.warn('Using fallback Razorpay Key ID:', e.message);
+    // Seamless fallback to default key without delaying modal
   }
 
   // Razorpay amounts are in the smallest currency unit (paise for INR)

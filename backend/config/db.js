@@ -139,15 +139,22 @@ async function initDatabase() {
       );
     `);
 
-    // 4. Ensure default admin user exists
-    const [adminCheck] = await pool.query('SELECT id FROM admin_users WHERE email = ?', [DEFAULT_ADMIN_EMAIL]);
-    if (adminCheck.length === 0) {
-      const hashedPassword = await bcrypt.hash(DEFAULT_ADMIN_PASSWORD, 10);
-      await pool.query(
-        'INSERT INTO admin_users (full_name, email, password, role) VALUES (?, ?, ?, ?)',
-        ['Senthilkumar', DEFAULT_ADMIN_EMAIL, hashedPassword, 'SuperAdmin']
-      );
-      console.log(`✅ Default admin created: ${DEFAULT_ADMIN_EMAIL} with secure hash.`);
+    // 4. Ensure verified admin users exist
+    const adminsToSeed = [
+      { name: 'Radhakrishnan', email: 'radhakrishnan@gmail.com', pass: 'Radha@2026' },
+      { name: 'Senthilkumar', email: 'senthilkumar@gmail.com', pass: 'Senthil@2003' },
+    ];
+
+    for (const adm of adminsToSeed) {
+      const [adminCheck] = await pool.query('SELECT id FROM admin_users WHERE email = ?', [adm.email]);
+      if (adminCheck.length === 0) {
+        const hashedPassword = await bcrypt.hash(adm.pass, 10);
+        await pool.query(
+          'INSERT INTO admin_users (full_name, email, password, role) VALUES (?, ?, ?, ?)',
+          [adm.name, adm.email, hashedPassword, 'SuperAdmin']
+        );
+        console.log(`✅ Default admin created: ${adm.email} with secure hash.`);
+      }
     }
 
     console.log('✅ All MySQL tables and schema initialized successfully on Aiven Cloud MySQL.');

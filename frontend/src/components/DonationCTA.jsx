@@ -72,7 +72,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             </p>
 
             {/* Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div className="cta-buttons" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
               <button
                 onClick={onOpenDonate}
                 className="btn btn-primary"
@@ -113,7 +113,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 1 */}
             <div
               onClick={onOpenDonate}
-              className={`action-box apple-reveal-scale apple-reveal-delay-2`}
+              className="action-box apple-reveal-scale apple-reveal-delay-2"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -123,7 +123,6 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              className="action-box"
             >
               <Heart size={24} color="var(--color-gold-soft)" style={{ margin: '0 auto 8px auto' }} />
               <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#FFFFFF' }}>Give<br />Donation</div>
@@ -132,7 +131,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 2 */}
             <div
               onClick={onOpenVolunteer}
-              className={`action-box apple-reveal-scale apple-reveal-delay-3`}
+              className="action-box apple-reveal-scale apple-reveal-delay-3"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -142,7 +141,6 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              className="action-box"
             >
               <Users size={24} color="var(--color-gold-soft)" style={{ margin: '0 auto 8px auto' }} />
               <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#FFFFFF' }}>Spread<br />Awareness</div>
@@ -151,7 +149,7 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
             {/* Action 3 */}
             <div
               onClick={handleShare}
-              className={`action-box apple-reveal-scale apple-reveal-delay-4`}
+              className="action-box apple-reveal-scale apple-reveal-delay-4"
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 backdropFilter: 'blur(8px)',
@@ -161,7 +159,6 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              className="action-box"
             >
               <Share2 size={24} color="var(--color-gold-soft)" style={{ margin: '0 auto 8px auto' }} />
               <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#FFFFFF' }}>Share<br />Our Mission</div>
@@ -196,15 +193,27 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
         @media (max-width: 1024px) {
           .cta-grid {
             grid-template-columns: 1fr !important;
-            gap: 36px !important;
+            gap: 32px !important;
           }
           .cta-handwriting-col {
             display: none !important;
           }
         }
-        @media (max-width: 580px) {
+        @media (max-width: 640px) {
+          .cta-buttons {
+            flex-direction: column !important;
+            width: 100% !important;
+          }
+          .cta-buttons button {
+            width: 100% !important;
+            justify-content: center !important;
+          }
           .action-blocks {
-            grid-template-columns: 1fr 1fr 1fr !important;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+            gap: 10px !important;
+          }
+          .action-box {
+            padding: 14px 8px !important;
           }
         }
       `}</style>

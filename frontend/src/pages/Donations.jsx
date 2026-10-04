@@ -445,11 +445,12 @@ export default function Donations({ onOpenDonate }) {
     <div style={{ backgroundColor: '#FCF9F1', minHeight: '100vh', paddingBottom: '90px' }}>
       {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
+        className="donations-hero-banner"
         style={{
           background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerDonations}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
-          minHeight: '520px',
-          padding: '50px 0 55px 0',
+          minHeight: '440px',
+          padding: '40px 16px 50px 16px',
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
@@ -535,6 +536,7 @@ export default function Donations({ onOpenDonate }) {
           >
             {/* Left Box: Donation Calculator & Form */}
             <div
+              className="donation-card-box"
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '28px',
@@ -582,7 +584,7 @@ export default function Donations({ onOpenDonate }) {
                   </div>
 
                   {/* Preset Buttons */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '14px' }}>
+                  <div className="preset-amounts-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '14px' }}>
                     {presets.map((amt) => (
                       <button
                         key={amt}
@@ -656,7 +658,7 @@ export default function Donations({ onOpenDonate }) {
                   </div>
 
                   {/* Donor Info */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
+                  <div className="donor-inputs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
                     <input
                       type="text"
                       required
@@ -942,6 +944,48 @@ export default function Donations({ onOpenDonate }) {
         @media (max-width: 991px) {
           .donation-page-grid {
             grid-template-columns: 1fr !important;
+            gap: 28px !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .donations-hero-banner {
+            min-height: 340px !important;
+            padding: 40px 16px !important;
+          }
+          .donation-card-box {
+            padding: 24px 18px !important;
+            border-radius: 20px !important;
+          }
+          .preset-amounts-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .donations-hero-banner {
+            min-height: 290px !important;
+            padding: 30px 14px 36px 14px !important;
+          }
+          .donation-card-box {
+            padding: 18px 14px !important;
+            border-radius: 16px !important;
+          }
+          .preset-amounts-grid {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 6px !important;
+          }
+          .preset-amounts-grid button {
+            padding: 10px 4px !important;
+            font-size: 0.82rem !important;
+          }
+          .donor-inputs-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+        }
+        @media (max-width: 420px) {
+          .preset-amounts-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
       `}</style>

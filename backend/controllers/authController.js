@@ -28,21 +28,41 @@ async function loginAdmin(req, res) {
       }
     }
 
-    // Direct credential verification (with DB check or fallback)
+    // Direct credential verification (with DB check or verified admin credentials)
     let isMatch = false;
-    if (admin) {
+    if (admin && admin.password) {
       isMatch = await bcrypt.compare(password, admin.password);
     }
 
-    // Also support fallback for instant seamless access
-    if (!isMatch && email.toLowerCase() === DEFAULT_ADMIN_EMAIL.toLowerCase() && password === DEFAULT_ADMIN_PASSWORD) {
-      isMatch = true;
-      admin = {
-        id: 1,
-        full_name: 'Senthilkumar',
-        email: DEFAULT_ADMIN_EMAIL,
-        role: 'SuperAdmin',
-      };
+    const cleanEmail = (email || '').trim().toLowerCase();
+
+    // Support both Radhakrishnan & Senthilkumar verified credentials
+    if (!isMatch) {
+      if (cleanEmail === 'radhakrishnan@gmail.com' && password === 'Radha@2026') {
+        isMatch = true;
+        admin = {
+          id: admin?.id || 2,
+          full_name: admin?.full_name || 'Radhakrishnan',
+          email: 'radhakrishnan@gmail.com',
+          role: 'SuperAdmin',
+        };
+      } else if (cleanEmail === 'senthilkumar@gmail.com' && password === 'Senthil@2003') {
+        isMatch = true;
+        admin = {
+          id: admin?.id || 1,
+          full_name: admin?.full_name || 'Senthilkumar',
+          email: 'senthilkumar@gmail.com',
+          role: 'SuperAdmin',
+        };
+      } else if (cleanEmail === DEFAULT_ADMIN_EMAIL.toLowerCase() && password === DEFAULT_ADMIN_PASSWORD) {
+        isMatch = true;
+        admin = {
+          id: admin?.id || 1,
+          full_name: admin?.full_name || 'Trust Admin',
+          email: DEFAULT_ADMIN_EMAIL,
+          role: 'SuperAdmin',
+        };
+      }
     }
 
     if (!isMatch) {
