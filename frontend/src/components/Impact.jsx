@@ -3,47 +3,63 @@ import { ArrowRight, GraduationCap, PlusSquare, Users, Globe } from 'lucide-reac
 import { Link } from 'react-router-dom';
 import impactBg from '../assets/images/impact-children.png';
 
-function useCountUp(target, duration = 1600) {
+function useCounter(target, started, duration = 1600) {
   const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
-      { threshold: 0.3 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [started]);
 
   useEffect(() => {
     if (!started) return;
     let start = 0;
-    const steps = 50;
-    const interval = duration / steps;
+    const steps = Math.min(target, 45);
+    const interval = Math.max(Math.floor(duration / (steps || 1)), 25);
     const timer = setInterval(() => {
       start++;
-      setCount(Math.floor((start / steps) * target));
-      if (start >= steps) { clearInterval(timer); setCount(target); }
+      const current = Math.min(Math.round((start / steps) * target), target);
+      setCount(current);
+      if (start >= steps || current >= target) {
+        clearInterval(timer);
+        setCount(target);
+      }
     }, interval);
     return () => clearInterval(timer);
   }, [started, target, duration]);
 
-  return [count, ref];
+  return count;
 }
 
 export default function Impact({ onOpenDonate }) {
-  const [students, studentsRef] = useCountUp(500);
-  const [medical] = useCountUp(200);
-  const [families] = useCountUp(150);
-  const [countries] = useCountUp(10);
+  const [started, setStarted] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    // Fallback trigger so stats never remain at 0 even if observer is delayed
+    const fallbackTimer = setTimeout(() => setStarted(true), 600);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+
+    return () => {
+      clearTimeout(fallbackTimer);
+      observer.disconnect();
+    };
+  }, []);
+
+  const students = useCounter(3000, started, 1600);
+  const medical = useCounter(21, started, 1200);
+  const families = useCounter(12, started, 1000);
+  const countries = useCounter(1, started, 700);
 
   const stats = [
-    { number: students, suffix: '+', label: 'Students\nSupported', icon: GraduationCap },
+    { number: students.toLocaleString(), suffix: '+', label: 'Students\nSupported', icon: GraduationCap },
     { number: medical, suffix: '+', label: 'People Received\nMedical Support', icon: PlusSquare },
     { number: families, suffix: '+', label: 'Families\nAssisted', icon: Users },
-    { number: countries, suffix: '+', label: 'Countries\nContributing', icon: Globe },
+    { number: countries, suffix: '+', label: 'Country\nContributing', icon: Globe },
   ];
 
   return (
@@ -71,7 +87,7 @@ export default function Impact({ onOpenDonate }) {
         pointerEvents: 'none',
       }} />
 
-      <div ref={studentsRef} style={{ maxWidth: '1380px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+      <div ref={containerRef} style={{ maxWidth: '1380px', margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
         <div
           style={{
             display: 'grid',

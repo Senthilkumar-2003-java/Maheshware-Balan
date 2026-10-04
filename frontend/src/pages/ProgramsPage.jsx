@@ -25,7 +25,7 @@ export default function ProgramsPage({ onOpenDonate }) {
       color: '#173F73',
       description: 'Many children from impoverished backgrounds drop out of school due to the lack of basic supplies, uniforms, bags, and academic guidance. Our trust sponsors deserving primary and secondary students, covering their complete schooling kit, nutrition support, and after-school remedial learning.',
       impactPoints: [
-        '500+ students sponsored across rural and semi-urban government schools',
+        '3,000+ students sponsored across rural and semi-urban government schools',
         'Distribution of notebooks, stationery kits, school bags, and uniforms',
         'Special academic coaching and science laboratory workshops',
         'Merit scholarships for higher secondary students aiming for college',
