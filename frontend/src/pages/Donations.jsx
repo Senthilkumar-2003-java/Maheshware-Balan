@@ -706,19 +706,16 @@ export default function Donations({ onOpenDonate }) {
 
                   {/* Tax Proof Selector: PAN vs Aadhaar */}
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    marginBottom: '12px',
+                    marginBottom: '14px',
                     backgroundColor: '#F8FAFC',
-                    padding: '8px 12px',
+                    padding: '10px 12px',
                     borderRadius: '12px',
                     border: '1.5px solid rgba(6, 75, 53, 0.15)',
                   }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#173F73', whiteSpace: 'nowrap' }}>
-                      {t('chooseTaxId')}
-                    </span>
-                    <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                    <div style={{ fontSize: '0.80rem', fontWeight: '700', color: '#173F73', marginBottom: '8px' }}>
+                      {t('chooseTaxId')} (For 80G Tax Exemption Certificate)
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
                       <button
                         type="button"
                         onClick={() => {
@@ -728,7 +725,7 @@ export default function Donations({ onOpenDonate }) {
                         }}
                         style={{
                           flex: 1,
-                          padding: '7px 12px',
+                          padding: '8px 12px',
                           borderRadius: '8px',
                           border: idType === 'pan' ? '2px solid #064B35' : '1px solid #CBD5E1',
                           backgroundColor: idType === 'pan' ? '#064B35' : '#FFFFFF',
@@ -755,7 +752,7 @@ export default function Donations({ onOpenDonate }) {
                         }}
                         style={{
                           flex: 1,
-                          padding: '7px 12px',
+                          padding: '8px 12px',
                           borderRadius: '8px',
                           border: idType === 'aadhaar' ? '2px solid #064B35' : '1px solid #CBD5E1',
                           backgroundColor: idType === 'aadhaar' ? '#064B35' : '#FFFFFF',
