@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Heart, Users, MessageSquare, LogOut, Search,
   Download, RefreshCw, IndianRupee, Phone, Mail, MapPin, Calendar,
   CheckCircle2, Clock, XCircle, AlertCircle, Menu, X, ArrowUpRight,
-  Filter, ShieldCheck, UserCheck, Printer, FileText, ChevronRight
+  Filter, ShieldCheck, UserCheck, Printer, FileText, ChevronRight, ArrowLeft
 } from 'lucide-react';
 import {
   getDonationsApi,
@@ -1048,20 +1048,54 @@ export default function AdminDashboard() {
       {/* ── MAIN CONTENT AREA ── */}
       <div style={{ flex: 1, marginLeft: '260px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }} className="admin-main">
         
-        {/* Top Header Bar */}
-        <header style={{
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
-          padding: '14px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* Top Header Bar — Fixed / Sticky Navbar with Back to Website Arrow */}
+        <header
+          className="admin-header"
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderBottom: '1px solid #E2E8F0',
+            padding: '12px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1000,
+            boxShadow: '0 2px 10px rgba(16,43,80,0.06)',
+            gap: '10px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+            {/* Back to Website Arrow Button */}
+            <Link
+              to="/"
+              title="Return to Public Website"
+              className="admin-back-btn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 11px',
+                borderRadius: '8px',
+                backgroundColor: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                color: '#173F73',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E2E8F0'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+            >
+              <ArrowLeft size={15} />
+              <span className="admin-back-btn-text">Website</span>
+            </Link>
+
+            {/* Mobile Sidebar Hamburger Toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="admin-mobile-toggle"
@@ -1070,54 +1104,77 @@ export default function AdminDashboard() {
                 display: 'none',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '38px',
-                height: '38px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '8px',
                 backgroundColor: '#F1F5F9',
                 border: '1px solid #E2E8F0',
                 cursor: 'pointer',
                 color: '#102B50',
+                flexShrink: 0,
               }}
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              {sidebarOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
 
-            <div>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: '700', color: '#102B50', margin: 0 }}>
+            {/* Tab Title */}
+            <div className="admin-header-title-box" style={{ minWidth: 0, overflow: 'hidden' }}>
+              <h1 className="admin-header-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '1.22rem', fontWeight: '700', color: '#102B50', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {activeTab === 'overview' && 'Dashboard Overview'}
                 {activeTab === 'donations' && 'Donations & 80G Receipts'}
                 {activeTab === 'volunteers' && 'Volunteer Registrations'}
                 {activeTab === 'contacts' && 'Contact Inquiries'}
               </h1>
-              <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '2px' }}>
-                {activeTab === 'overview' && 'Executive summary of charitable funds, active donors, volunteers and messages'}
-                {activeTab === 'donations' && 'Verified online donor records and instant Section 80G tax receipt issuance'}
-                {activeTab === 'volunteers' && 'Community volunteer applications, field service coordination, and verification'}
-                {activeTab === 'contacts' && 'Public queries and support requests submitted via official Contact page'}
+              <div className="admin-header-subtitle" style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {activeTab === 'overview' && 'Executive summary of charitable funds, active donors, and volunteers'}
+                {activeTab === 'donations' && 'Verified online donor records and Section 80G tax receipt issuance'}
+                {activeTab === 'volunteers' && 'Community volunteer applications and field service verification'}
+                {activeTab === 'contacts' && 'Public queries and support requests submitted via Contact page'}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             <button
               onClick={loadData}
               title="Refresh Data from Database"
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                padding: '7px 15px',
+                gap: '5px',
+                padding: '6px 12px',
                 borderRadius: '8px',
                 backgroundColor: '#F8FAFC',
                 border: '1px solid #CBD5E1',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: '700',
                 color: '#102B50',
                 cursor: 'pointer',
               }}
             >
-              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
               <span className="refresh-label">Refresh</span>
+            </button>
+
+            {/* Mobile Quick Sign Out */}
+            <button
+              onClick={handleLogout}
+              title="Sign Out"
+              className="admin-header-logout"
+              style={{
+                display: 'none',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '34px',
+                height: '34px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(225, 29, 72, 0.1)',
+                border: '1px solid rgba(225, 29, 72, 0.25)',
+                color: '#DC2626',
+                cursor: 'pointer',
+              }}
+            >
+              <LogOut size={15} />
             </button>
           </div>
         </header>
@@ -1146,7 +1203,7 @@ export default function AdminDashboard() {
         <main style={{ padding: '24px', flex: 1 }}>
 
           {/* ── DATE FILTER BAR (Today Default, Month, 6 Months, Year, Custom Date) ── */}
-          <div style={{
+          <div className="admin-filter-bar" style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '14px',
             border: '1px solid #E2E8F0',
@@ -1172,7 +1229,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Filter Pills (Scrollable on small mobile) */}
-              <div style={{
+              <div className="admin-filter-pills" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
@@ -1279,7 +1336,7 @@ export default function AdminDashboard() {
 
           {/* ── KPI METRICS CARDS: OVERVIEW ── */}
           {activeTab === 'overview' && (
-            <div style={{
+            <div className="admin-kpi-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
               gap: '16px',
@@ -1353,7 +1410,7 @@ export default function AdminDashboard() {
 
           {/* ── KPI METRICS CARDS: DONATIONS ── */}
           {activeTab === 'donations' && (
-            <div style={{
+            <div className="admin-kpi-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
               gap: '16px',
@@ -1385,7 +1442,7 @@ export default function AdminDashboard() {
 
           {/* ── KPI METRICS CARDS: VOLUNTEERS ── */}
           {activeTab === 'volunteers' && (
-            <div style={{
+            <div className="admin-kpi-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
               gap: '16px',
@@ -1417,7 +1474,7 @@ export default function AdminDashboard() {
 
           {/* ── KPI METRICS CARDS: CONTACTS ── */}
           {activeTab === 'contacts' && (
-            <div style={{
+            <div className="admin-kpi-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
               gap: '16px',
@@ -1486,7 +1543,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Actions: Export CSV & Download Report */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+            <div className="admin-toolbar-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
               
               {/* Export CSV */}
               <button
@@ -1815,6 +1872,15 @@ export default function AdminDashboard() {
       </div>
 
       <style>{`
+        /* Sticky Admin Navbar */
+        .admin-header {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 1000 !important;
+          background-color: #FFFFFF !important;
+          box-shadow: 0 2px 10px rgba(16,43,80,0.06) !important;
+        }
+
         @media (max-width: 1024px) {
           .admin-sidebar {
             transform: translateX(-100%) !important;
@@ -1824,17 +1890,69 @@ export default function AdminDashboard() {
           }
           .admin-main {
             margin-left: 0 !important;
+            width: 100% !important;
+            max-width: 100vw !important;
           }
           .admin-mobile-toggle {
             display: inline-flex !important;
           }
         }
+
+        /* Tablet Responsive Grid */
+        @media (min-width: 481px) and (max-width: 768px) {
+          .admin-kpi-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+        }
+
+        /* Mobile Screens */
         @media (max-width: 640px) {
+          .admin-header {
+            padding: 10px 12px !important;
+          }
+          .admin-header-subtitle {
+            display: none !important;
+          }
+          .admin-header-title {
+            font-size: 1.05rem !important;
+          }
+          .admin-back-btn-text {
+            display: none !important;
+          }
+          .admin-back-btn {
+            padding: 7px 9px !important;
+            border-radius: 8px !important;
+          }
           .refresh-label {
             display: none !important;
           }
           .status-label {
             display: none !important;
+          }
+          .admin-header-logout {
+            display: inline-flex !important;
+          }
+          .admin-main main {
+            padding: 12px 10px !important;
+          }
+          .admin-filter-bar {
+            padding: 12px 12px !important;
+          }
+          .admin-toolbar-actions {
+            width: 100% !important;
+          }
+          .admin-toolbar-actions button {
+            flex: 1 1 auto !important;
+            justify-content: center !important;
+          }
+        }
+
+        /* Small Phones (Single Column Cards to prevent any card clipping) */
+        @media (max-width: 480px) {
+          .admin-kpi-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
           }
         }
       `}</style>

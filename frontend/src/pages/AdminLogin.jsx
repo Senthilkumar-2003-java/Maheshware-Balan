@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Mail, Shield, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import heroImg from '../assets/images/hero-children.jpg';
 import { TRUST_LOGO_BASE64 } from '../utils/logoBase64';
 
@@ -122,7 +122,37 @@ export default function AdminLogin() {
         padding: '32px 20px',
         minHeight: '100vh',
         boxSizing: 'border-box',
+        position: 'relative',
       }}>
+        {/* Top-Left Back Arrow for Fast Mobile Access */}
+        <Link
+          to="/"
+          style={{
+            position: 'absolute',
+            top: '18px',
+            left: '18px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '7px 14px',
+            borderRadius: '9999px',
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #CBD5E1',
+            boxShadow: '0 2px 8px rgba(16,43,80,0.08)',
+            color: '#173F73',
+            fontSize: '0.80rem',
+            fontWeight: '700',
+            textDecoration: 'none',
+            zIndex: 10,
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+          onMouseLeave={e => e.currentTarget.style.backgroundColor = '#FFFFFF'}
+        >
+          <ArrowLeft size={15} />
+          <span>Home</span>
+        </Link>
+
         <div style={{
           width: '100%',
           maxWidth: '460px',
@@ -133,7 +163,34 @@ export default function AdminLogin() {
           padding: 'clamp(32px, 5vw, 44px)',
           boxSizing: 'border-box',
           margin: 'auto',
+          position: 'relative',
         }}>
+          {/* Back to Home Website Link */}
+          <div style={{ marginBottom: '18px' }}>
+            <Link
+              to="/"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '7px 14px',
+                borderRadius: '9999px',
+                backgroundColor: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                color: '#173F73',
+                fontSize: '0.80rem',
+                fontWeight: '700',
+                textDecoration: 'none',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#E2E8F0'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#F1F5F9'}
+            >
+              <ArrowLeft size={15} />
+              <span>Back to Home Website</span>
+            </Link>
+          </div>
+
           {/* Top Logo & Title */}
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <div style={{
