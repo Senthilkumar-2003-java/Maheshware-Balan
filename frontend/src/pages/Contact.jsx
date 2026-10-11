@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2, X, Heart, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Loader2, X, Heart, Sparkles, Clock, ShieldCheck } from 'lucide-react';
 import { submitContactApi } from '../services/api';
 import confetti from 'canvas-confetti';
 import bannerContact from '../assets/images/banner-contact.jpg';
@@ -98,8 +98,8 @@ function SuccessPopup({ onClose }) {
         </div>
 
         <h2 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: '1.85rem', fontWeight: '800',
+          fontFamily: "var(--font-serif)",
+          fontSize: '1.85rem', fontWeight: '700',
           color: '#064B35', marginBottom: '12px', lineHeight: '1.25',
         }}>
           Message Sent!
@@ -211,7 +211,7 @@ export default function Contact() {
       {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerContact}) center 95% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(16, 43, 80, 0.58) 0%, rgba(10, 25, 47, 0.32) 45%, rgba(16, 43, 80, 0.78) 100%), url(${bannerContact}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
           minHeight: '520px',
           padding: '50px 0 55px 0',
@@ -241,14 +241,13 @@ export default function Contact() {
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
                 color: '#F5D061',
-                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
                 padding: '6px 16px',
                 borderRadius: '9999px',
                 border: '1px solid rgba(245, 208, 97, 0.45)',
                 marginBottom: '16px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               }}
             >
               <MessageSquare size={15} color="#F5D061" />
@@ -263,7 +262,6 @@ export default function Contact() {
                 lineHeight: '1.2',
                 marginBottom: '16px',
                 color: '#FFFFFF',
-                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
               }}
             >
               We Are Here to Listen
@@ -272,10 +270,9 @@ export default function Contact() {
               className="banner-animate-3"
               style={{
                 fontSize: '1.1rem',
-                color: '#FFFFFF',
+                color: 'rgba(255, 255, 255, 0.95)',
                 lineHeight: '1.65',
-                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
-                fontWeight: '500',
+                fontWeight: '400',
                 maxWidth: '720px',
                 margin: '0 auto',
               }}
@@ -358,15 +355,72 @@ export default function Contact() {
                 style={{
                   backgroundColor: 'var(--color-primary-deep)',
                   borderRadius: '24px',
-                  padding: '30px',
+                  padding: '26px 30px',
                   color: '#FFFFFF',
                 }}
               >
-                <div style={{ fontFamily: 'var(--font-handwritten)', fontSize: '2.2rem', color: 'var(--color-gold-soft)', lineHeight: '1.2' }}>
+                <div style={{ fontFamily: 'var(--font-editorial)', fontStyle: 'italic', fontWeight: '600', fontSize: '1.75rem', color: 'var(--color-gold-soft)', lineHeight: '1.3', letterSpacing: '0.015em' }}>
                   “Serve with Love &amp; Compassion”
                 </div>
-                <div style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.8)', marginTop: '8px' }}>
+                <div style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.85)', marginTop: '8px', lineHeight: '1.5' }}>
                   Every interaction is a stepping stone toward a more dignified tomorrow.
+                </div>
+              </div>
+
+              {/* Working Hours & Helpline Card */}
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '24px',
+                  padding: '24px 28px',
+                  boxShadow: '0 8px 24px rgba(16, 43, 80, 0.05)',
+                  border: '1px solid rgba(16, 43, 80, 0.08)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: 'rgba(215, 154, 24, 0.12)', color: '#D79A18', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Clock size={19} />
+                  </div>
+                  <div>
+                    <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#102B50', margin: 0, fontWeight: '700' }}>
+                      Trust Office Hours
+                    </h4>
+                    <span style={{ fontSize: '0.74rem', color: '#64748B' }}>Monday to Saturday</span>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '0.88rem', color: '#334155', lineHeight: '1.6' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px dashed #E2E8F0' }}>
+                    <span style={{ color: '#64748B' }}>In-Person &amp; Enquiries:</span>
+                    <strong style={{ color: '#102B50' }}>9:00 AM – 6:00 PM</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '6px' }}>
+                    <span style={{ color: '#64748B' }}>Sunday Outreaches:</span>
+                    <strong style={{ color: '#064B35' }}>Rural &amp; Medical Camps</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Verified Trust Credentials Badge Card */}
+              <div
+                style={{
+                  backgroundColor: '#F0FDF4',
+                  borderRadius: '20px',
+                  padding: '16px 20px',
+                  border: '1.5px solid #BBF7D0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                }}
+              >
+                <ShieldCheck size={28} color="#059669" style={{ flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: '800', color: '#064B35' }}>
+                    Registered Public Charitable Trust
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: '#334155', marginTop: '2px', lineHeight: '1.4' }}>
+                    Reg. No: <strong>142/IV/2021</strong> • Income Tax 80G Certified • NITI Aayog: <strong>TN/2021/0289145</strong>
+                  </div>
                 </div>
               </div>
             </div>

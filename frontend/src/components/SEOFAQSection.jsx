@@ -74,7 +74,7 @@ export default function SEOFAQSection({
 
           <h2
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(1.9rem, 3.5vw, 2.6rem)',
               color: '#102B50',
               fontWeight: '700',
@@ -142,8 +142,8 @@ export default function SEOFAQSection({
                   <span
                     itemProp="name"
                     style={{
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      fontSize: '1.08rem',
+                      fontFamily: "var(--font-serif)",
+                      fontSize: '1.05rem',
                       fontWeight: '700',
                       lineHeight: '1.4',
                       color: isOpen ? '#102B50' : '#1F2937',

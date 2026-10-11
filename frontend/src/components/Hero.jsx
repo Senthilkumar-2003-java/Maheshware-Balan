@@ -60,18 +60,18 @@ export default function Hero({ onOpenDonate, onOpenVideo }) {
 
             {/* Main Heading — matches reference: 3 lines, large serif */}
             <h1 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(2.1rem, 3.8vw, 3.4rem)',
               fontWeight: '700',
               color: '#17231F',
-              lineHeight: '1.16',
+              lineHeight: '1.2',
               letterSpacing: '-0.01em',
               marginBottom: '18px',
             }}>
               Together We Build<br />
               <span style={{ color: '#064B35' }}>A Kinder, Healthier</span><br />
               <span style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontFamily: "var(--font-editorial)",
                 fontStyle: 'italic',
                 color: '#173F73',
                 fontWeight: '600',

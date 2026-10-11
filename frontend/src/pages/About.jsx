@@ -1,7 +1,6 @@
 import React from 'react';
-import { Heart, Shield, Award, Users, CheckCircle2, ArrowRight, Eye, Target, Sparkles } from 'lucide-react';
+import { Heart, Shield, Award, Users, Eye, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import plantImg from '../assets/images/plant-growth-hands.png';
 import heroImg from '../assets/images/hero-children.jpg';
 import bannerAbout from '../assets/images/banner-about.jpg';
 import SEOFAQSection from '../components/SEOFAQSection';
@@ -20,7 +19,7 @@ export default function About({ onOpenDonate }) {
       {/* Header — Clean text banner without card container so background image is fully visible */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerAbout}) center 95% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(16, 43, 80, 0.55) 0%, rgba(10, 25, 47, 0.28) 45%, rgba(16, 43, 80, 0.75) 100%), url(${bannerAbout}) center 50% / cover no-repeat`,
           color: '#FFFFFF',
           minHeight: '520px',
           padding: '50px 0 55px 0',
@@ -50,14 +49,13 @@ export default function About({ onOpenDonate }) {
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
                 color: '#F5D061',
-                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
                 padding: '6px 16px',
                 borderRadius: '9999px',
                 border: '1px solid rgba(245, 208, 97, 0.45)',
                 marginBottom: '16px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               }}
             >
               <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#F5D061', display: 'inline-block' }}></span>
@@ -70,13 +68,12 @@ export default function About({ onOpenDonate }) {
                 fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
                 fontWeight: '700',
                 color: '#FFFFFF',
-                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
                 lineHeight: '1.2',
                 marginBottom: '16px',
               }}
             >
               Rooted in Kindness. <br />
-              <span style={{ fontStyle: 'italic', fontFamily: 'var(--font-editorial)', color: '#F5D061', textShadow: '0 3px 20px rgba(0, 0, 0, 0.9)' }}>
+              <span style={{ color: '#F5D061' }}>
                 Dedicated to Human Flourishing.
               </span>
             </h1>
@@ -84,10 +81,9 @@ export default function About({ onOpenDonate }) {
               className="banner-animate-3"
               style={{
                 fontSize: '1.1rem',
-                color: '#FFFFFF',
+                color: 'rgba(255, 255, 255, 0.95)',
                 lineHeight: '1.65',
-                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
-                fontWeight: '500',
+                fontWeight: '400',
                 maxWidth: '740px',
                 margin: '0 auto',
               }}

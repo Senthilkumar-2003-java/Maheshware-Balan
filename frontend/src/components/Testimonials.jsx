@@ -93,11 +93,11 @@ export default function Testimonials() {
               WHAT PEOPLE SAY
             </div>
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
               fontWeight: '700',
               color: '#17231F',
-              lineHeight: '1.18',
+              lineHeight: '1.22',
             }}>
               Kind Words. Big Impact.
             </h2>
@@ -206,7 +206,7 @@ export default function Testimonials() {
                 />
                 <div>
                   <div style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontFamily: "var(--font-serif)",
                     fontSize: '0.95rem',
                     fontWeight: '700',
                     color: '#17231F',

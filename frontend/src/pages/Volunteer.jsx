@@ -123,7 +123,7 @@ export default function Volunteer({ onOpenDonate }) {
       {/* ── BANNER — Clean text banner without card container so background image is fully visible ── */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerVolunteer}) center 95% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(16, 43, 80, 0.58) 0%, rgba(10, 25, 47, 0.32) 45%, rgba(16, 43, 80, 0.78) 100%), url(${bannerVolunteer}) center 95% / cover no-repeat`,
           color: '#FFFFFF',
           minHeight: '520px',
           padding: '50px 0 55px 0',
@@ -153,14 +153,13 @@ export default function Volunteer({ onOpenDonate }) {
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
                 color: '#F5D061',
-                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
                 padding: '6px 16px',
                 borderRadius: '9999px',
                 border: '1px solid rgba(245, 208, 97, 0.45)',
                 marginBottom: '16px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               }}
             >
               <Users size={15} color="#F5D061" />
@@ -173,7 +172,6 @@ export default function Volunteer({ onOpenDonate }) {
                 fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
                 fontWeight: '700',
                 color: '#FFFFFF',
-                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
                 lineHeight: '1.2',
                 marginBottom: '16px',
               }}
@@ -184,10 +182,9 @@ export default function Volunteer({ onOpenDonate }) {
               className="banner-animate-3"
               style={{
                 fontSize: '1.1rem',
-                color: '#FFFFFF',
-                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                color: 'rgba(255, 255, 255, 0.95)',
                 lineHeight: '1.65',
-                fontWeight: '500',
+                fontWeight: '400',
                 maxWidth: '720px',
                 margin: '0 auto',
               }}
@@ -469,7 +466,7 @@ export default function Volunteer({ onOpenDonate }) {
                           required
                           value={formData.name}
                           onChange={e => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="e.g. Senthilkumar Balan"
+                          placeholder="e.g. Senthilkumar"
                           style={{
                             width: '100%',
                             padding: '12px 16px',

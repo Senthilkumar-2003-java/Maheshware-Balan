@@ -80,11 +80,11 @@ export default function Navbar({ onOpenDonate }) {
           <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShieldCheck size={14} color="#F5D061" />
             <span style={{ opacity: 0.95, letterSpacing: '0.01em', color: '#F8FAFC' }}>
-              Tax Exempted under Section 80G • Registered NGO (Reg. No. BOOK-4/35/2026)
+              {t('taxExemptTopBar')}
             </span>
           </div>
 
-          {/* Right: Office link + Google Translate Dropdown + Admin Login */}
+          {/* Right: Office link + Language Selector Dropdown + Admin Login */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: 'auto' }}>
             <NavLink 
               to="/contact" 
@@ -100,7 +100,7 @@ export default function Navbar({ onOpenDonate }) {
               }}
             >
               <Building2 size={13} color="#F5D061" />
-              <span>Trust Office</span>
+              <span>{t('trustOffice')}</span>
             </NavLink>
 
             <div className="topbar-divider" style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.25)' }} />

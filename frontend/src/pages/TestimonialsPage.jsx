@@ -50,7 +50,7 @@ export default function TestimonialsPage({ onOpenDonate }) {
       {/* Header (Balanced Scrim — Image vivid, Text crisp) */}
       <section
         style={{
-          background: `linear-gradient(180deg, rgba(16, 24, 40, 0.28) 0%, rgba(16, 24, 40, 0.52) 100%), url(${bannerTestimonials}) center 15% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(16, 43, 80, 0.58) 0%, rgba(10, 25, 47, 0.32) 45%, rgba(16, 43, 80, 0.78) 100%), url(${bannerTestimonials}) center 15% / cover no-repeat`,
           color: '#FFFFFF',
           padding: '110px 0 85px 0',
           textAlign: 'center',
@@ -76,7 +76,6 @@ export default function TestimonialsPage({ onOpenDonate }) {
               borderRadius: '9999px',
               border: '1px solid rgba(245, 208, 97, 0.4)',
               marginBottom: '16px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
             <Quote size={16} color="#F5D061" />
@@ -89,7 +88,6 @@ export default function TestimonialsPage({ onOpenDonate }) {
               fontSize: 'clamp(2.4rem, 4.2vw, 3.5rem)',
               fontWeight: '700',
               color: '#FFFFFF',
-              textShadow: '0 3px 18px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9)',
               lineHeight: '1.2',
               marginBottom: '16px',
             }}
@@ -100,12 +98,11 @@ export default function TestimonialsPage({ onOpenDonate }) {
             className="banner-animate-3"
             style={{
               fontSize: '1.12rem',
-              color: '#F8FAFC',
-              textShadow: '0 2px 14px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9)',
+              color: 'rgba(255, 255, 255, 0.95)',
               maxWidth: '660px',
               margin: '0 auto',
               lineHeight: '1.6',
-              fontWeight: '500',
+              fontWeight: '400',
             }}
           >
             Read authentic experiences from the students, patients, families, and community members touched by our initiatives.

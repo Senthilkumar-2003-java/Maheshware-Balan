@@ -126,20 +126,29 @@ button {
   }
 }
 
-/* Typography Hierarchy */
+/* Typography Hierarchy - Authentic Charitable Trust Architecture */
 h1, h2, h3, h4, .font-serif {
   font-family: var(--font-serif);
   font-weight: 700;
   color: var(--color-text-primary);
-  line-height: 1.2;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 .font-editorial {
   font-family: var(--font-editorial);
 }
 
-.font-handwriting {
-  font-family: var(--font-handwritten);
+.font-handwriting, .font-quote, .font-motto {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+/* Multilingual & Tamil Typography Support */
+[lang="ta"], .lang-ta {
+  font-family: var(--font-tamil);
 }
 
 /* Section Header Styles */

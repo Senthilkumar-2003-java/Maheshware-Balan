@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { 
   X, Heart, ShieldCheck, CheckCircle2, QrCode, CreditCard, Building, 
-  Sparkles, AlertCircle, Loader2, Download, ChevronDown
+  Sparkles, AlertCircle, Loader2, Download, ChevronDown, Fingerprint
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitDonationApi } from '../services/api';
 import { openRazorpayCheckout } from '../utils/razorpay';
+import { TRUST_LOGO_BASE64 } from '../utils/logoBase64';
+import { useLanguage } from '../context/LanguageContext';
 
 const currencies = [
   { code: 'INR', symbol: '₹', label: 'INR (₹)' },
@@ -40,6 +42,7 @@ function numberToWords(num) {
 }
 
 export default function DonationModal({ isOpen, onClose }) {
+  const { t } = useLanguage();
   const [frequency, setFrequency] = useState('one-time');
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
   const [amount, setAmount] = useState('');
@@ -50,11 +53,12 @@ export default function DonationModal({ isOpen, onClose }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [receiptData, setReceiptData] = useState(null);
 
+  const [idType, setIdType] = useState('pan'); // 'pan' | 'aadhaar'
   const [donorDetails, setDonorDetails] = useState({
     name: '',
     email: '',
     phone: '',
-    pan: '',
+    idNumber: '',
   });
 
   if (!isOpen) return null;
@@ -67,10 +71,50 @@ export default function DonationModal({ isOpen, onClose }) {
       setErrorMessage('Please enter a valid donation amount.');
       return;
     }
-    if (!donorDetails.name.trim() || !donorDetails.email.trim()) {
-      setErrorMessage('Please provide your name and email address.');
+    if (!donorDetails.name.trim()) {
+      setErrorMessage('Please enter your full name.');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!donorDetails.email.trim() || !emailRegex.test(donorDetails.email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    const cleanPhone = donorDetails.phone.trim().replace(/\D/g, '');
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+      setErrorMessage('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+
+    const cleanId = (donorDetails.idNumber || '').trim();
+    if (idType === 'pan') {
+      const cleanPan = cleanId.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+      if (!cleanPan) {
+        setErrorMessage('Please enter your 10-character PAN number for 80G tax exemption.');
+        return;
+      }
+      if (!panRegex.test(cleanPan)) {
+        setErrorMessage('Invalid PAN format. PAN must be exactly 10 characters (e.g. ABCDE1234F: 5 letters, 4 numbers, 1 letter).');
+        return;
+      }
+    } else {
+      const cleanAadhaar = cleanId.replace(/\D/g, '');
+      const aadhaarRegex = /^\d{12}$/;
+      if (!cleanAadhaar) {
+        setErrorMessage('Please enter your 12-digit Aadhaar number for 80G verification.');
+        return;
+      }
+      if (!aadhaarRegex.test(cleanAadhaar)) {
+        setErrorMessage('Invalid Aadhaar number. Please enter a valid 12-digit Indian Aadhaar number.');
+        return;
+      }
+    }
+
+    const finalIdFormatted = idType === 'pan'
+      ? cleanId.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      : cleanId.replace(/\D/g, '');
 
     setSubmitting(true);
     setErrorMessage('');
@@ -85,7 +129,9 @@ export default function DonationModal({ isOpen, onClose }) {
       cause: selectedCause,
       notes: {
         frequency,
-        pan: donorDetails.pan ? donorDetails.pan.toUpperCase() : 'N/A',
+        id_type: idType.toUpperCase(),
+        id_number: finalIdFormatted,
+        pan: idType === 'pan' ? finalIdFormatted : `AADHAAR-${finalIdFormatted}`,
       },
       onSuccess: async (rzpResponse) => {
         try {
@@ -97,7 +143,7 @@ export default function DonationModal({ isOpen, onClose }) {
             donor_name: donorDetails.name,
             email: donorDetails.email,
             phone: donorDetails.phone || 'N/A',
-            pan_number: donorDetails.pan ? donorDetails.pan.toUpperCase() : null,
+            pan_number: finalIdFormatted,
             amount: currentAmountNum,
             currency: selectedCurrency.code,
             cause: selectedCause,
@@ -106,7 +152,7 @@ export default function DonationModal({ isOpen, onClose }) {
             razorpay_payment_id: rzpResponse.razorpay_payment_id,
             razorpay_order_id: rzpResponse.razorpay_order_id || null,
             razorpay_signature: rzpResponse.razorpay_signature || null,
-            notes: `Plan: ${frequency} | Razorpay ID: ${rzpResponse.razorpay_payment_id}`,
+            notes: `Plan: ${frequency} | ID: ${idType.toUpperCase()} - ${finalIdFormatted} | Razorpay ID: ${rzpResponse.razorpay_payment_id}`,
           });
 
           const receipt = {
@@ -117,7 +163,9 @@ export default function DonationModal({ isOpen, onClose }) {
             donorName: donorDetails.name,
             email: donorDetails.email,
             phone: donorDetails.phone || 'N/A',
-            pan: donorDetails.pan ? donorDetails.pan.toUpperCase() : 'N/A',
+            idType: idType,
+            idNumber: finalIdFormatted,
+            pan: finalIdFormatted,
             amount: currentAmountNum,
             currency: selectedCurrency,
             amountInWords: numberToWords(currentAmountNum),
@@ -197,9 +245,9 @@ export default function DonationModal({ isOpen, onClose }) {
             margin-bottom: 20px;
           }
           .trust-name {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 23px;
-            font-weight: 800;
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 22px;
+            font-weight: 700;
             letter-spacing: 0.02em;
             margin: 0;
             text-transform: uppercase;
@@ -362,6 +410,7 @@ export default function DonationModal({ isOpen, onClose }) {
         </div>
         <div class="receipt-box">
           <div class="header">
+            <img src="${TRUST_LOGO_BASE64}" alt="Trust Official Logo" style="width: 76px; height: 76px; object-fit: contain; margin: 0 auto 10px auto; display: block;" />
             <h1 class="trust-name">
               <span class="part1">MAHESWARI </span>
               <span class="amp">&amp;</span>
@@ -402,8 +451,8 @@ export default function DonationModal({ isOpen, onClose }) {
               <td>${receiptData.email} • ${receiptData.phone}</td>
             </tr>
             <tr>
-              <th>Donor PAN Number (80G Benefit)</th>
-              <td style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.pan}</td>
+              <th>Donor ${receiptData.idType === 'aadhaar' ? 'Aadhaar Number' : 'PAN Number'} (80G Benefit)</th>
+              <td style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.idNumber || receiptData.pan}</td>
             </tr>
             <tr>
               <th>Donation Allocated To</th>
@@ -434,11 +483,11 @@ export default function DonationModal({ isOpen, onClose }) {
               <div class="seal-sub">MEMORIAL CHARITABLE TRUST</div>
               <div style="font-size:8px; color:#6B7280; margin-top:2px;">ESTD. 2021 • TAMIL NADU</div>
             </div>
-            <div class="sign-box">
-              <div class="stamp-verified">✓ Digitally Signed &amp; Approved</div>
-              <div class="sign-line">
-                <div class="sign-title">Authorized Signatory</div>
-                <div class="sign-trust">For Maheswari &amp; Balan Memorial Charitable Trust</div>
+            <div style="text-align: right; width: 300px;">
+              <div style="font-size: 11px; color: #475569; font-weight: 600; line-height: 1.5;">
+                • Computer-Generated Official Receipt •<br/>
+                Valid under Indian IT Act Section 80G<br/>
+                <span style="font-size: 10px; color: #94A3B8;">No physical signature required</span>
               </div>
             </div>
           </div>
@@ -479,90 +528,102 @@ export default function DonationModal({ isOpen, onClose }) {
       <div
         style={{
           backgroundColor: '#FFFFFF',
-          borderRadius: '28px',
-          maxWidth: step === 'receipt' ? '600px' : 'min(94vw, 520px)',
+          borderRadius: '24px',
+          maxWidth: step === 'receipt' ? '640px' : 'min(94vw, 560px)',
           width: '100%',
           boxSizing: 'border-box',
-          maxHeight: '92vh',
+          maxHeight: '90vh',
           overflowY: 'auto',
-          padding: 'clamp(20px, 4vw, 30px) clamp(16px, 4vw, 24px)',
-          boxShadow: '0 30px 90px rgba(0, 0, 0, 0.25)',
+          padding: '28px 24px',
+          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.05)',
           position: 'relative',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Apple-style Close Button */}
+        <style>{`
+          .donation-modal-scroll::-webkit-scrollbar { width: 5px; }
+          .donation-modal-scroll::-webkit-scrollbar-track { background: transparent; }
+          .donation-modal-scroll::-webkit-scrollbar-thumb { background: rgba(6, 75, 53, 0.2); border-radius: 9999px; }
+          .donation-modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(6, 75, 53, 0.4); }
+        `}</style>
+
+        {/* Close Button */}
         <button
           onClick={onClose}
           style={{
             position: 'absolute',
-            top: '18px',
-            right: '18px',
-            width: '32px',
-            height: '32px',
+            top: '16px',
+            right: '16px',
+            width: '34px',
+            height: '34px',
             borderRadius: '50%',
-            backgroundColor: '#F5F5F7',
+            backgroundColor: '#F1F5F9',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#1D1D1F',
+            color: '#475569',
             cursor: 'pointer',
             border: 'none',
-            transition: 'background 0.2s',
+            transition: 'all 0.2s',
           }}
           aria-label="Close dialog"
         >
-          <X size={16} strokeWidth={2.5} />
+          <X size={17} strokeWidth={2.2} />
         </button>
 
         {step === 'form' ? (
-          <form onSubmit={handleSubmit}>
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '22px' }}>
+          <form onSubmit={handleSubmit} className="donation-modal-scroll">
+            {/* Header with Official Trust Logo */}
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <div
                 style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  backgroundColor: '#FFFBEB',
-                  color: '#D79A18',
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '16px',
+                  backgroundColor: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: '0 auto 10px auto',
-                  border: '1px solid rgba(215, 154, 24, 0.3)',
+                  border: '1.5px solid rgba(215, 154, 24, 0.4)',
+                  boxShadow: '0 4px 14px rgba(6, 75, 53, 0.1)',
+                  padding: '4px',
                 }}
               >
-                <Heart size={22} fill="#D79A18" />
+                <img
+                  src={TRUST_LOGO_BASE64}
+                  alt="MBMCT Logo"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
               </div>
               <h3
                 style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: '1.7rem',
+                  fontFamily: "var(--font-serif)",
+                  fontSize: '1.55rem',
                   fontWeight: '700',
-                  color: '#111827',
-                  lineHeight: '1.2',
+                  color: '#102B50',
+                  lineHeight: '1.25',
                   marginBottom: '4px',
                 }}
               >
-                Support Our Mission
+                Make a Tax-Deductible Gift
               </h3>
-              <p style={{ fontSize: '0.88rem', color: '#6B7280' }}>
-                Your generosity brings education, healthcare and dignity to those in need.
-              </p>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem', color: '#064B35', fontWeight: '700', backgroundColor: '#ECFDF5', padding: '3px 10px', borderRadius: '9999px', border: '1px solid #A7F3D0' }}>
+                <ShieldCheck size={13} color="#059669" />
+                <span>Section 80G Tax Exemption • Registered Trust</span>
+              </div>
             </div>
 
-            {/* iOS-Style Segmented Frequency Toggle */}
+            {/* Segmented Frequency Toggle */}
             <div
               style={{
                 display: 'flex',
-                backgroundColor: '#F5F5F7',
-                borderRadius: '9999px',
+                backgroundColor: '#F1F5F9',
+                borderRadius: '12px',
                 padding: '3px',
-                marginBottom: '20px',
-                border: '1px solid #E5E5EA',
+                marginBottom: '16px',
+                border: '1px solid #E2E8F0',
               }}
             >
               <button
@@ -570,33 +631,33 @@ export default function DonationModal({ isOpen, onClose }) {
                 onClick={() => setFrequency('one-time')}
                 style={{
                   flex: 1,
-                  padding: '9px',
-                  borderRadius: '9999px',
-                  fontSize: '0.86rem',
+                  padding: '8px',
+                  borderRadius: '9px',
+                  fontSize: '0.84rem',
                   fontWeight: '700',
                   backgroundColor: frequency === 'one-time' ? '#FFFFFF' : 'transparent',
-                  color: frequency === 'one-time' ? '#111827' : '#6B7280',
-                  boxShadow: frequency === 'one-time' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
-                  transition: 'all 0.2s',
+                  color: frequency === 'one-time' ? '#102B50' : '#64748B',
+                  boxShadow: frequency === 'one-time' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s ease',
                   cursor: 'pointer',
                   border: 'none',
                 }}
               >
-                One-Time Donation
+                One-Time Gift
               </button>
               <button
                 type="button"
                 onClick={() => setFrequency('monthly')}
                 style={{
                   flex: 1,
-                  padding: '9px',
-                  borderRadius: '9999px',
-                  fontSize: '0.86rem',
+                  padding: '8px',
+                  borderRadius: '9px',
+                  fontSize: '0.84rem',
                   fontWeight: '700',
-                  backgroundColor: frequency === 'monthly' ? '#111827' : 'transparent',
-                  color: frequency === 'monthly' ? '#FFFFFF' : '#6B7280',
-                  boxShadow: frequency === 'monthly' ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
-                  transition: 'all 0.2s',
+                  backgroundColor: frequency === 'monthly' ? '#102B50' : 'transparent',
+                  color: frequency === 'monthly' ? '#FFFFFF' : '#64748B',
+                  boxShadow: frequency === 'monthly' ? '0 2px 6px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.15s ease',
                   cursor: 'pointer',
                   border: 'none',
                   display: 'flex',
@@ -605,36 +666,63 @@ export default function DonationModal({ isOpen, onClose }) {
                   gap: '6px',
                 }}
               >
-                <span>Monthly Supporter</span>
-                <Heart size={13} fill={frequency === 'monthly' ? '#D79A18' : '#6B7280'} color={frequency === 'monthly' ? '#D79A18' : '#6B7280'} />
+                <span>Monthly Partner</span>
+                <Heart size={12} fill={frequency === 'monthly' ? '#F5D061' : '#64748B'} color={frequency === 'monthly' ? '#F5D061' : '#64748B'} />
               </button>
             </div>
 
-            {/* Apple-Style Currency & Amount Input Group (ZERO OVERLAP ARCHITECTURE) */}
-            <div style={{ marginBottom: '18px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '8px' }}>
-                Select Currency &amp; Enter Donation Amount
+            {/* Quick Amount Presets */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '14px' }}>
+              {[500, 1000, 2500, 5000].map((preset) => {
+                const isSelected = Number(amount) === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setAmount(String(preset))}
+                    style={{
+                      padding: '8px 4px',
+                      borderRadius: '10px',
+                      border: '1.5px solid',
+                      borderColor: isSelected ? '#D79A18' : '#CBD5E1',
+                      backgroundColor: isSelected ? '#FFFBEB' : '#FFFFFF',
+                      color: isSelected ? '#064B35' : '#334155',
+                      fontWeight: '700',
+                      fontSize: '0.84rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    ₹{preset.toLocaleString('en-IN')}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Currency & Amount Input Group */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#102B50', display: 'block', marginBottom: '6px' }}>
+                Select Currency &amp; Donation Amount
               </label>
 
-              {/* Flex Container: Currency Selector + Distinct Symbol Column + Separate Number Input */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'stretch',
-                  backgroundColor: '#F5F5F7',
-                  borderRadius: '16px',
-                  border: '1.5px solid #E5E5EA',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '14px',
+                  border: '1.5px solid #CBD5E1',
                   overflow: 'hidden',
-                  transition: 'border-color 0.2s',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
                 }}
               >
                 {/* 1. Currency Code Selector Dropdown */}
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#EAEAEE',
-                  padding: '0 12px',
-                  borderRight: '1px solid #D1D1D6',
+                  backgroundColor: '#F8FAFC',
+                  padding: '0 10px',
+                  borderRight: '1px solid #CBD5E1',
                   flexShrink: 0,
                 }}>
                   <select
@@ -645,8 +733,8 @@ export default function DonationModal({ isOpen, onClose }) {
                     }}
                     style={{
                       fontWeight: '700',
-                      fontSize: '0.9rem',
-                      color: '#111827',
+                      fontSize: '0.86rem',
+                      color: '#102B50',
                       background: 'transparent',
                       border: 'none',
                       cursor: 'pointer',
@@ -670,16 +758,16 @@ export default function DonationModal({ isOpen, onClose }) {
                     padding: '0 12px',
                     fontWeight: '800',
                     fontSize: '1.25rem',
-                    color: '#111827',
-                    backgroundColor: '#F5F5F7',
-                    borderRight: '1px solid #E5E5EA',
+                    color: '#064B35',
+                    backgroundColor: '#F8FAFC',
+                    borderRight: '1px solid #CBD5E1',
                     flexShrink: 0,
                   }}
                 >
                   {selectedCurrency.symbol}
                 </div>
 
-                {/* 3. Number Input Field: Completely isolated so NO characters ever overlap digits */}
+                {/* 3. Number Input Field */}
                 <input
                   type="number"
                   min="1"
@@ -691,11 +779,11 @@ export default function DonationModal({ isOpen, onClose }) {
                   style={{
                     flex: 1,
                     minWidth: 0,
-                    padding: '14px 16px',
-                    fontSize: '1.35rem',
+                    padding: '12px 14px',
+                    fontSize: '1.3rem',
                     fontWeight: '800',
-                    color: '#111827',
-                    backgroundColor: 'transparent',
+                    color: '#102B50',
+                    backgroundColor: '#FFFFFF',
                     border: 'none',
                     outline: 'none',
                   }}
@@ -703,7 +791,7 @@ export default function DonationModal({ isOpen, onClose }) {
               </div>
 
               {currentAmountNum > 0 && (
-                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginTop: '6px', fontStyle: 'italic' }}>
+                <div style={{ fontSize: '0.76rem', color: '#64748B', marginTop: '5px', fontStyle: 'italic' }}>
                   Amount in words: {selectedCurrency.code} {numberToWords(currentAmountNum)}
                 </div>
               )}
@@ -711,7 +799,7 @@ export default function DonationModal({ isOpen, onClose }) {
 
             {/* Allocate To Specific Program */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#102B50', display: 'block', marginBottom: '6px' }}>
                 Allocate To Specific Initiative
               </label>
               <select
@@ -720,45 +808,122 @@ export default function DonationModal({ isOpen, onClose }) {
                 style={{
                   width: '100%',
                   maxWidth: '100%',
-                  padding: '11px 14px',
+                  padding: '10px 12px',
                   borderRadius: '12px',
-                  border: '1.5px solid #E5E5EA',
-                  fontSize: '0.88rem',
-                  backgroundColor: '#F5F5F7',
-                  color: '#1D1D1F',
+                  border: '1.5px solid #CBD5E1',
+                  fontSize: '0.86rem',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1E293B',
                   fontWeight: '600',
                   outline: 'none',
                 }}
               >
-                <option value="Child Education & School Needs">Child Education Support</option>
-                <option value="Government School Infrastructure">Government School Infrastructure</option>
-                <option value="Cancer Patients Medical Relief">Cancer Patient Medical Relief</option>
-                <option value="Leprosy Patients Care & Rehabilitation">Leprosy Patient Rehabilitation</option>
-                <option value="Elderly & Bedridden Care">Elderly Care &amp; Nutrition</option>
-                <option value="General Welfare & Immediate Relief">General Humanitarian Welfare</option>
+                <option value="Child Education & School Needs">Government School Child Education Support</option>
+                <option value="Government School Infrastructure">Government School Needs &amp; Infrastructure</option>
+                <option value="Cancer Patients Medical Relief">Cancer Patients Medication &amp; Relief</option>
+                <option value="Leprosy Patients Care & Rehabilitation">Leprosy Patients Care &amp; Support</option>
+                <option value="Elderly & Bedridden Care">Senior Citizen Shelter &amp; Nutrition</option>
+                <option value="General Welfare & Immediate Relief">General Charitable Welfare (Urgent Need)</option>
               </select>
             </div>
 
             {/* Donor Information */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
-                Donor Information
-              </label>
-              <div className="modal-donor-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#102B50' }}>
+                  {t('donorInformation')}
+                </label>
+              </div>
+
+              {/* Tax Proof Selector: PAN Card vs Aadhaar Card */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '10px',
+                backgroundColor: '#F8FAFC',
+                padding: '6px 10px',
+                borderRadius: '10px',
+                border: '1.5px solid #E2E8F0',
+              }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#475569', whiteSpace: 'nowrap' }}>
+                  {t('chooseTaxId')}
+                </span>
+                <div style={{ display: 'flex', gap: '6px', flex: 1 }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIdType('pan');
+                      setDonorDetails(prev => ({ ...prev, idNumber: '' }));
+                      if (errorMessage) setErrorMessage('');
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      border: idType === 'pan' ? '2px solid #064B35' : '1px solid #CBD5E1',
+                      backgroundColor: idType === 'pan' ? '#064B35' : '#FFFFFF',
+                      color: idType === 'pan' ? '#FFFFFF' : '#334155',
+                      fontWeight: idType === 'pan' ? '800' : '600',
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '5px',
+                    }}
+                  >
+                    <CreditCard size={15} color={idType === 'pan' ? '#F5D061' : '#173F73'} />
+                    <span>{t('panCard')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIdType('aadhaar');
+                      setDonorDetails(prev => ({ ...prev, idNumber: '' }));
+                      if (errorMessage) setErrorMessage('');
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      border: idType === 'aadhaar' ? '2px solid #064B35' : '1px solid #CBD5E1',
+                      backgroundColor: idType === 'aadhaar' ? '#064B35' : '#FFFFFF',
+                      color: idType === 'aadhaar' ? '#FFFFFF' : '#334155',
+                      fontWeight: idType === 'aadhaar' ? '800' : '600',
+                      fontSize: '0.78rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <Fingerprint size={15} color={idType === 'aadhaar' ? '#F5D061' : '#064B35'} />
+                    <span>{t('aadhaarCard')}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="modal-donor-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '9px', width: '100%', boxSizing: 'border-box' }}>
                 <div>
                   <input
                     type="text"
                     required
-                    placeholder="Full Name *"
+                    placeholder={t('fullName')}
                     value={donorDetails.name}
                     onChange={(e) => setDonorDetails({ ...donorDetails, name: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '11px 12px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #E5E5EA',
-                      fontSize: '0.86rem',
-                      backgroundColor: '#F5F5F7',
+                      boxSizing: 'border-box',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      backgroundColor: '#FFFFFF',
+                      color: '#0F172A',
                       outline: 'none',
                     }}
                   />
@@ -767,16 +932,18 @@ export default function DonationModal({ isOpen, onClose }) {
                   <input
                     type="email"
                     required
-                    placeholder="Email Address *"
+                    placeholder={t('emailAddress')}
                     value={donorDetails.email}
                     onChange={(e) => setDonorDetails({ ...donorDetails, email: e.target.value })}
                     style={{
                       width: '100%',
-                      padding: '11px 12px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #E5E5EA',
-                      fontSize: '0.86rem',
-                      backgroundColor: '#F5F5F7',
+                      boxSizing: 'border-box',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      backgroundColor: '#FFFFFF',
+                      color: '#0F172A',
                       outline: 'none',
                     }}
                   />
@@ -784,81 +951,95 @@ export default function DonationModal({ isOpen, onClose }) {
                 <div>
                   <input
                     type="tel"
-                    placeholder="Phone Number"
+                    required
+                    maxLength={10}
+                    placeholder={t('mobileNumber')}
                     value={donorDetails.phone}
-                    onChange={(e) => setDonorDetails({ ...donorDetails, phone: e.target.value })}
+                    onChange={(e) => setDonorDetails({ ...donorDetails, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                     style={{
                       width: '100%',
-                      padding: '11px 12px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #E5E5EA',
-                      fontSize: '0.86rem',
-                      backgroundColor: '#F5F5F7',
+                      boxSizing: 'border-box',
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      border: '1.5px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      backgroundColor: '#FFFFFF',
+                      color: '#0F172A',
                       outline: 'none',
                     }}
                   />
                 </div>
                 <div>
-                  <input
-                    type="text"
-                    placeholder="PAN Card (For 80G Receipt)"
-                    value={donorDetails.pan}
-                    onChange={(e) => setDonorDetails({ ...donorDetails, pan: e.target.value })}
-                    style={{
-                      width: '100%',
-                      padding: '11px 12px',
-                      borderRadius: '12px',
-                      border: '1.5px solid #E5E5EA',
-                      fontSize: '0.86rem',
-                      backgroundColor: '#F5F5F7',
-                      textTransform: 'uppercase',
-                      outline: 'none',
-                    }}
-                  />
+                  {idType === 'pan' ? (
+                    <input
+                      type="text"
+                      required
+                      maxLength={10}
+                      placeholder={t('panPlaceholder')}
+                      value={donorDetails.idNumber || ''}
+                      onChange={(e) => {
+                        const clean = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+                        setDonorDetails({ ...donorDetails, idNumber: clean });
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        border: '1.5px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                        backgroundColor: '#FFFFFF',
+                        color: '#0F172A',
+                        textTransform: 'uppercase',
+                        outline: 'none',
+                      }}
+                    />
+                  ) : (
+                    <input
+                      type="tel"
+                      required
+                      maxLength={12}
+                      placeholder={t('aadhaarPlaceholder')}
+                      value={donorDetails.idNumber || ''}
+                      onChange={(e) => {
+                        const clean = e.target.value.replace(/\D/g, '').slice(0, 12);
+                        setDonorDetails({ ...donorDetails, idNumber: clean });
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        border: '1.5px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                        backgroundColor: '#FFFFFF',
+                        color: '#0F172A',
+                        outline: 'none',
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Payment Method Selector */}
-            <div style={{ marginBottom: '18px' }}>
-              <label style={{ fontSize: '0.82rem', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '6px' }}>
-                Payment Gateway &amp; Mode
-              </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                {[
-                  { id: 'razorpay', label: 'Razorpay Gateway', icon: CreditCard },
-                  { id: 'upi', label: 'UPI / GPay / QR', icon: QrCode },
-                  { id: 'netbanking', label: 'Net Banking', icon: Building },
-                ].map((m) => {
-                  const MIcon = m.icon;
-                  const isSelected = paymentMethod === m.id;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setPaymentMethod(m.id)}
-                      style={{
-                        padding: '10px 6px',
-                        borderRadius: '12px',
-                        border: '1.5px solid',
-                        borderColor: isSelected ? '#064B35' : '#E5E5EA',
-                        backgroundColor: isSelected ? '#F0FDF4' : '#FFFFFF',
-                        color: isSelected ? '#064B35' : '#6B7280',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '0.78rem',
-                        fontWeight: '700',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                      }}
-                    >
-                      <MIcon size={17} color={isSelected ? '#064B35' : '#6B7280'} />
-                      <span>{m.label}</span>
-                    </button>
-                  );
-                })}
+            {/* Seamless Razorpay Payment Assurance Notice */}
+            <div
+              style={{
+                marginBottom: '18px',
+                padding: '11px 14px',
+                borderRadius: '12px',
+                backgroundColor: '#F0FDF4',
+                border: '1px solid #BBF7D0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <ShieldCheck size={22} color="#059669" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: '0.82rem', color: '#064B35', fontWeight: '600', lineHeight: 1.4 }}>
+                {t('instantSecureNotice')}
               </div>
             </div>
 
@@ -902,7 +1083,7 @@ export default function DonationModal({ isOpen, onClose }) {
                 <>
                   <Heart size={18} fill="#F5D061" color="#F5D061" />
                   <span>
-                    Pay via Razorpay — {selectedCurrency.symbol} {currentAmountNum ? currentAmountNum.toLocaleString() : '0'}
+                    {t('payViaRazorpay')} — {selectedCurrency.symbol} {currentAmountNum ? currentAmountNum.toLocaleString() : '0'}
                   </span>
                 </>
               )}
@@ -944,8 +1125,8 @@ export default function DonationModal({ isOpen, onClose }) {
 
             <h3
               style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: '1.75rem',
+                fontFamily: "var(--font-serif)",
+                fontSize: '1.7rem',
                 fontWeight: '700',
                 color: '#111827',
                 marginBottom: '4px',
@@ -1016,8 +1197,12 @@ export default function DonationModal({ isOpen, onClose }) {
                   <span style={{ fontFamily: 'monospace', fontSize: '0.76rem', color: '#064B35', fontWeight: '700' }}>{receiptData?.transactionId}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>PAN (80G Benefit):</span>
-                  <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{receiptData?.pan || 'N/A'}</span>
+                  <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>
+                    {receiptData?.idType === 'aadhaar' ? 'Aadhaar (80G Benefit):' : 'PAN (80G Benefit):'}
+                  </span>
+                  <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>
+                    {receiptData?.idNumber || receiptData?.pan || 'N/A'}
+                  </span>
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
                   <span style={{ color: '#64748B', fontSize: '0.74rem', display: 'block' }}>Designated Initiative:</span>

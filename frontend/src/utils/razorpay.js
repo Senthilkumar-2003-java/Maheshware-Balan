@@ -1,15 +1,26 @@
+import { TRUST_LOGO_BASE64 } from './logoBase64';
+
 // Razorpay Payment Gateway integration utility
 
 let razorpayScriptPromise = null;
 
 export function loadRazorpayScript() {
-  if (typeof window !== 'undefined' && window.Razorpay) {
+  if (window.Razorpay) {
     return Promise.resolve(true);
   }
+
   if (razorpayScriptPromise) {
     return razorpayScriptPromise;
   }
+
   razorpayScriptPromise = new Promise((resolve) => {
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.onload = () => resolve(true);
+      existing.onerror = () => resolve(false);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
@@ -20,59 +31,39 @@ export function loadRazorpayScript() {
     };
     document.body.appendChild(script);
   });
+
   return razorpayScriptPromise;
 }
 
 export async function openRazorpayCheckout({
   amount,
-  currency = 'INR',
+  orderId,
   donorName,
   email,
   phone,
-  cause = 'General Support',
+  cause,
   notes = {},
   onSuccess,
-  onDismiss,
   onFailure,
+  onDismiss,
 }) {
   const loaded = await loadRazorpayScript();
-  if (!loaded) {
-    if (onFailure) {
-      onFailure(new Error('Razorpay SDK failed to load. Please check your internet connection.'));
-    }
+  if (!loaded || !window.Razorpay) {
+    alert('Razorpay SDK failed to load. Please check your internet connection.');
+    if (onFailure) onFailure(new Error('Razorpay SDK not loaded'));
     return;
   }
 
-  // Fallback to configured key
-  const defaultKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TjpUljZMeNnLXm';
-  let keyId = defaultKey;
-
-  try {
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://maheshware-balan.onrender.com/api';
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1200);
-    const keyRes = await fetch(`${apiUrl}/donations/razorpay-key`, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (keyRes.ok) {
-      const keyData = await keyRes.json();
-      if (keyData?.keyId) {
-        keyId = keyData.keyId;
-      }
-    }
-  } catch (e) {
-    // Seamless fallback to default key without delaying modal
-  }
-
-  // Razorpay amounts are in the smallest currency unit (paise for INR)
-  const amountInPaise = Math.round(Number(amount) * 100);
+  const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
 
   const options = {
     key: keyId,
-    amount: amountInPaise,
-    currency: currency || 'INR',
+    amount: Math.round(Number(amount) * 100), // amount in paise
+    currency: 'INR',
     name: 'Maheswari & Balan Memorial Charitable Trust',
-    description: `Donation: ${cause}`,
-    image: 'https://cdn-icons-png.flaticon.com/512/3342/3342137.png',
+    description: `Donation towards ${cause || 'General Charitable Cause'}`,
+    image: TRUST_LOGO_BASE64,
+    order_id: orderId || undefined,
     prefill: {
       name: donorName || '',
       email: email || '',
@@ -80,7 +71,7 @@ export async function openRazorpayCheckout({
     },
     notes: {
       cause: cause || 'General Support',
-      trust_reg: '142/IV/2021',
+      trust_reg: 'BOOK-4/35/2026',
       tax_benefit: '80G Exemption',
       ...notes,
     },

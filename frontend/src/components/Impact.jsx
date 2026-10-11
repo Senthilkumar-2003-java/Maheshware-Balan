@@ -115,18 +115,18 @@ export default function Impact({ onOpenDonate }) {
             </div>
 
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(2rem, 3.2vw, 3rem)',
               fontWeight: '700',
               color: '#FFFFFF',
-              lineHeight: '1.12',
+              lineHeight: '1.18',
               letterSpacing: '-0.01em',
               marginBottom: '16px',
             }}>
               Real People.<br />
               <span style={{
                 fontStyle: 'italic',
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontFamily: "var(--font-editorial)",
                 color: '#E9C66A',
               }}>
                 Real Stories.
@@ -211,7 +211,7 @@ export default function Impact({ onOpenDonate }) {
                   </div>
                   {/* Count */}
                   <div style={{
-                    fontFamily: "'Playfair Display', Georgia, serif",
+                    fontFamily: "var(--font-serif)",
                     fontSize: 'clamp(1.6rem, 2.2vw, 2rem)',
                     fontWeight: '700',
                     color: '#FFFFFF',
@@ -235,22 +235,23 @@ export default function Impact({ onOpenDonate }) {
             })}
           </div>
 
-          {/* RIGHT: Handwritten script — "Hope Changes Lives ♡" */}
+          {/* RIGHT: Authentic Trust Motto Quote */}
           <div
             style={{ textAlign: 'center' }}
             className="impact-handwriting-col apple-reveal-right apple-reveal-delay-3"
           >
             <div
               style={{
-                fontFamily: "'Caveat', cursive",
-                fontSize: '2.2rem',
-                lineHeight: '1.15',
+                fontFamily: "var(--font-editorial)",
+                fontStyle: 'italic',
+                fontWeight: '600',
+                fontSize: '1.65rem',
+                lineHeight: '1.3',
                 color: '#E9C66A',
-                transform: 'rotate(-6deg)',
-                textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                letterSpacing: '0.02em',
               }}
             >
-              Hope<br />Changes<br />Lives ♡
+              “Hope<br />Changes<br />Lives”
             </div>
           </div>
         </div>

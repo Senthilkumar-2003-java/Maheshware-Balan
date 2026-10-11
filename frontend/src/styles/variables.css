@@ -31,11 +31,12 @@
   --color-border-light: rgba(6, 75, 53, 0.08);
   --color-border-gold: rgba(215, 154, 24, 0.28);
   
-  /* Typography */
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-editorial: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-handwritten: 'Caveat', cursive;
+  /* Typography - Authentic Registered Charitable Trust Typography System */
+  --font-serif: 'Merriweather', Georgia, 'Times New Roman', serif;
+  --font-editorial: 'Lora', Georgia, serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-tamil: 'Noto Sans Tamil', 'DM Sans', sans-serif;
+  --font-handwritten: 'Lora', Georgia, serif;
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(6, 75, 53, 0.04);

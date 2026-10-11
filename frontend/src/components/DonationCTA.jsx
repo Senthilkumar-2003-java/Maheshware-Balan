@@ -168,17 +168,18 @@ export default function DonationCTA({ onOpenDonate, onOpenVolunteer }) {
           {/* Right Column: Handwritten Script */}
           <div style={{ textAlign: 'center' }} className="cta-handwriting-col apple-reveal-right apple-reveal-delay-3">
             <div
-              className="font-handwriting"
               style={{
-                fontSize: '2.8rem',
-                lineHeight: '1.1',
+                fontFamily: 'var(--font-editorial)',
+                fontStyle: 'italic',
+                fontWeight: '600',
+                fontSize: '2.5rem',
+                lineHeight: '1.2',
                 color: 'var(--color-gold-soft)',
-                transform: 'rotate(-4deg)',
-                textShadow: '0 2px 12px rgba(0,0,0,0.4)',
+                letterSpacing: '0.015em',
               }}
             >
-              Together<br />
-              We Can ♡
+              “Together<br />
+              We Can”
             </div>
           </div>
         </div>

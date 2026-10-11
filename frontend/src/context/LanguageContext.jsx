@@ -58,11 +58,9 @@ export function LanguageProvider({ children }) {
   }, []);
 
   const setLanguage = (langCode) => {
-    if (translations[langCode]) {
-      setLanguageState(langCode);
-      localStorage.setItem('mbmct_lang', langCode);
-      document.documentElement.lang = langCode;
-    }
+    setLanguageState(langCode);
+    localStorage.setItem('mbmct_lang', langCode);
+    document.documentElement.lang = langCode;
   };
 
   // Translation helper function

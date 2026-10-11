@@ -73,12 +73,12 @@ export default function ProgramCard({ title, description, image, icon: Icon, lin
         flexGrow: 1,
       }}>
         <h3 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-serif)",
           fontSize: '1.08rem',
           fontWeight: '700',
           color: '#17231F',
           marginBottom: '8px',
-          lineHeight: '1.3',
+          lineHeight: '1.35',
         }}>
           {title}
         </h3>

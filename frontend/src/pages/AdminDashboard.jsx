@@ -15,6 +15,7 @@ import {
   getVolunteersApi,
   updateVolunteerStatusApi
 } from '../services/api';
+import { TRUST_LOGO_BASE64 } from '../utils/logoBase64';
 
 function convertNumberToWords(num) {
   const n = parseInt(num, 10);
@@ -291,10 +292,12 @@ export default function AdminDashboard() {
       <head>
         <meta charset="utf-8" />
         <title>80G Donation Receipt - ${receiptNum}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #F1F5F9;
             color: #1E293B;
             padding: 30px 15px;
@@ -332,10 +335,11 @@ export default function AdminDashboard() {
             margin-bottom: 22px;
           }
           .trust-name {
+            font-family: 'Merriweather', Georgia, serif;
             font-size: 22px;
-            font-weight: 900;
+            font-weight: 700;
             color: #173F73;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.01em;
             text-transform: uppercase;
           }
           .trust-sub {
@@ -481,6 +485,7 @@ export default function AdminDashboard() {
         </div>
         <div class="receipt-sheet">
           <div class="header">
+            <img src="${TRUST_LOGO_BASE64}" alt="Trust Official Logo" style="width: 76px; height: 76px; object-fit: contain; margin: 0 auto 10px auto; display: block;" />
             <div class="trust-name">MAHESWARI &amp; BALAN MEMORIAL CHARITABLE TRUST</div>
             <div class="trust-sub">ESTD. 2021 • SERVE WITH LOVE &amp; COMPASSION</div>
             <div class="trust-meta">
@@ -516,8 +521,8 @@ export default function AdminDashboard() {
               <td>${d.email || '—'} • ${d.phone || '—'}</td>
             </tr>
             <tr>
-              <th>Donor PAN (80G Tax Benefit)</th>
-              <td style="font-family: monospace; font-weight: 800; color: #173F73;">${d.pan || 'ON FILE'}</td>
+              <th>Donor ID (PAN / Aadhaar)</th>
+              <td style="font-family: monospace; font-weight: 800; color: #173F73;">${d.pan_number || d.pan || 'ON FILE'}</td>
             </tr>
             <tr>
               <th>Program / Cause Allocated</th>
@@ -550,10 +555,12 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div class="sign-box">
-              <div class="digital-verify">✓ Digitally Signed &amp; Approved</div>
-              <div class="sign-title">Authorized Signatory</div>
-              <div class="sign-trust">For Maheswari &amp; Balan Memorial Charitable Trust</div>
+            <div style="text-align: right; width: 300px;">
+              <div style="font-size: 11px; color: #475569; font-weight: 600; line-height: 1.5;">
+                • Computer-Generated Official Receipt •<br/>
+                Valid under Indian IT Act Section 80G<br/>
+                <span style="font-size: 10px; color: #94A3B8;">No physical signature required</span>
+              </div>
             </div>
           </div>
         </div>
@@ -591,10 +598,12 @@ export default function AdminDashboard() {
       <head>
         <meta charset="utf-8" />
         <title>Trust Administration Report - ${periodLabel}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: #F8FAFC;
             color: #1E293B;
             padding: 30px 20px;
@@ -633,8 +642,9 @@ export default function AdminDashboard() {
             align-items: flex-start;
           }
           .trust-name {
+            font-family: 'Merriweather', Georgia, serif;
             font-size: 20px;
-            font-weight: 900;
+            font-weight: 700;
             color: #173F73;
           }
           .trust-sub {
@@ -873,7 +883,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC', color: '#1E293B', fontFamily: 'inherit' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC', color: '#1E293B', fontFamily: 'var(--font-sans)' }}>
       
       {/* ── MOBILE BACKDROP OVERLAY ── */}
       {sidebarOpen && (
@@ -916,7 +926,7 @@ export default function AdminDashboard() {
           <div style={{ fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.12em', color: '#F5D061', textTransform: 'uppercase', marginBottom: '4px' }}>
             MBMCT PORTAL
           </div>
-          <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: '700', color: '#FFFFFF', letterSpacing: '0.01em' }}>
             Trust Administration
           </div>
           <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '2px' }}>
@@ -1073,11 +1083,17 @@ export default function AdminDashboard() {
             </button>
 
             <div>
-              <h1 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#102B50', margin: 0, textTransform: 'capitalize' }}>
-                {activeTab === 'overview' ? 'Operational Overview' : activeTab}
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: '700', color: '#102B50', margin: 0 }}>
+                {activeTab === 'overview' && 'Dashboard Overview'}
+                {activeTab === 'donations' && 'Donations & 80G Receipts'}
+                {activeTab === 'volunteers' && 'Volunteer Registrations'}
+                {activeTab === 'contacts' && 'Contact Inquiries'}
               </h1>
-              <div style={{ fontSize: '0.76rem', color: '#64748B' }}>
-                Real-time records from public donor, volunteer &amp; contact forms
+              <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '2px' }}>
+                {activeTab === 'overview' && 'Executive summary of charitable funds, active donors, volunteers and messages'}
+                {activeTab === 'donations' && 'Verified online donor records and instant Section 80G tax receipt issuance'}
+                {activeTab === 'volunteers' && 'Community volunteer applications, field service coordination, and verification'}
+                {activeTab === 'contacts' && 'Public queries and support requests submitted via official Contact page'}
               </div>
             </div>
           </div>
@@ -1085,40 +1101,24 @@ export default function AdminDashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               onClick={loadData}
-              title="Refresh Data from MySQL"
+              title="Refresh Data from Database"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '7px 14px',
+                padding: '7px 15px',
                 borderRadius: '8px',
                 backgroundColor: '#F8FAFC',
                 border: '1px solid #CBD5E1',
                 fontSize: '0.8rem',
-                fontWeight: '600',
-                color: '#334155',
+                fontWeight: '700',
+                color: '#102B50',
                 cursor: 'pointer',
               }}
             >
               <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
               <span className="refresh-label">Refresh</span>
             </button>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              borderRadius: '9999px',
-              backgroundColor: isLiveBackend ? '#ECFDF5' : '#FFFBEB',
-              border: `1px solid ${isLiveBackend ? '#A7F3D0' : '#FDE68A'}`,
-              fontSize: '0.74rem',
-              fontWeight: '700',
-              color: isLiveBackend ? '#065F46' : '#92400E',
-            }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: isLiveBackend ? '#10B981' : '#F59E0B' }} />
-              <span className="status-label">{isLiveBackend ? 'MySQL Connected' : 'Local Standby'}</span>
-            </div>
           </div>
         </header>
 
@@ -1277,77 +1277,175 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* ── KPI METRICS CARDS (Dynamic based on selected Date Filter) ── */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-            gap: '16px',
-            marginBottom: '24px',
-          }}>
-            {/* Card 1: Total Donations */}
-            <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Funds Raised</span>
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D79A18' }}>
-                  <IndianRupee size={18} />
+          {/* ── KPI METRICS CARDS: OVERVIEW ── */}
+          {activeTab === 'overview' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '16px',
+              marginBottom: '24px',
+            }}>
+              {/* Card 1: Total Donations */}
+              <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Funds Raised</span>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D79A18' }}>
+                    <IndianRupee size={18} />
+                  </div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.65rem', fontWeight: '700', color: '#102B50' }}>
+                  ₹{totalRaisedPeriod.toLocaleString('en-IN')}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
+                  {filteredDonations.length} recorded payments in period
                 </div>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#102B50' }}>
-                ₹{totalRaisedPeriod.toLocaleString('en-IN')}
-              </div>
-              <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
-                {filteredDonations.length} recorded payments in period
-              </div>
-            </div>
 
-            {/* Card 2: Total Donors */}
-            <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Active Donors</span>
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534' }}>
-                  <Heart size={18} />
+              {/* Card 2: Total Donors */}
+              <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Active Donors</span>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534' }}>
+                    <Heart size={18} />
+                  </div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.65rem', fontWeight: '700', color: '#102B50' }}>
+                  {totalDonorsPeriod}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
+                  Individual &amp; corporate supporters
                 </div>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#102B50' }}>
-                {totalDonorsPeriod}
-              </div>
-              <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
-                Individual &amp; corporate supporters
-              </div>
-            </div>
 
-            {/* Card 3: Volunteers */}
-            <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Volunteers</span>
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1D4ED8' }}>
-                  <Users size={18} />
+              {/* Card 3: Volunteers */}
+              <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Volunteers</span>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1D4ED8' }}>
+                    <Users size={18} />
+                  </div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.65rem', fontWeight: '700', color: '#102B50' }}>
+                  {totalVolunteersPeriod}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
+                  Registered in this period
                 </div>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#102B50' }}>
-                {totalVolunteersPeriod}
-              </div>
-              <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
-                Registered in this period
-              </div>
-            </div>
 
-            {/* Card 4: Contact Messages */}
-            <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Contact Inquiries</span>
-                <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7E22CE' }}>
-                  <MessageSquare size={18} />
+              {/* Card 4: Contact Messages */}
+              <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '14px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Contact Inquiries</span>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#FAF5FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7E22CE' }}>
+                    <MessageSquare size={18} />
+                  </div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.65rem', fontWeight: '700', color: '#102B50' }}>
+                  {totalContactsPeriod}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
+                  Community &amp; support queries
                 </div>
               </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: '800', color: '#102B50' }}>
-                {totalContactsPeriod}
+            </div>
+          )}
+
+          {/* ── KPI METRICS CARDS: DONATIONS ── */}
+          {activeTab === 'donations' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '16px',
+              marginBottom: '22px',
+            }}>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Total Funds Raised</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#064B35', marginTop: '4px' }}>
+                  ₹{totalRaisedPeriod.toLocaleString('en-IN')}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>In selected timeframe</div>
               </div>
-              <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '4px' }}>
-                Community &amp; support queries
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Active Donors</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#173F73', marginTop: '4px' }}>
+                  {totalDonorsPeriod}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Unique supporters</div>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Recorded Payments</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#D79A18', marginTop: '4px' }}>
+                  {filteredDonations.length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>80G Receipts generated</div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* ── KPI METRICS CARDS: VOLUNTEERS ── */}
+          {activeTab === 'volunteers' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '16px',
+              marginBottom: '22px',
+            }}>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Total Registered</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#102B50', marginTop: '4px' }}>
+                  {volunteers.length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Across education &amp; healthcare</div>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Approved Volunteers</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#065F46', marginTop: '4px' }}>
+                  {volunteers.filter(v => v.status === 'Approved').length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Active field team</div>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Pending Review</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#B45309', marginTop: '4px' }}>
+                  {volunteers.filter(v => !v.status || v.status === 'Pending').length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Awaiting onboarding</div>
+              </div>
+            </div>
+          )}
+
+          {/* ── KPI METRICS CARDS: CONTACTS ── */}
+          {activeTab === 'contacts' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '16px',
+              marginBottom: '22px',
+            }}>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Total Inquiries</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#102B50', marginTop: '4px' }}>
+                  {contacts.length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Public website submissions</div>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>New / Unread</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#7E22CE', marginTop: '4px' }}>
+                  {contacts.filter(c => !c.status || c.status === 'New').length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Awaiting response</div>
+              </div>
+              <div style={{ backgroundColor: '#FFFFFF', padding: '18px 20px', borderRadius: '14px', border: '1.5px solid #CBD5E1' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>Resolved</span>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', fontWeight: '700', color: '#065F46', marginTop: '4px' }}>
+                  {contacts.filter(c => c.status === 'Resolved').length}
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>Action completed</div>
+              </div>
+            </div>
+          )}
 
           {/* ── TOOLBAR: SEARCH, EXPORT CSV & DOWNLOAD REPORT ── */}
           <div style={{

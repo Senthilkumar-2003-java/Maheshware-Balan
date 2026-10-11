@@ -137,18 +137,18 @@ export default function OurStory() {
             </div>
 
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
               fontWeight: '700',
               color: '#17231F',
-              lineHeight: '1.18',
+              lineHeight: '1.22',
               marginBottom: '16px',
             }}>
               From Compassion<br />
               <span style={{
                 color: '#064B35',
                 fontStyle: 'italic',
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontFamily: "var(--font-editorial)",
                 fontWeight: '600',
               }}>
                 to Action
@@ -209,7 +209,7 @@ export default function OurStory() {
             }}>
               {/* Opening quote */}
               <div style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: "var(--font-serif)",
                 fontSize: '2.8rem',
                 lineHeight: '1',
                 color: '#D79A18',
@@ -218,11 +218,11 @@ export default function OurStory() {
                 "
               </div>
               <blockquote style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontFamily: "var(--font-editorial)",
                 fontSize: '1.18rem',
                 fontWeight: '600',
                 color: '#17231F',
-                lineHeight: '1.42',
+                lineHeight: '1.45',
                 fontStyle: 'italic',
                 marginBottom: '14px',
               }}>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, ShieldCheck, FileCheck, Landmark, ArrowRight, Sparkles, CheckCircle2, QrCode, CreditCard, Building, AlertCircle, Loader2 } from 'lucide-react';
+import { Heart, ShieldCheck, FileCheck, Landmark, ArrowRight, Sparkles, CheckCircle2, QrCode, CreditCard, Building, AlertCircle, Loader2, Fingerprint } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { submitDonationApi } from '../services/api';
 import bannerDonations from '../assets/images/banner-donations.jpg';
@@ -7,6 +7,8 @@ import SEOFAQSection from '../components/SEOFAQSection';
 
 import { openRazorpayCheckout } from '../utils/razorpay';
 import { Download } from 'lucide-react';
+import { TRUST_LOGO_BASE64 } from '../utils/logoBase64';
+import { useLanguage } from '../context/LanguageContext';
 
 function numberToWords(num) {
   const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -26,6 +28,7 @@ function numberToWords(num) {
 }
 
 export default function Donations({ onOpenDonate }) {
+  const { t } = useLanguage();
   const [amount, setAmount] = useState(2500);
   const [customVal, setCustomVal] = useState('');
   const [frequency, setFrequency] = useState('one-time');
@@ -35,11 +38,12 @@ export default function Donations({ onOpenDonate }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [txnRef, setTxnRef] = useState('');
   const [receiptData, setReceiptData] = useState(null);
+  const [idType, setIdType] = useState('pan'); // 'pan' | 'aadhaar'
   const [donorInfo, setDonorInfo] = useState({
     name: '',
     email: '',
     phone: '',
-    pan: '',
+    idNumber: '',
   });
 
   const presets = [500, 1000, 2500, 5000, 10000];
@@ -59,10 +63,51 @@ export default function Donations({ onOpenDonate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (total <= 0) return;
-    if (!donorInfo.name || !donorInfo.email || !donorInfo.phone) {
-      setErrorMessage('Please provide your name, email, and phone number.');
+    if (!donorInfo.name.trim()) {
+      setErrorMessage('Please enter your full name.');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!donorInfo.email.trim() || !emailRegex.test(donorInfo.email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+    const cleanPhone = donorInfo.phone.trim().replace(/\D/g, '');
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+      setErrorMessage('Please enter a valid 10-digit Indian mobile number.');
+      return;
+    }
+
+    const cleanId = (donorInfo.idNumber || '').trim();
+    if (idType === 'pan') {
+      const cleanPan = cleanId.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+      if (!cleanPan) {
+        setErrorMessage('Please enter your 10-character PAN number for 80G tax exemption.');
+        return;
+      }
+      if (!panRegex.test(cleanPan)) {
+        setErrorMessage('Invalid PAN format. PAN must be exactly 10 characters (e.g. ABCDE1234F: 5 letters, 4 numbers, 1 letter).');
+        return;
+      }
+    } else {
+      const cleanAadhaar = cleanId.replace(/\D/g, '');
+      const aadhaarRegex = /^\d{12}$/;
+      if (!cleanAadhaar) {
+        setErrorMessage('Please enter your 12-digit Aadhaar number for 80G verification.');
+        return;
+      }
+      if (!aadhaarRegex.test(cleanAadhaar)) {
+        setErrorMessage('Invalid Aadhaar number. Please enter a valid 12-digit Indian Aadhaar number.');
+        return;
+      }
+    }
+
+    const finalIdFormatted = idType === 'pan'
+      ? cleanId.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      : cleanId.replace(/\D/g, '');
+
     setSubmitting(true);
     setErrorMessage('');
 
@@ -76,7 +121,9 @@ export default function Donations({ onOpenDonate }) {
       cause: cause,
       notes: {
         frequency,
-        pan: donorInfo.pan || 'N/A',
+        id_type: idType.toUpperCase(),
+        id_number: finalIdFormatted,
+        pan: idType === 'pan' ? finalIdFormatted : `AADHAAR-${finalIdFormatted}`,
       },
       onSuccess: async (rzpResponse) => {
         try {
@@ -87,7 +134,7 @@ export default function Donations({ onOpenDonate }) {
             donor_name: donorInfo.name,
             email: donorInfo.email,
             phone: donorInfo.phone,
-            pan_number: donorInfo.pan || null,
+            pan_number: finalIdFormatted,
             amount: total,
             cause,
             payment_method: 'Razorpay',
@@ -95,7 +142,7 @@ export default function Donations({ onOpenDonate }) {
             razorpay_payment_id: rzpResponse.razorpay_payment_id,
             razorpay_order_id: rzpResponse.razorpay_order_id || null,
             razorpay_signature: rzpResponse.razorpay_signature || null,
-            notes: `Plan: ${frequency} | Razorpay ID: ${rzpResponse.razorpay_payment_id}`,
+            notes: `Plan: ${frequency} | ID: ${idType.toUpperCase()} - ${finalIdFormatted} | Razorpay ID: ${rzpResponse.razorpay_payment_id}`,
           });
 
           const receipt = {
@@ -106,7 +153,9 @@ export default function Donations({ onOpenDonate }) {
             donorName: donorInfo.name,
             email: donorInfo.email,
             phone: donorInfo.phone,
-            pan: donorInfo.pan ? donorInfo.pan.toUpperCase() : 'N/A',
+            idType: idType,
+            idNumber: finalIdFormatted,
+            pan: finalIdFormatted,
             amount: total,
             amountInWords: numberToWords(total),
             cause,
@@ -186,9 +235,9 @@ export default function Donations({ onOpenDonate }) {
             margin-bottom: 20px;
           }
           .trust-name {
-            font-family: Georgia, serif;
-            font-size: 23px;
-            font-weight: 800;
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 22px;
+            font-weight: 700;
             letter-spacing: 0.02em;
             margin: 0;
             text-transform: uppercase;
@@ -351,6 +400,7 @@ export default function Donations({ onOpenDonate }) {
         </div>
         <div class="receipt-box">
           <div class="header">
+            <img src="${TRUST_LOGO_BASE64}" alt="Trust Official Logo" style="width: 76px; height: 76px; object-fit: contain; margin: 0 auto 10px auto; display: block;" />
             <h1 class="trust-name">
               <span class="part1">MAHESWARI </span>
               <span class="amp">&amp;</span>
@@ -391,8 +441,8 @@ export default function Donations({ onOpenDonate }) {
               <td>${receiptData.email} • ${receiptData.phone}</td>
             </tr>
             <tr>
-              <th>Donor PAN Number (80G Benefit)</th>
-              <td style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.pan}</td>
+              <th>Donor ${receiptData.idType === 'aadhaar' ? 'Aadhaar Number' : 'PAN Number'} (80G Benefit)</th>
+              <td style="font-family:monospace; font-weight:800; color:#173F73;">${receiptData.idNumber || receiptData.pan}</td>
             </tr>
             <tr>
               <th>Donation Allocated To</th>
@@ -423,11 +473,11 @@ export default function Donations({ onOpenDonate }) {
               <div class="seal-sub">MEMORIAL CHARITABLE TRUST</div>
               <div style="font-size:8px; color:#6B7280; margin-top:2px;">ESTD. 2021 • TAMIL NADU</div>
             </div>
-            <div class="sign-box">
-              <div class="stamp-verified">✓ Digitally Signed &amp; Approved</div>
-              <div class="sign-line">
-                <div class="sign-title">Authorized Signatory</div>
-                <div class="sign-trust">For Maheswari &amp; Balan Memorial Charitable Trust</div>
+            <div style="text-align: right; width: 300px;">
+              <div style="font-size: 11px; color: #475569; font-weight: 600; line-height: 1.5;">
+                • Computer-Generated Official Receipt •<br/>
+                Valid under Indian IT Act Section 80G<br/>
+                <span style="font-size: 10px; color: #94A3B8;">No physical signature required</span>
               </div>
             </div>
           </div>
@@ -447,10 +497,10 @@ export default function Donations({ onOpenDonate }) {
       <section
         className="donations-hero-banner"
         style={{
-          background: `linear-gradient(180deg, rgba(10, 20, 30, 0.5) 0%, rgba(10, 20, 30, 0.25) 50%, rgba(10, 20, 30, 0.7) 100%), url(${bannerDonations}) center 95% / cover no-repeat`,
+          background: `linear-gradient(180deg, rgba(16, 43, 80, 0.58) 0%, rgba(10, 25, 47, 0.32) 45%, rgba(16, 43, 80, 0.78) 100%), url(${bannerDonations}) center 30% / cover no-repeat`,
           color: '#FFFFFF',
-          minHeight: '440px',
-          padding: '40px 16px 50px 16px',
+          minHeight: '520px',
+          padding: '50px 0 55px 0',
           display: 'flex',
           alignItems: 'flex-start',
           justifyContent: 'center',
@@ -477,14 +527,13 @@ export default function Donations({ onOpenDonate }) {
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
                 color: '#F5D061',
-                backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                backgroundColor: 'rgba(0, 0, 0, 0.45)',
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
                 padding: '6px 16px',
                 borderRadius: '9999px',
                 border: '1px solid rgba(245, 208, 97, 0.45)',
                 marginBottom: '16px',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
               }}
             >
               <Heart size={15} fill="#F5D061" color="#F5D061" />
@@ -497,7 +546,6 @@ export default function Donations({ onOpenDonate }) {
                 fontSize: 'clamp(2.3rem, 4.2vw, 3.4rem)',
                 fontWeight: '700',
                 color: '#FFFFFF',
-                textShadow: '0 3px 20px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.95)',
                 lineHeight: '1.2',
                 marginBottom: '16px',
               }}
@@ -508,10 +556,9 @@ export default function Donations({ onOpenDonate }) {
               className="banner-animate-3"
               style={{
                 fontSize: '1.1rem',
-                color: '#FFFFFF',
-                textShadow: '0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9)',
+                color: 'rgba(255, 255, 255, 0.95)',
                 lineHeight: '1.65',
-                fontWeight: '500',
+                fontWeight: '400',
                 maxWidth: '720px',
                 margin: '0 auto',
               }}
@@ -657,12 +704,84 @@ export default function Donations({ onOpenDonate }) {
                     </select>
                   </div>
 
+                  {/* Tax Proof Selector: PAN vs Aadhaar */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    marginBottom: '12px',
+                    backgroundColor: '#F8FAFC',
+                    padding: '8px 12px',
+                    borderRadius: '12px',
+                    border: '1.5px solid rgba(6, 75, 53, 0.15)',
+                  }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#173F73', whiteSpace: 'nowrap' }}>
+                      {t('chooseTaxId')}
+                    </span>
+                    <div style={{ display: 'flex', gap: '8px', flex: 1 }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIdType('pan');
+                          setDonorInfo(prev => ({ ...prev, idNumber: '' }));
+                          if (errorMessage) setErrorMessage('');
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          border: idType === 'pan' ? '2px solid #064B35' : '1px solid #CBD5E1',
+                          backgroundColor: idType === 'pan' ? '#064B35' : '#FFFFFF',
+                          color: idType === 'pan' ? '#FFFFFF' : '#334155',
+                          fontWeight: idType === 'pan' ? '800' : '600',
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <CreditCard size={15} color={idType === 'pan' ? '#F5D061' : '#173F73'} />
+                        <span>{t('panCard')}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIdType('aadhaar');
+                          setDonorInfo(prev => ({ ...prev, idNumber: '' }));
+                          if (errorMessage) setErrorMessage('');
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          border: idType === 'aadhaar' ? '2px solid #064B35' : '1px solid #CBD5E1',
+                          backgroundColor: idType === 'aadhaar' ? '#064B35' : '#FFFFFF',
+                          color: idType === 'aadhaar' ? '#FFFFFF' : '#334155',
+                          fontWeight: idType === 'aadhaar' ? '800' : '600',
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <Fingerprint size={15} color={idType === 'aadhaar' ? '#F5D061' : '#064B35'} />
+                        <span>{t('aadhaarCard')}</span>
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Donor Info */}
                   <div className="donor-inputs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}>
                     <input
                       type="text"
                       required
-                      placeholder="Your Full Name *"
+                      placeholder={t('fullName')}
                       value={donorInfo.name}
                       onChange={(e) => setDonorInfo({ ...donorInfo, name: e.target.value })}
                       style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
@@ -670,7 +789,7 @@ export default function Donations({ onOpenDonate }) {
                     <input
                       type="email"
                       required
-                      placeholder="Email Address *"
+                      placeholder={t('emailAddress')}
                       value={donorInfo.email}
                       onChange={(e) => setDonorInfo({ ...donorInfo, email: e.target.value })}
                       style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
@@ -678,18 +797,41 @@ export default function Donations({ onOpenDonate }) {
                     <input
                       type="tel"
                       required
-                      placeholder="Phone Number *"
+                      maxLength={10}
+                      placeholder={t('mobileNumber')}
                       value={donorInfo.phone}
-                      onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value })}
+                      onChange={(e) => setDonorInfo({ ...donorInfo, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                       style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
                     />
-                    <input
-                      type="text"
-                      placeholder="PAN Number (For 80G Tax Exemption)"
-                      value={donorInfo.pan}
-                      onChange={(e) => setDonorInfo({ ...donorInfo, pan: e.target.value })}
-                      style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
-                    />
+                    {idType === 'pan' ? (
+                      <input
+                        type="text"
+                        required
+                        maxLength={10}
+                        placeholder={t('panPlaceholder')}
+                        value={donorInfo.idNumber || ''}
+                        onChange={(e) => {
+                          const clean = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+                          setDonorInfo({ ...donorInfo, idNumber: clean });
+                          if (errorMessage) setErrorMessage('');
+                        }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem', textTransform: 'uppercase' }}
+                      />
+                    ) : (
+                      <input
+                        type="tel"
+                        required
+                        maxLength={12}
+                        placeholder={t('aadhaarPlaceholder')}
+                        value={donorInfo.idNumber || ''}
+                        onChange={(e) => {
+                          const clean = e.target.value.replace(/\D/g, '').slice(0, 12);
+                          setDonorInfo({ ...donorInfo, idNumber: clean });
+                          if (errorMessage) setErrorMessage('');
+                        }}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: '10px', border: '1.5px solid rgba(6, 75, 53, 0.15)', fontSize: '0.9rem' }}
+                      />
+                    )}
                   </div>
 
                   {errorMessage && (
@@ -725,7 +867,7 @@ export default function Donations({ onOpenDonate }) {
                     ) : (
                       <>
                         <Heart size={18} fill="#F5D061" color="#F5D061" />
-                        <span>Pay via Razorpay — ₹{total.toLocaleString('en-IN')}</span>
+                        <span>{t('payViaRazorpay')} — ₹{total.toLocaleString('en-IN')}</span>
                       </>
                     )}
                   </button>
@@ -800,8 +942,12 @@ export default function Donations({ onOpenDonate }) {
                         <strong style={{ color: '#064B35', fontSize: '1rem' }}>₹ {total.toLocaleString('en-IN')} INR</strong>
                       </div>
                       <div>
-                        <span style={{ color: '#64748B', fontSize: '0.72rem', display: 'block' }}>PAN (80G):</span>
-                        <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>{donorInfo.pan || 'N/A'}</span>
+                        <span style={{ color: '#64748B', fontSize: '0.72rem', display: 'block' }}>
+                          {receiptData?.idType === 'aadhaar' ? 'Aadhaar (80G):' : 'PAN (80G):'}
+                        </span>
+                        <span style={{ fontFamily: 'monospace', fontWeight: '700' }}>
+                          {receiptData?.idNumber || receiptData?.pan || donorInfo.idNumber || 'N/A'}
+                        </span>
                       </div>
                     </div>
 
@@ -849,7 +995,8 @@ export default function Donations({ onOpenDonate }) {
                     <button
                       onClick={() => {
                         setDonated(false);
-                        setDonorInfo({ name: '', email: '', phone: '', pan: '' });
+                        setIdType('pan');
+                        setDonorInfo({ name: '', email: '', phone: '', idNumber: '' });
                       }}
                       className="btn btn-dark"
                       style={{ padding: '12px 28px', fontSize: '0.9rem', borderRadius: '9999px' }}

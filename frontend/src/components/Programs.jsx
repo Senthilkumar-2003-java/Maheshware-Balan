@@ -97,11 +97,11 @@ export default function Programs() {
             </div>
             {/* Heading */}
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
               fontWeight: '700',
               color: '#17231F',
-              lineHeight: '1.18',
+              lineHeight: '1.22',
               marginBottom: '4px',
             }}>
               {t('programsTitle')}

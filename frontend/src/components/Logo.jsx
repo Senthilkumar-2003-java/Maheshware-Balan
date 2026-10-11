@@ -51,11 +51,11 @@ export default function Logo({ variant = 'dark', className = '', showText = true
           <div
             className="logo-title"
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontSize: '1.32rem',
-              fontWeight: '800',
+              fontFamily: "var(--font-serif)",
+              fontSize: '1.25rem',
+              fontWeight: '700',
               letterSpacing: '0.01em',
-              lineHeight: '1.15',
+              lineHeight: '1.2',
               color: isLight ? '#FFFFFF' : '#173F73',
             }}
           >
@@ -67,8 +67,9 @@ export default function Logo({ variant = 'dark', className = '', showText = true
           <div
             className="logo-sub"
             style={{
-              fontSize: '0.54rem',
-              fontWeight: '800',
+              fontFamily: "var(--font-sans)",
+              fontSize: '0.55rem',
+              fontWeight: '700',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color: isLight ? 'rgba(255,255,255,0.85)' : '#6B2D67',
@@ -86,11 +87,11 @@ export default function Logo({ variant = 'dark', className = '', showText = true
           <div
             className="logo-motto"
             style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontFamily: "var(--font-editorial)",
               fontStyle: 'italic',
-              fontSize: '0.74rem',
+              fontSize: '0.78rem',
               color: isLight ? '#FCD34D' : '#4F8A35',
-              marginTop: '0px',
+              marginTop: '1px',
               letterSpacing: '0.02em',
               fontWeight: '600',
             }}
