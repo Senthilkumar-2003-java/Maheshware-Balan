@@ -64,6 +64,7 @@ async function createDonation(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Failed to record donation in database.',
+      error: error.message,
     });
   }
 }

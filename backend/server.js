@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const { initDatabase } = require('./config/db');
+const { initDatabase, getPool } = require('./config/db');
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
@@ -22,13 +22,29 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health Check API
-app.get('/api/health', (req, res) => {
+// Health Check API with live DB ping
+app.get('/api/health', async (req, res) => {
+  const pool = getPool();
+  let dbStatus = 'disconnected';
+  let dbError = null;
+
+  if (pool) {
+    try {
+      await pool.query('SELECT 1');
+      dbStatus = 'connected';
+    } catch (err) {
+      dbStatus = 'error';
+      dbError = err.message;
+    }
+  }
+
   res.status(200).json({
     status: 'online',
     timestamp: new Date().toISOString(),
     service: 'Maheswari & Balan Memorial Charitable Trust Backend API',
-    database: 'MySQL',
+    database: dbStatus,
+    dbHost: process.env.DB_HOST || 'localhost (fallback)',
+    dbError: dbError || undefined,
   });
 });
 

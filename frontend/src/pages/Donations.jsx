@@ -72,10 +72,11 @@ export default function Donations({ onOpenDonate }) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
-    const cleanPhone = donorInfo.phone.trim().replace(/\D/g, '');
+    const rawDigits = donorInfo.phone.trim().replace(/\D/g, '');
+    const cleanPhone = rawDigits.length > 10 ? rawDigits.slice(-10) : rawDigits;
     const phoneRegex = /^[6-9]\d{9}$/;
     if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
-      setErrorMessage('Please enter a valid 10-digit Indian mobile number.');
+      setErrorMessage('Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).');
       return;
     }
 
