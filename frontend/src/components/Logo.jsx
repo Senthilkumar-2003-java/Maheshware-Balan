@@ -103,15 +103,21 @@ export default function Logo({ variant = 'dark', className = '', showText = true
 
       <style>{`
         @media (max-width: 640px) {
-          .logo-symbol { width: 42px !important; height: 42px !important; }
-          .logo-title { font-size: 1.08rem !important; }
-          .logo-sub { font-size: 0.48rem !important; letter-spacing: 0.1em !important; }
-          .logo-motto { font-size: 0.65rem !important; }
+          .logo-brand { gap: 8px !important; }
+          .logo-symbol { width: 38px !important; height: 38px !important; border-radius: 8px !important; }
+          .logo-title { font-size: 1.04rem !important; }
+          .logo-sub { font-size: 0.44rem !important; letter-spacing: 0.08em !important; }
+          .logo-motto { display: none !important; }
         }
         @media (max-width: 440px) {
-          .logo-symbol { width: 38px !important; height: 38px !important; }
-          .logo-title { font-size: 1.02rem !important; }
-          .logo-motto { display: none !important; }
+          .logo-brand { gap: 6px !important; }
+          .logo-symbol { width: 34px !important; height: 34px !important; border-radius: 7px !important; }
+          .logo-title { font-size: 0.94rem !important; }
+          .logo-sub { font-size: 0.38rem !important; letter-spacing: 0.04em !important; }
+        }
+        @media (max-width: 360px) {
+          .logo-symbol { width: 30px !important; height: 30px !important; }
+          .logo-title { font-size: 0.88rem !important; }
         }
       `}</style>
     </Link>

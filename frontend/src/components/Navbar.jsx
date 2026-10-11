@@ -66,7 +66,7 @@ export default function Navbar({ onOpenDonate }) {
         fontWeight: '500',
         borderBottom: '1px solid rgba(255,255,255,0.12)',
       }}>
-        <div style={{
+        <div className="topbar-inner" style={{
           maxWidth: '1380px',
           margin: '0 auto',
           padding: '0 16px',
@@ -74,18 +74,18 @@ export default function Navbar({ onOpenDonate }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '12px',
+          gap: '10px',
         }}>
           {/* Left: 80G Tax Exemption & Trust Info */}
-          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={14} color="#F5D061" />
-            <span style={{ opacity: 0.95, letterSpacing: '0.01em', color: '#F8FAFC' }}>
+          <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+            <ShieldCheck size={14} color="#F5D061" style={{ flexShrink: 0 }} />
+            <span className="topbar-badge-text" style={{ opacity: 0.95, letterSpacing: '0.01em', color: '#F8FAFC' }}>
               {t('taxExemptTopBar')}
             </span>
           </div>
 
           {/* Right: Office link + Language Selector Dropdown + Admin Login */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginLeft: 'auto' }}>
+          <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: 'auto' }}>
             <NavLink 
               to="/contact" 
               className="topbar-office-link"
@@ -97,6 +97,7 @@ export default function Navbar({ onOpenDonate }) {
                 textDecoration: 'none',
                 fontSize: '0.76rem',
                 transition: 'color 0.2s',
+                whiteSpace: 'nowrap',
               }}
             >
               <Building2 size={13} color="#F5D061" />
@@ -207,7 +208,7 @@ export default function Navbar({ onOpenDonate }) {
       <div style={{
         borderBottom: '1px solid rgba(0,0,0,0.06)',
       }}>
-        <div style={{
+        <div className="navbar-container" style={{
           maxWidth: '1380px',
           margin: '0 auto',
           padding: '0 16px',
@@ -250,7 +251,7 @@ export default function Navbar({ onOpenDonate }) {
           </nav>
 
           {/* Right Action Block: Donate Now + Mobile Menu Button */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <div className="navbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             {/* Logo Brand Golden Donate Now Button */}
             <button
               onClick={onOpenDonate}
@@ -259,7 +260,7 @@ export default function Navbar({ onOpenDonate }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '9px 20px',
+                padding: '9px 18px',
                 background: 'linear-gradient(135deg, #D79A18 0%, #B88010 100%)',
                 color: '#FFFFFF',
                 borderRadius: '9999px',
@@ -280,8 +281,9 @@ export default function Navbar({ onOpenDonate }) {
                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(215, 154, 24, 0.35)';
               }}
             >
-              <Heart size={14} fill="#FFFFFF" color="#FFFFFF" />
-              <span>Donate Now</span>
+              <Heart size={14} fill="#FFFFFF" color="#FFFFFF" style={{ flexShrink: 0 }} />
+              <span className="navbar-donate-text-full">{t('navDonateBtn') || 'Donate Now'}</span>
+              <span className="navbar-donate-text-short">Donate</span>
             </button>
 
             {/* Premium Mobile Menu Toggle Button */}
@@ -469,26 +471,74 @@ export default function Navbar({ onOpenDonate }) {
         @media (max-width: 1023px) {
           .desktop-nav { display: none !important; }
           .mobile-toggle-btn { display: inline-flex !important; }
-          .topbar-left { display: none !important; }
         }
-        @media (max-width: 580px) {
+        @media (max-width: 768px) {
           .topbar-office-link, .topbar-divider { display: none !important; }
+          .topbar-badge-text { font-size: 0.72rem !important; }
+        }
+        @media (max-width: 640px) {
+          .topbar-inner {
+            height: 32px !important;
+            padding: 0 10px !important;
+          }
+          .topbar-left {
+            font-size: 0.70rem !important;
+          }
+          .topbar-badge-text {
+            font-size: 0.69rem !important;
+          }
+          .topbar-right {
+            gap: 6px !important;
+          }
+          .topbar-right button {
+            padding: 2px 7px !important;
+            font-size: 0.72rem !important;
+          }
+          .navbar-container {
+            height: 60px !important;
+            padding: 0 10px !important;
+            gap: 8px !important;
+          }
+          .navbar-actions {
+            gap: 6px !important;
+          }
           .navbar-donate-btn { 
-            padding: 7px 12px !important; 
+            padding: 6px 12px !important; 
             font-size: 0.78rem !important; 
           }
           .mobile-toggle-btn {
             width: 36px !important;
             height: 36px !important;
+            border-radius: 8px !important;
           }
         }
-        @media (max-width: 380px) {
-          .navbar-donate-btn span {
+        @media (max-width: 440px) {
+          .navbar-container {
+            padding: 0 8px !important;
+            gap: 6px !important;
+          }
+          .navbar-donate-text-full {
             display: none !important;
           }
+          .navbar-donate-text-short {
+            display: inline !important;
+          }
           .navbar-donate-btn {
-            padding: 8px 10px !important;
-            border-radius: 50% !important;
+            padding: 6px 10px !important;
+            font-size: 0.76rem !important;
+          }
+        }
+        @media (min-width: 441px) {
+          .navbar-donate-text-short {
+            display: none !important;
+          }
+          .navbar-donate-text-full {
+            display: inline !important;
+          }
+        }
+        @media (max-width: 350px) {
+          .topbar-badge-text {
+            display: none !important;
           }
         }
       `}</style>
